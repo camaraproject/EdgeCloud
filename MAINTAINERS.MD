@@ -8,3 +8,6 @@
 | Broadpeak  | Tuan Tran |
 | Broadpeak | Christoph Neumann |
 | Nabstract | Babu |
+| TIM | Fabrizio Moggio |
+| TIM | Marco Signorelli |
+| TIM | Raffaele Passannanti |
