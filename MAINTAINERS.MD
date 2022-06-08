@@ -8,3 +8,4 @@
 | Broadpeak  | Tuan Tran |
 | Broadpeak | Christoph Neumann |
 | Nabstract | Babu |
+| Deutsche Telekom | Yamina Kelm |
