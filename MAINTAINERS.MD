@@ -15,3 +15,4 @@
 | TIM | Marco Signorelli |
 | TIM | Raffaele Passannanti | 
 | Intel | Larry Horner | 
+| Capgemini | Deepak Gunjal |
