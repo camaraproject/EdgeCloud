@@ -10,9 +10,10 @@
 | Broadpeak  | Tuan Tran |
 | Broadpeak | Christoph Neumann |
 | Nabstract | Babu |
-| Deutsche Telekom | Yamina Kelm |
 | TIM | Fabrizio Moggio |
 | TIM | Marco Signorelli |
 | TIM | Raffaele Passannanti | 
+| Deutsche Telekom | Yamina Kelm |
 | Intel | Larry Horner | 
 | Capgemini | Deepak Gunjal |
+| Vodafone | Eric Murray |
