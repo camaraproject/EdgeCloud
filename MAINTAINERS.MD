@@ -15,4 +15,5 @@
 | TIM | Raffaele Passannanti | 
 | Deutsche Telekom | Yamina Kelm |
 | Intel | Larry Horner | 
+| Capgemini | Deepak Gunjal |
 | Vodafone | Eric Murray |
