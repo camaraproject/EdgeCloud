@@ -12,6 +12,6 @@
 | Nabstract | Babu |
 | TIM | Fabrizio Moggio |
 | TIM | Marco Signorelli |
-| TIM | Raffaele Passannanti |
+| TIM | Raffaele Passannanti | 
 | Deutsche Telekom | Yamina Kelm |
 | Intel | Larry Horner | 
