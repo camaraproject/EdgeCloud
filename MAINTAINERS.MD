@@ -5,9 +5,13 @@
 | Telefonica | Jose A Ordonez Lucena |
 | KDDI | Toshi (Toshiyasu) Wakayama |
 | Microsoft | Landon Cox |
+| GSMA | Tom Van Pelt |
+| GSMA | Mark Cornall |
 | Broadpeak  | Tuan Tran |
 | Broadpeak | Christoph Neumann |
 | Nabstract | Babu |
 | TIM | Fabrizio Moggio |
 | TIM | Marco Signorelli |
 | TIM | Raffaele Passannanti |
+| Deutsche Telekom | Yamina Kelm |
+| Intel | Larry Horner | 
