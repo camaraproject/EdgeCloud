@@ -8,7 +8,7 @@ Repository to describe, develop, document and test the EdgeCloud API family
   * Use reserved compute resources within the operator network for the deployment of applications on VMs or containers  
   * NOTE: The scope of this API family should be limited (at least at a first stage) to 4G and 5G.  
 * Describe, develop, document and test the APIs (with 1-2 Telcos)  
-* Started: April 2022
+* Started: June 2022
 * Location: virtually  
 
 ## Meetings
