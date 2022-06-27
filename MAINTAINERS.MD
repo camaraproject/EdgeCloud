@@ -19,3 +19,4 @@
 | Intel | Larry Horner | 
 | Capgemini | Deepak Gunjal |
 | Vodafone | Eric Murray |
+| Scenera | Andrew Wajs|
