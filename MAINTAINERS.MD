@@ -16,6 +16,7 @@
 | TIM | Marco Signorelli |
 | TIM | Raffaele Passannanti | 
 | Deutsche Telekom | Yamina Kelm |
+| Deutsche Telekom | Shilpa Padgaonkar |
 | Intel | Larry Horner | 
 | Capgemini | Deepak Gunjal |
 | Vodafone | Eric Murray |
