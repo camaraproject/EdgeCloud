@@ -20,3 +20,5 @@
 | Capgemini | Deepak Gunjal |
 | Vodafone | Eric Murray |
 | Scenera | Andrew Wajs|
+| 5GFF| Kevin Smith |
+| 5GFF | Senthoor Punniamoorthy |
