@@ -1,0 +1,405 @@
+openapi: 3.0.0
+info:
+  title: Simple MEC Discovery API
+  version: 1.1.0
+  description: |
+    # Find your nearest MEC platform
+    ---
+    Network operators will typically have multiple MEC sites in a given territory. Connecting your application to a server on the closest MEC platform means the lowest latency - however, the physical location of a user is not an accurate match to the closest MEC site, due to the way operator networks are configured. This API returns the MEC platforms with the _shortest network path_ to the client making the request, and hence the lowest propagation delay.
+    * If you have a server instance deployed there, connect to it to gain the lowest latency
+    * Or if not, you may wish to deploy an instance there using the APIs of the cloud provider supporting that zone.
+    
+      This API is intended to be called by a client application hosted on a UE attached to the operator network. _Note that the API parameters have been listed in this 'simple API' to align with the full API, but are optional and may not be supported by the API server_
+    ---
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'https://8vclhc412g.execute-api.us-east-2.amazonaws.com/POC1simple'
+    description: Simple POC Phase 1
+
+tags:
+  - name: Discovery
+    description: |
+       Find the closest MEC platform to the UE (user equipment)
+
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: Bookmark
+          content:
+            application/json:
+              schema:
+                title: getResourcesResponse
+                type: object
+                properties:
+                  resources:
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/resources'
+                  links:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/linksCommon'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Unexpected'
+      tags:
+        - Discovery
+      operationId: bookmark
+      summary: API bookmark
+      description: API bookmark
+
+  /mecplatforms:
+    get:
+      operationId: get-mecplatforms
+      parameters:
+        - $ref: '#/components/parameters/region'
+        - $ref: '#/components/parameters/zone'        
+        - $ref: '#/components/parameters/serviceProfileId'
+        - $ref: '#/components/parameters/subscriberDensity'
+        - $ref: '#/components/parameters/UEIdentityType'
+        - $ref: '#/components/parameters/UEIdentity'
+      responses:
+        '200':
+          description: MEC platforms matching query parameters
+          content:
+            application/json:
+              schema:
+                title: GetMECPlatformsResponse
+                type: object
+                properties:
+                  MECPlatforms:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/resources_mecplatform'
+                  links:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/links_All-mec-platforms'
+                        - $ref: '#/components/schemas/linksCommon'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Unexpected'
+      tags:
+        - Discovery
+      summary: Returns the name of the closest MEC platform(s) to the UE that sent the request.
+      description: ON receiving this request, the network will calculate which of its MEC platforms have the shortest network path to the UE (terminal) from which the request was made. 
+   
+components:
+  schemas:
+    resources:
+      type: array
+      items:
+        oneOf:
+          - $ref: '#/components/schemas/links_All-mec-platforms' 
+      additionalProperties: false
+    resources_mecplatform:
+      type: object
+      properties:
+        ern:
+          $ref: '#/components/schemas/types_edgeResource'
+        zone:
+          $ref: '#/components/schemas/types_zone_Id'
+        region:
+          $ref: '#/components/schemas/types_region_Id'
+        status:
+          description: Status of the MEC Platform (default is 'unknown')
+          type: string
+          enum:
+            - active
+            - inactive
+            - unknown
+          default: unknown
+        properties:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              data:
+                type: object
+      additionalProperties: false
+
+    types_edgeResource:
+      description: |
+        An object defined by the service provider representing an edge resource within its network domain, such as a MEC Platform.  The string contains colon-separated metadata in the form   ern:<tsp-identifier>:<tsp-region>:<resource-type>:<resource-identifier>:<tsp-extensions>
+      type: string
+      additionalProperties: false     
+    types_zone_Id:
+      description: |
+        Unique identifier representing a zone
+      type: string
+      additionalProperties: false  
+    types_region_Id:
+      description: |
+        Unique identifier representing a region
+      type: string
+      additionalProperties: false
+    typesError:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        links:
+          $ref: '#/components/schemas/linksCommon'
+      required:
+        - code
+        - message
+        - links
+      additionalProperties: false
+    typesSuccess:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        links:
+          $ref: '#/components/schemas/linksCommon'
+      required:
+        - code
+        - message
+        - links
+      additionalProperties: false
+    types_UEIdentityType:
+      description: Type of User Equipment identifier used in `UEIdentity`.
+      type: string
+      enum:
+        - IPAddress
+        - MSISDN
+        - IMEI
+        - MDN
+        - GPSI
+    types_UEIdentity:
+      description: Identifier value for User Equipment. The type of identifier is defined by the 'UEIdentityType' parameter.
+      type: string         
+###########################################
+# LINKS
+###########################################
+    links_All-mec-platforms:
+      type: object
+      readOnly: true
+      properties:
+        link:
+          type: object
+          properties:
+            rel:
+              type: string
+              pattern: ListMECPlatforms
+              example: ListMECPlatforms
+            method:
+              type: string
+              pattern: get
+              example: get
+            href:
+              type: string
+              pattern: '\/mecplatforms'
+              example: /mecplatforms
+          required:
+            - href
+            - rel
+            - method
+      additionalProperties: false 
+
+    linksSelf:
+      type: object
+      readOnly: true
+      properties:
+        link:
+          type: object
+          properties:
+            rel:
+              type: string
+              pattern: self
+              example: self
+            method:
+              type: string
+              pattern: get
+              example: get
+            href:
+              type: string
+              format: uri
+          required:
+            - href
+            - rel
+            - method
+      additionalProperties: false
+    linksVersionHistory:
+      type: object
+      readOnly: true
+      properties:
+        link:
+          type: object
+          properties:
+            rel:
+              type: string
+              pattern: version-history
+              example: version-history
+            method:
+              type: string
+              pattern: get
+              example: get
+            href:
+              type: string
+              format: uri
+          required:
+            - href
+            - rel
+            - method
+      additionalProperties: false
+    linksTermsOfService:
+      type: object
+      readOnly: true
+      properties:
+        link:
+          type: object
+          properties:
+            rel:
+              type: string
+              pattern: terms-of-service
+              example: terms-of-service
+            method:
+              type: string
+              pattern: get
+              example: get
+            href:
+              type: string
+              format: uri
+          required:
+            - href
+            - rel
+            - method
+      additionalProperties: false
+    linksBookmark:
+      type: object
+      readOnly: true
+      properties:
+        link:
+          type: object
+          properties:
+            rel:
+              type: string
+              pattern: bookmark
+              example: bookmark
+            method:
+              type: string
+              pattern: get
+              example: get
+            href:
+              type: string
+              format: uri
+          required:
+            - href
+            - rel
+            - method
+      additionalProperties: false
+    linksCommon:
+      type: array
+      readOnly: true
+      items:
+        oneOf:
+          - $ref: '#/components/schemas/linksSelf'
+          - $ref: '#/components/schemas/linksVersionHistory'
+          - $ref: '#/components/schemas/linksTermsOfService'
+          - $ref: '#/components/schemas/linksBookmark'
+
+###################################
+# RESPONSES
+####################################
+  responses:
+    OK:
+      description: HTTP 200 OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/typesSuccess'
+    Created:
+      description: HTTP 201 Created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/typesSuccess'
+    NoContent:
+      description: HTTP 204 No Content
+    BadRequest:
+      description: HTTP 400 Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/typesError'
+    NotFound:
+      description: HTTP 401 The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/typesError'
+    Unauthorized:
+      description: HTTP 401 Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/typesError'
+    Unexpected:
+      description: HTTP 500 Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/typesError'
+ 
+################################
+# PARAMETERS
+################################
+            
+  parameters:
+    region:
+      name: region
+      description: MEC region ID
+      in: query
+      required: false
+      schema:
+        type: string
+    zone:
+      name: zone
+      description: MEC zone ID
+      in: query
+      required: false
+      schema:
+        type: string  
+    serviceProfileId:
+      name: serviceProfileId
+      description: service profile identifier
+      in: query
+      required: false
+      schema:
+        type: string
+    subscriberDensity:
+      name: subscriberDensity
+      description: Minimum number of 4G/5G subscribers per square kilometer.
+      in: query
+      required: false
+      schema:
+        type: integer
+    UEIdentityType:
+      name: UEIdentityType
+      description: Type of User Equipment identifier used in `UEIdentity`.
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/types_UEIdentityType'
+    UEIdentity:
+      name: UEIdentity
+      description: Identifier value for User Equipment. The type of identifier is defined by the UEIdentityType parameter.
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/types_UEIdentity'
