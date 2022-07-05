@@ -13,5 +13,5 @@ Repository to describe, develop, document and test the EdgeCloud API family
 
 ## Meetings
 * Meetings are held virtually
-* Schedule: *tbd*
+* Schedule: Every Two Weeks
 * Meeting link: *tbd*
