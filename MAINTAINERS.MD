@@ -28,3 +28,7 @@
 | 5GFF | Mahesh Chapalamadugu |
 | 5GFF | Raghuram Parvataneni |
 | 5GFF | Kevin Xu |
+| EdgeXR | Jesse Bijl |
+| EdgeXR | Jon Gainsley |
+| EdgeXR | Sunay Tripathi |
+| EdgeXR | Thomas Vits |
