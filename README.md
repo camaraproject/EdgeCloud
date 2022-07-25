@@ -1,3 +1,10 @@
+<a href="https://github.com/camaraproject/EdgeCloud/commits/" title="Last Commit"><img src="https://img.shields.io/github/last-commit/camaraproject/EdgeCloud?style=plastic"></a>
+<a href="https://github.com/camaraproject/EdgeCloud/issues" title="Open Issues"><img src="https://img.shields.io/github/issues/camaraproject/EdgeCloud?style=plastic"></a>
+<a href="https://github.com/camaraproject/EdgeCloud/pulls" title="Open Pull Requests"><img src="https://img.shields.io/github/issues-pr/camaraproject/EdgeCloud?style=plastic"></a>
+<a href="https://github.com/camaraproject/EdgeCloud/graphs/contributors" title="Contributors"><img src="https://img.shields.io/github/contributors/camaraproject/EdgeCloud?style=plastic"></a>
+<a href="https://github.com/camaraproject/EdgeCloud" title="Repo Size"><img src="https://img.shields.io/github/repo-size/camaraproject/EdgeCloud?style=plastic"></a>
+<a href="https://github.com/camaraproject/EdgeCloud/blob/main/LICENSE" title="License"><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg?style=plastic"></a>
+
 # EdgeCloud
 Repository to describe, develop, document and test the EdgeCloud API family
 
