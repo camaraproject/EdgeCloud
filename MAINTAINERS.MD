@@ -32,3 +32,4 @@
 | EdgeXR | Jon Gainsley |
 | EdgeXR | Sunay Tripathi |
 | EdgeXR | Thomas Vits |
+| Ericsson | Emil Zhang |
