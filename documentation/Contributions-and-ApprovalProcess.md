@@ -17,7 +17,7 @@ Assuming we have 3 contributors for the agreed feature, the following sample bra
 * 5GFF-AppLCM-F1
 * EXR-AppLCM-F1
 * CONSENSUS-AppLCM-F1
-![image](./images/EdgeCloudWG-Branches-Approvals.PNG)
+![image](./images/EdgeCloudWG-Branches-Approvals.png)
 
 <br>
 The core contributors group (the actual contributors of the current APIs) need to setup dedicated sessions to propose/discuss the harmonisation/convergence aspect and during this time, the pull requests (if already created at the time of branching are set in draft mode). If a consensus is reached to pick one API contribution out of the existing contributions, the contributor of the agreed spec removes the draft mode of his pull request  and the branch gets merged to CON-AppLCM-F1 so that minor changes/additions can be done.
