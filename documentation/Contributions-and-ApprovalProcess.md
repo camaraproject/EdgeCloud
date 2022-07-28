@@ -8,7 +8,8 @@ For eg.
 * Application-LCM
 
 <br>
-**Branching and Approaval process**
+
+### Branching and Approaval process
 For the API/APIs where multiple contributors showcase capability overlap, the core contributors in a smaller round can agree on the first feature(API) for contribution. If for eg.  feature-1 (which has an overlap) within the intent group AppLCM is planned to be contributed, an issue gets created to mention the brief details such as agreed API name, file name, contributor list etc. This could be contributed as AppLCM-F1.MD file and can include these overview details.
 
 Assuming we have 3 contributors for the agreed feature, the following sample branches could be created:
@@ -37,5 +38,6 @@ Note:
 * The general rules regarding who is allowed to make merges and if there could be default reviewers etc. are not covered within the scope of this document
 
 <br>
-**Ref-Platform**: We also propose setting up an additional repository called Ref-Platform (name is subject to change)
-EdgeXR has offered to contribute the implementation code of their reference platform to Camara. The goal would be to eventually align or refactor the implementation to match the harmonised APIs in the above-said Edge cloud subgroups, use the existing implementation from certain other API families such as QoD and Location and ensure that everything works together. This repo could be created outside the Edgecloud repo. This request will be addressed to the Steering committee.
+
+### Ref-Platform  
+We also propose setting up an additional repository called Ref-Platform (name is subject to change) EdgeXR has offered to contribute the implementation code of their reference platform to Camara. The goal would be to eventually align or refactor the implementation to match the harmonised APIs in the above-said Edge cloud subgroups, use the existing implementation from certain other API families such as QoD and Location and ensure that everything works together. This repo could be created outside the Edgecloud repo. This request will be addressed to the Steering committee.
