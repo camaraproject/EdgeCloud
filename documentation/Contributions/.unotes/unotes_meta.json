@@ -1,13 +1,16 @@
 {
   "name": "",
   "isOrdered": true,
-  "folders": {},
+  "folders": {
+    "Images": {
+      "name": "Images",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    }
+  },
   "files": {
     "README": 0,
-<<<<<<< Updated upstream
     "Discovery UNI API": 1
-=======
-    "UNI API": 1
->>>>>>> Stashed changes
   }
 }
