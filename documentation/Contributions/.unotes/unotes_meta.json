@@ -1,0 +1,17 @@
+{
+  "name": "",
+  "isOrdered": true,
+  "folders": {
+    "Images": {
+      "name": "Images",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    }
+  },
+  "files": {
+    "README": 0,
+    "Discovery UNI API": 1,
+    "Proposal - Edge Cloud GitHub repository organization ": 2
+  }
+}
