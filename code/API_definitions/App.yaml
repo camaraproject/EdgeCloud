@@ -11,76 +11,6 @@ servers:
 - description: localhost server
   url: http://localhost:9900
 paths:
-  /api/v1/auth/ctrl/AddAppAlertPolicy:
-    post:
-      description: Add an AlertPolicy to the application definition
-      operationId: AddAppAlertPolicy
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrmapiRegionAppAlertPolicy'
-            x-required-fields:
-            - region
-            - appalertpolicy.appkey.organization
-            - appalertpolicy.appkey.name
-            - appalertpolicy.appkey.version
-            - appalertpolicy.alertpolicy
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EdgeprotoResult'
-          description: OK
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrmapiResult'
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - bearerAuth: []
-      summary: AddAppAlertPolicy
-      tags:
-      - App
-  /api/v1/auth/ctrl/AddAppAutoProvPolicy:
-    post:
-      description: Add an AutoProvPolicy to the application definition
-      operationId: AddAppAutoProvPolicy
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrmapiRegionAppAutoProvPolicy'
-            x-required-fields:
-            - region
-            - appautoprovpolicy.appkey.organization
-            - appautoprovpolicy.appkey.name
-            - appautoprovpolicy.appkey.version
-            - appautoprovpolicy.autoprovpolicy
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EdgeprotoResult'
-          description: OK
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrmapiResult'
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - bearerAuth: []
-      summary: AddAppAutoProvPolicy
-      tags:
-      - App
   /api/v1/auth/ctrl/CreateApp:
     post:
       description: Create Application. Creates a definition for an application for
@@ -151,76 +81,6 @@ paths:
       summary: DeleteApp
       tags:
       - App
-  /api/v1/auth/ctrl/RemoveAppAlertPolicy:
-    post:
-      description: Remove an AlertPolicy from the application definition
-      operationId: RemoveAppAlertPolicy
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrmapiRegionAppAlertPolicy'
-            x-required-fields:
-            - region
-            - appalertpolicy.appkey.organization
-            - appalertpolicy.appkey.name
-            - appalertpolicy.appkey.version
-            - appalertpolicy.alertpolicy
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EdgeprotoResult'
-          description: OK
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrmapiResult'
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - bearerAuth: []
-      summary: RemoveAppAlertPolicy
-      tags:
-      - App
-  /api/v1/auth/ctrl/RemoveAppAutoProvPolicy:
-    post:
-      description: Remove an AutoProvPolicy from the application definition
-      operationId: RemoveAppAutoProvPolicy
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrmapiRegionAppAutoProvPolicy'
-            x-required-fields:
-            - region
-            - appautoprovpolicy.appkey.organization
-            - appautoprovpolicy.appkey.name
-            - appautoprovpolicy.appkey.version
-            - appautoprovpolicy.autoprovpolicy
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EdgeprotoResult'
-          description: OK
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrmapiResult'
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - bearerAuth: []
-      summary: RemoveAppAutoProvPolicy
-      tags:
-      - App
   /api/v1/auth/ctrl/ShowApp:
     post:
       description: Show Applications. Lists all application definitions. Any fields
@@ -251,37 +111,6 @@ paths:
       security:
       - bearerAuth: []
       summary: ShowApp
-      tags:
-      - App
-  /api/v1/auth/ctrl/ShowCloudletsForAppDeployment:
-    post:
-      description: Discover cloudlets supporting deployments of App.DefaultFlavor
-      operationId: ShowCloudletsForAppDeployment
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrmapiRegionDeploymentCloudletRequest'
-            x-required-fields:
-            - region
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EdgeprotoCloudletKey'
-          description: OK
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrmapiResult'
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - bearerAuth: []
-      summary: ShowCloudletsForAppDeployment
       tags:
       - App
   /api/v1/auth/ctrl/UpdateApp:
@@ -461,22 +290,6 @@ components:
             Windows10, Windows2012, Windows2016, Windows2019, or 0, 1, 2, 3, 4, 5
           type: string
       type: object
-    EdgeprotoAppAlertPolicy:
-      properties:
-        alert_policy:
-          description: Alert name
-          type: string
-        app_key:
-          $ref: '#/components/schemas/EdgeprotoAppKey'
-      type: object
-    EdgeprotoAppAutoProvPolicy:
-      properties:
-        app_key:
-          $ref: '#/components/schemas/EdgeprotoAppKey'
-        auto_prov_policy:
-          description: Auto provisioning policy name
-          type: string
-      type: object
     EdgeprotoAppKey:
       properties:
         name:
@@ -489,18 +302,6 @@ components:
           description: App version
           type: string
       type: object
-    EdgeprotoCloudletKey:
-      properties:
-        federated_organization:
-          description: Federated operator organization who shared this cloudlet
-          type: string
-        name:
-          description: Name of the cloudlet
-          type: string
-        organization:
-          description: Organization of the cloudlet site
-          type: string
-      type: object
     EdgeprotoConfigFile:
       properties:
         config:
@@ -509,19 +310,6 @@ components:
         kind:
           description: Kind (type) of config, i.e. envVarsYaml, helmCustomizationYaml
           type: string
-      type: object
-    EdgeprotoDeploymentCloudletRequest:
-      properties:
-        app:
-          $ref: '#/components/schemas/EdgeprotoApp'
-        dry_run_deploy:
-          description: Attempt to qualify cloudlet resources for deployment
-          type: boolean
-        num_nodes:
-          description: Optional number of worker VMs in dry run K8s Cluster, default
-            = 2
-          minimum: 0
-          type: integer
       type: object
     EdgeprotoFlavorKey:
       properties:
@@ -575,30 +363,6 @@ components:
       properties:
         App:
           $ref: '#/components/schemas/EdgeprotoApp'
-        Region:
-          description: Region name
-          type: string
-      type: object
-    OrmapiRegionAppAlertPolicy:
-      properties:
-        AppAlertPolicy:
-          $ref: '#/components/schemas/EdgeprotoAppAlertPolicy'
-        Region:
-          description: Region name
-          type: string
-      type: object
-    OrmapiRegionAppAutoProvPolicy:
-      properties:
-        AppAutoProvPolicy:
-          $ref: '#/components/schemas/EdgeprotoAppAutoProvPolicy'
-        Region:
-          description: Region name
-          type: string
-      type: object
-    OrmapiRegionDeploymentCloudletRequest:
-      properties:
-        DeploymentCloudletRequest:
-          $ref: '#/components/schemas/EdgeprotoDeploymentCloudletRequest'
         Region:
           description: Region name
           type: string
