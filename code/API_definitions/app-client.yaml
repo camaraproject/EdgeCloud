@@ -67,36 +67,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/getappofficialfqdn:
-        post:
-            tags:
-                - MatchEngineApi
-            description: |-
-                GetAppOfficialFqdn
-
-                 Get an App's official FQDN if configured, which points to a default
-                 public cloud instance of the application service that can be
-                 used if no Edge Cloud application instances are available.
-            operationId: MatchEngineApi_GetAppOfficialFqdn
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/AppOfficialFqdnRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/AppOfficialFqdnReply'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /v1/streamedgeevent:
         post:
             tags:
@@ -170,54 +140,6 @@ components:
                     type: integer
                     description: _(optional)_ Limit the number of results, defaults to 3
                     format: uint32
-                tags:
-                    type: object
-                    additionalProperties:
-                        type: string
-                    description: _(optional)_ Vendor specific data
-        AppOfficialFqdnReply:
-            type: object
-            properties:
-                ver:
-                    type: integer
-                    description: API version _(hidden)_ Reserved for future use
-                    format: uint32
-                app_official_fqdn:
-                    type: string
-                    description: The FQDN to which the app is reached independent of the edge
-                client_token:
-                    type: string
-                    description: Tokenized client data
-                status:
-                    enum:
-                        - AOF_UNDEFINED
-                        - AOF_SUCCESS
-                        - AOF_FAIL
-                    type: string
-                    description: Status of the reply
-                    format: enum
-                ports:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/AppPort'
-                    description: List of Service Endpoints for AppInst
-                tags:
-                    type: object
-                    additionalProperties:
-                        type: string
-                    description: _(optional)_ Vendor specific data
-        AppOfficialFqdnRequest:
-            type: object
-            properties:
-                ver:
-                    type: integer
-                    description: API version _(hidden)_ Reserved for future use
-                    format: uint32
-                session_cookie:
-                    type: string
-                    description: Session Cookie from RegisterClientRequest
-                gps_location:
-                    $ref: '#/components/schemas/Loc'
                 tags:
                     type: object
                     additionalProperties:
