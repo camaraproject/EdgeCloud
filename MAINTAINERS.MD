@@ -33,3 +33,5 @@
 | EdgeXR | Sunay Tripathi |
 | EdgeXR | Thomas Vits |
 | Ericsson | Emil Zhang |
+| Deutsche Telekom | Prashant Goswami |
+
