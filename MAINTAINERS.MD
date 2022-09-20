@@ -15,7 +15,7 @@
 | TIM | Fabrizio Moggio |
 | TIM | Marco Signorelli |
 | TIM | Raffaele Passannanti | 
-| Deutsche Telekom | Yamina Kelm |
+| Deutsche Telekom | Prashant Goswami |
 | Deutsche Telekom | Shilpa Padgaonkar |
 | Intel | Larry Horner | 
 | Capgemini | Deepak Gunjal |
@@ -33,5 +33,4 @@
 | EdgeXR | Sunay Tripathi |
 | EdgeXR | Thomas Vits |
 | Ericsson | Emil Zhang |
-| Deutsche Telekom | Prashant Goswami |
 
