@@ -1,7 +1,7 @@
 | Term | Definition |
 |------|------------|
 |API Consumer |	 A user or an application consuming the MEC Exposure and Experience Management APIs. |
-||Application Service Provider |	 the developer/publisher who deploys applications on MEC platforms.|
+||Application Service Provider | the developer/publisher who deploys applications on MEC platforms. |
 |Density |	 Minimum 4G/5G subscriber density in a geographical area, represented as the number of subscribers per square kilometer.|
 |Edge Application | A cloud application that has some services deployed to MEC Platforms to take advantage of low latency and high bandwidth when interacting with devices.|
 |Edge Resource |	 An object defined by the sevice provider representing an edge resource within its network domain, such as a MEC Platform.|
