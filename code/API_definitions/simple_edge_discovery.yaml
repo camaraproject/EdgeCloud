@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Simple MEC Discovery API
-  version: 1.1.0
+  version: 1.1.1
   description: |
     # Find your nearest MEC platform
     ---
@@ -317,32 +317,6 @@ components:
 # RESPONSES
 ####################################
   responses:
-    OK:
-      description: HTTP 200 OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/typesSuccess'
-    Created:
-      description: HTTP 201 Created
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/typesSuccess'
-    NoContent:
-      description: HTTP 204 No Content
-    BadRequest:
-      description: HTTP 400 Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/typesError'
-    NotFound:
-      description: HTTP 401 The specified resource was not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/typesError'
     Unauthorized:
       description: HTTP 401 Unauthorized
       content:
