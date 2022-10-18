@@ -15,6 +15,7 @@ Fri, Sep 16, 2022 17:00 PM
 * Rebecca Odenwaelder  (Deutsche Telekom)
 * Marc Cornall (GSMA)
 * Alexandru Ciinaru (Orange)
+* Toshiyasu Wakayama (KDDI)
 
 ## Kickoff disucssion
 
