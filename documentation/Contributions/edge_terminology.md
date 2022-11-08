@@ -15,3 +15,18 @@
 |TSP |	 Telecommunications Service Provider.   |   
 |UEIdentity |	 User Equipment identity, which can be a device's IP address, MSISDN, IMEI, MDN, or GPSI.|
 |Zone |	 A logical collection of MEC Platforms in a telecommunication provider's network. A Zone is part of a Region.|
+|Application Backend Part |	An architectural part of an Application that is to be deployed on public or private (and central) cloud infrastructure.|
+|Application Client | A specifically developed client component of an application. |
+|Application Edge Part | An architectural part of an Edge Application that is to be deployed on edge compute cloudlets. An End-to-End Application may include multiple Application Edge Parts (e.g. microservices).|
+|Application Instance | An instantiation of and Application Edge Part on a Cloudlet. |
+|Application Provider | The provider of the application that accesses the OP to deploy its application on the Edge Cloud, thereby using the Edge Cloud Resources and Network Resources. An Application Provider may be part of a larger organisation, like an enterprise, enterprise customer of the OP, or be an independent entity.|
+|Cloudlet| A point of presence for the Edge Cloud. It is the point where Edge Applications are deployed. A Cloudlet offers a set of resources at a particular location (either geographically or within a network) that would provide a similar set of network performance.|
+|Edge Application | An Application whose architecture includes one or more Application Edge Parts (e.g. microservices).|
+|Flavour | A set of characteristics for compute instances that define the sizing of the virtualised resources (compute, memory, and storage) required to run an application. Flavours can vary between operator networks.|
+|Northbound Interface | NBI, The interface that exposes the Operator Platform to Application Providers.|
+|Operator Platform | An Operator Platform (OP) facilitates access to the Edge Cloud capability of an Operator or federation of Operators and Partners.|
+|Tenant | A Tenant is the commercial owner of the applications and the associated data.|
+|Tenant Space | A Tenant Space is a subset of resources from a Cloudlet that are dedicated to a particular tenant. A Tenant Space has one or more Virtual Machines (VMs) running native or containerised applications or cover a complete server.|
+|User Client | Functionality that manages on the user's side the interaction with the OP. The User Client (UC) represents an endpoint of the UNI and is a component on the User Equipment.|
+|User Equipment (UE) | Any device with a SIM used directly by an end-user to communicate. UCs and Application Clients are deployed on the User Equipment. By default, the term “UE” means UE with the explicit SIM-based Telecom wireless network connectivity throughout the document.|
+|User-Network Interface (UNI) | Enables the UC hosted in the user equipment to communicate with the OP. |
