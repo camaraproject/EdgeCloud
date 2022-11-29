@@ -3,5 +3,5 @@
 | 5GFF| Kevin Smith |
 | 5GFF | Mahesh Chapalamadugu |
 | Capgemini | Deepak Gunjal |
-| Telefonica | Aurelia Martinez Guerra |
+| Telefonica | Cristina Santana Casillas |
 | EdgeXR | Jon Gainsley |
