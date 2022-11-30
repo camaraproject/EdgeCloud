@@ -118,6 +118,13 @@ servers:
 paths:
   /traffic-influences:
     get:
+      parameters:
+        - in: query
+          name: externalServiceId
+          schema:
+            type: string
+          description: Not required. Used to select influence istances filtered for External Service Id of the AF
+
       tags:
         - Traffic Influence API GET Operation
       summary: Retries existing TrafficInfluence Resources
