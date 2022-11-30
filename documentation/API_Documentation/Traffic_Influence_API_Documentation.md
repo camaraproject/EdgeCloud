@@ -174,7 +174,7 @@ The resource identified by the TIResource_id value can be modified
 
 | Code | Description |
 | ---- | ----------- |
-| 201 | TrafficInfluence resource edited, the related object is returned,  the status (state) is updated. |
+| 200 | TrafficInfluence resource edited, the related object is returned,  the status (state) is updated. |
 | 401 | Unauthorized |
 | 403 | Forbidden |
 | 404 | The specified resource was not found |
