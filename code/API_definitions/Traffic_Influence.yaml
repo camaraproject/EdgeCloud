@@ -237,7 +237,7 @@ paths:
             schema:
               $ref: '#/components/schemas/TrafficInfluence'
       responses:
-        '201':
+        '200':
           description: TrafficInfluence resource edited, the related object is returned,  the status (state) is updated. 
           content:
             application/json:
