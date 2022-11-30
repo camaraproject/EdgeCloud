@@ -120,11 +120,10 @@ paths:
     get:
       parameters:
         - in: query
-          name: externalServiceId
+          name: applicationId
           schema:
             type: string
-          description: Not required. Used to select influence istances filtered for External Service Id of the AF
-
+          description: Not required. Used to select traffic influence istances filtered for applicationId
       tags:
         - Traffic Influence API GET Operation
       summary: Retries existing TrafficInfluence Resources
@@ -373,9 +372,6 @@ components:
             - 'not active'
             - 'error'
             - 'deleted'
-        externalServiceId:
-          type: string
-          description: Unique ID (for AF) which identifies the AF service (managed externally to Camara) associated to the current traffic influence istance. Can be used by the caller to correlate multiple traffic influences to the same service.
         trafficFilters:
           type: array
           items:
