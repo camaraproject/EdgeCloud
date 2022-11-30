@@ -4,7 +4,7 @@ openapi: 3.0.0
 ############################################################################
 info:
   title: OPAG-CAMARA Traffic Influence API
-  version: 0.8.0
+  version: 0.8.1
   description: |
     ## Overview
     
@@ -79,7 +79,6 @@ info:
     1) activate the optimal routing for any EAS Instance: the API must be invoked with the applicationId. The Telco Operator Platform identifies all the EAS Instances and activates the optimal routing on the Mobile Network.
     2) activate the optimal routing in a specific Region or Zone: the API must be invoked with the applicationId and the Zones and Regions identifiers. 
     3) activate the optimal routing for a specific set of users: the API can also be invoked with a user identifier ("userId"). The same TrafficInfluce resource identifier ("trafficInfluenceID") must be used in each call.
-    
     
   license:
     name: Apache 2.0
@@ -356,7 +355,7 @@ components:
             $ref: '#/components/schemas/types_region_Id'
         zone:
             $ref: '#/components/schemas/types_zone_Id'
-        usersId:
+        userId:
           $ref: '#/components/schemas/userId'
         state:
           type: string
@@ -367,6 +366,9 @@ components:
             - 'not active'
             - 'error'
             - 'deleted'
+        externalServiceId:
+          type: string
+          description: Unique ID (for AF) which identifies the AF service (managed externally to Camara) associated to the current traffic influence istance. Can be used by the caller to correlate multiple traffic influences to the same service.
         trafficFilters:
           type: array
           items:
