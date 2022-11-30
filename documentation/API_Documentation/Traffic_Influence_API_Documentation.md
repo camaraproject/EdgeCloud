@@ -1,3 +1,4 @@
+
 # OPAG-CAMARA Traffic Influence API
 ## Overview
 
@@ -10,12 +11,13 @@ If a Service is offered by a Cloud Instance and by Edge Instances, the API can b
 The Traffic Influence API provides the capability to establish the best connectivity, in terms of latency, in a specific geographical area, between the User Equipment (UE), e.g. the user’s smartphone, and the optimal Edge Application Server instance nearby.
 The Service architecture foresees one or more EASs and a component, the Application Function (AF), that is the API consumer. Invoking the TI API, the AF can create a "TrafficInfluence" resource specifying the desired request.
 The TI API provider implements the intent specified in the Traffic Influence resource.
-While the API is usually invoked to activate the fastest routing for any user,  it can also be used to request the routing for a specific user. Invoking the API for each user (using the same "trafficInfluenceID"), the TrafficInfluence resource provides the requested routing for a set of users.
+While the API is usually invoked to activate the fastest routing for any user,  it can also be used to request the routing for a specific user. Invoking the API for each user (using the same "trafficInfluenceID"), the "TrafficInfluence" resource provides the requested routing for a set of users.
 
 ## 2. Quick Start
 The usage of the Traffic Influence API is based on the management of a "TrafficInfluence" resource, an object containing the intent requested invoking the Traffic Influence API and that is implemented by the platform configuring the Mobile Network for the optimal routing toward the EAS Instance.
-The Traffic Influence resource can be created (providing the related parameters that specify the desired intent), queried, modified and deleted.
+The "TrafficInfluence" resource can be created (providing the related parameters that specify the desired intent), queried, modified and deleted.
 The API is asynchronous, a notification is available providing information about the status of the requested resource.  
+For an Application (identified by "applicationId") many "TrafficInfluence" resources can be created, e.g. to add multiple users, regions or zones.
 
 Before starting to use the API, the developer needs to know about the below specified details:
 
@@ -35,10 +37,10 @@ Identifier for the Traffic Influence resource. This parameter ir returned by the
 Unique identifier for the Application Function (AF), the TI API consumer.
 
 **region**
-The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Region is a wide geographical area and it contains one ore more Zones. A Zone is where the Edge Datacenters are located. Zones and Regions identifiers are defined and provided by the Telco Operator and can also be used or retrieved with other CAMARA APIs ("MEC Exposure & Experience Management API" and "Simple Edge Discovery").
+The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Region is a wide geographical area and it contains one ore more Zones. A Zone is where the Edge Datacenters are located. Zones and Regions identifiers are defined and provided by the Telco Operator and can also be used or retrieved with other CAMARA APIs ("MEC Exposure & Experience Management API" and "Simple Edge Discovery"). To add more regions the API must be invoked (PUT) of each region. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId").
 
 **zone**
-The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Zone is a smaller geographical area inside a Region. A Zone is where the Edge Datacenters are located.
+The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Zone is a smaller geographical area inside a Region. A Zone is where the Edge Datacenters are located. To add more zones the API must be invoked (PUT) of each zone. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId").
 
 **applicationId**
 Unique Application identifier inside the Telco Operator Platform.
@@ -47,7 +49,7 @@ Unique Application identifier inside the Telco Operator Platform.
 The Application can expose different service on different interfaces, with this parameter it is possible to enable just some of those services maybe for different sets of users.
 
 **usersId**
-Optionally a user can be provided as an input. The routing toward the selected Application Instance is only applied for that user. To add more users the API must be invoked of each one always passing the reference to the same Traffic Influence resource (trafficInfluenceID)
+Optionally a user can be provided as an input. To add more users the API must be invoked (PUT) of each user. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Applicatoin (identified by "applicatoinId"). The routing toward the selected Application Instance is only applied for provided users.
 
 **Notification URL and token**
 Developers have a chance to specify callback URL on which notifications (eg. session termination) regarding the session can be received from the service provider. This is also an optional parameter.
@@ -75,7 +77,7 @@ Here are some possible intents:
 3) activate the optimal routing for a specific set of users: the API can also be invoked with a user identifier ("userId"). The same TrafficInfluce resource identifier ("trafficInfluenceID") must be used in each call.
 
 ### 4.2 Endpoint Definitions
-## Version: 0.8.0
+## Version: 0.8.1
 
 **License:** [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -90,6 +92,12 @@ Retries existing TrafficInfluence Resources
 ##### Description
 
 Reads all of the active TrafficInfluence resources owned by the AF authenticated via oAuth2
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| applicationId | query | Not required. Used to select traffic influence resources filtered by applicationId | No | string |
 
 ##### Responses
 
@@ -154,7 +162,7 @@ updates a specific TrafficInfluence resource, identified by the TIResource_id va
 
 ##### Description
 
-The resource identified by the TIResource_id value can be modified, e.g. to add a new user
+The resource identified by the TIResource_id value can be modified
 
 ##### Parameters
 
@@ -214,7 +222,7 @@ Delete an existing TrafficInfluence resource
 | applicationId | string | Unique ID representing the Edge Application<br>_Example:_ `"Virtual_Reality_Arena"` | Yes |
 | region | string | Unique identifier representing a region  | No |
 | zone | string | Unique identifier representing a zone  | No |
-| usersId | object | User equipment identifier, it is composed by a value and a type for that value | No |
+| userId | object | User equipment identifier, it is composed by a value and a type for that value | No |
 | state | string | _Enum:_ `"ordered"`, `"created"`, `"active"`, `"not active"`, `"error"`, `"deleted"` | No |
 | trafficFilters | [ object ] | Identifies IP packet filters. To be used when a the Application needs a traffic flow towards a specific EAS interface | No |
 | notificationUri | string | Defines the callback uri which should be notified in asynchronous way when the state for the requested resources changes (i.e. ordered to activated) | No |
