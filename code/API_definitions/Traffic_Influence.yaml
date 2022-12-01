@@ -191,14 +191,14 @@ paths:
       callbacks:
         onTrafficInfluenceChanged:
           $ref: "#/components/callbacks/onTrafficInfluenceChanged"
-  /traffic-influences/{TIResource_id}:
+  /traffic-influences/{trafficInfluenceID}:
     parameters:
-      - name: TIResource_id
+      - name: trafficInfluenceID
         in: path
         description: Identifier of the specific TrafficInfluence resource to be retrieved, modified or deleted. It is the value used to fill trafficInfluenceID parameter
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/types_trafficInfluenceID'
    
     get:
       summary: read a specific TrafficInfluence resource identified by the TIResource_id value
@@ -392,6 +392,11 @@ components:
  #######################################################
  #  TYPES
  #######################################################    
+    types_trafficInfluenceID:
+      description: |
+        Identifier for the Traffic Influence resource. This parameter is returned by the API and must be used to update it (e.g., adding new users or deleting it) passing it as TIResource_id value in the API call.
+      type: string
+      additionalProperties: false 
     types_zone_Id:
       description: |
         Unique identifier representing a zone
