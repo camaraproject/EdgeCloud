@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Simple MEC Discovery API
-  version: 1.1.1
+  version: 1.1.2
   description: |
     # Find your nearest MEC platform
     ---
@@ -15,8 +15,9 @@ info:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
-  - url: 'https://8vclhc412g.execute-api.us-east-2.amazonaws.com/POC1simple'
-    description: Simple POC Phase 1
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/alphatest/SimpleAPI/1.1.2
 
 tags:
   - name: Discovery
@@ -157,7 +158,21 @@ components:
         - message
         - links
       additionalProperties: false
-    typesSuccess:
+    types_success:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        links:
+          $ref: '#/components/schemas/linksCommon'
+      required:
+        - code
+        - message
+        - links
+      additionalProperties: false
+    types_error:
       type: object
       properties:
         code:
@@ -317,12 +332,24 @@ components:
 # RESPONSES
 ####################################
   responses:
+    OK:
+      description: HTTP 200 OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/types_success'  
     Unauthorized:
       description: HTTP 401 Unauthorized
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/typesError'
+            $ref: '#/components/schemas/types_error'
+    NotFound:
+      description: HTTP 404 The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/types_error'            
     Unexpected:
       description: HTTP 500 Internal Server Error
       content:
