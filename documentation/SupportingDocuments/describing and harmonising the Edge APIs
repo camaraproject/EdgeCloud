@@ -1,0 +1,84 @@
+# Describing and harmonising the Edge APIs
+## Abstract
+Three 'edge cloud' APIs have been proposed for CAMARA: [Simple Edge Discovery](https://github.com/camaraproject/EdgeCloud/blob/main/code/API_definitions/simple_edge_discovery.yaml), [MEC Exposure and Experience Management](https://github.com/camaraproject/EdgeCloud/blob/main/code/API_definitions/MEC%20exposure%20and%20experience%20management.yaml), and a workflow API (yet to be contributed) from GSMA/MobiledgeX.
+
+This document explains the differences/similarities between the APIs, by:
+- listing all the intents delivered by the APIs, from both developer and operator perspectives,
+- listing the constraints of each API
+- illustrating the workflow of each API
+
+This document can be used as a basis for harmonising/combining the APIs into a single set of definitions. 'Simple Edge Discovery' is a subset (one operation) of the  'MEC Exposure and Experience Management' API, and hence has matching syntax. The GSMA/MobiledgeX API will have different syntax and together we will need to agree a  common syntax that is also consistent with the CAMARA Commonalities working group rules.
+
+_Note, the [Traffic Influence API](https://github.com/camaraproject/EdgeCloud/blob/main/code/API_definitions/Traffic_Influence.yaml) covers a different scenario and is not discussed here._ 
+
+## Terminology used
+Please refer to the [Edge Terminology document](https://github.com/camaraproject/EdgeCloud/blob/main/documentation/Contributions/edge_terminology.md)
+
+## Intents 
+### Developer intents
+#### Provisioning intents 
+1.	“I can retrieve a list of the operator’s MECs and their status”
+2.	"I can discover the capabilities/resources available at an operator’s MEC"
+3.	"I can discover the geographical regions covered by the operators MECs"
+4.	"I can discover the closest MEC platform to a particular UE"
+5.	"I can ask the operator to provision my application server to the optimal MEC for a particular UE"
+6.	 "I can ask the operator to inform me if the optimal MEC for my application and a particular UE changes"
+#### Runtime intents 
+7.    "I can discover the closest MEC platform to a particular UE"
+8.    "I can discover the optimal MEC platform for my application and a particular UE" (this may not be the closest MEC, rather the 'best MEC for this job')
+9.    "I can discover the optimal application service endpoint for a particular UE"
+10.   "I can ask the operator to move my running application instance to a different MEC if the closest MEC changes"
+### Operator intents
+#### Provisioning intents
+11. “I can publish a list of my MECs, their coverage, capabilities and status” (aligns with 1,2,3 in the developer intents)
+12. “I can map an application’s requirements to the best MEC for hosting it” (aligns with 4,5,8,9)
+13. “I can inform the developer of any event which changes which MEC is optimal for their application and connected UEs” (aligns with  6)
+14. “I can move a running application to a new MEC and inform the developer of the new service endpoint to connect to” (aligns with 10)
+
+
+### Mapping the APIs to Intents
+
+| Intent # | Simple Edge Discovery | MEC Exposure & Experience management | GSMA/MobiledgeX|
+|----------|---------------------------------|--------------------------------------|----------------------------------------------|
+|1           |                               |YES                                   |?               |
+|2           |                               |YES                                   |?               |
+|3           |                               |YES                                   |?               |
+|4           |  YES                       |YES                                   |?               |
+|5           |                               |YES                                   |?               |
+|6           |                               |YES                                   |?               |
+|7           |   YES                      |YES                                   |?               |
+|8           |                               |YES                                   |?               |
+|9           |                               |YES                                   |?               |
+|10         |                               |?                                       |?               |
+|11         |                               |YES                                   |?               |
+|12         |                               |YES                                   |?               |
+|13         |                               |YES                                   |?               |
+|14         |                               |?                                       |?               |
+
+
+
+## Constraints of the APIs
+### Simple Edge Discovery
+- not application aware (does not take into account the application's requirements for MEC, e.g. compute resources)
+- must be called by the network-attached UE hosting the client application
+
+### MEC Exposure & Experience Management
+- no constraints (to be checked)
+
+### GSMA/MobiledgeX
+- requires UNI to be called from the UE hosting the client application
+
+## API Workflows
+# Simple Edge Discovery
+(todo)
+
+# MEC Exposure and Experience Management
+(todo)
+
+# GSMA/MobiledgeX 
+(todo)
+
+
+
+
+
