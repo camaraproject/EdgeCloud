@@ -21,7 +21,7 @@ Repository to describe, develop, document and test the EdgeCloud API family
 ## Meetings
 * Meetings are held virtually
 * Schedule: Tuesdays 16h-17 CET, every two weeks. 
-* Meeting link: [Link](https://teams.microsoft.com/l/meetup-join/19%3ameeting_MTEyNzgwOWYtZDg0Zi00ZmIwLWFkZmUtMmQ1ZjgzN2NhYmM1%40thread.v2/0?context=%7b%22Tid%22%3a%229744600e-3e04-492e-baa1-25ec245c6f10%22%2c%22Oid%22%3a%2235a6f92c-a8cf-44b9-950d-43e644a3199d%22%7d)
+* Meeting link: [Link](https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZTk5NjBiZTgtYjc5OS00ODA5LTljMTEtNjZkNjNmYzdmZTE3%40thread.v2/0?context=%7b%22Tid%22%3a%229744600e-3e04-492e-baa1-25ec245c6f10%22%2c%22Oid%22%3a%2259beacec-cc69-4b31-873d-ba429711a3a7%22%7d)
 
 ## Results
 * Sub Project is in progress
