@@ -82,9 +82,22 @@ Abbreviations used for API names:
 (todo)
 
 # GSMA OPAG Capgemini APIs 
-(todo)
-
-
-
-
-
+### Developer intents
+#### Onboarding intents
+1.	“I can ask the operator to store artifacts e.g., container images or VM images and manifests describing required resources, Helm charts etc”  **GMEC**
+2.	“I can ask the operator to provide the artifacts details for already stored artifacts”  **GMEC**
+3.	“I can query the list of applications linked with a given artifact”  **GMEC**
+4.	"I can ask the operator to link artifacts to the applications when onboarding my applications"  **GMEC**
+5.		"I can ask the operator to delete an existing artifact(s)"  **GMEC**
+6.	“I can ask the operator to onboard my application to a set of MEC locations”  **GMEC**
+7.	"I can specify quality of service information e.g., end to end latency, bandwidth, jitter etc that the application clients expect with the application server"  **GMEC**
+8.	"I can ask the operator to reserve compute, network and storage required for my application in various MEC locations"  **GMEC**
+9.	“I can ask the operator to use reserved resources for my application to earlier on various MEC locations”  **GMEC**
+10.		"I can ask the operator to delete an existing reserve reservation"  **GMEC**
+11.	“I can ask the operator to remove my application from a set of MEC locations”  **GMEC**
+12.	“I can ask the operator to provide the details of all the onboarded applications”  **GMEC**
+#### Provisioning intents
+1.	"I can ask the operator to instantiate my application server in given MEC locations where I onboarded my application"  **GMEC**
+2.	"I can ask the operator to instantiate my application server in MEC locations determined by operator"  **GMEC**
+3.	"I can ask the operator to inform about the application instance details e.g., communication endpoints, resource consumed etc"  **GMEC**
+4.	"I can ask the operator to terminate the running instance of my application"  **GMEC**
