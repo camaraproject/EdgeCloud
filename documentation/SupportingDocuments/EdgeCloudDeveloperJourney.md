@@ -1,0 +1,9 @@
+| Modules       | Org and User Onboarding   | Application Onboarding              | Application Orchestration    | Service Discovery                   | Traffic Steering and Optimization | Common Features                 |
+|---------------|---------------------------|-------------------------------------|------------------------------|-------------------------------------|-----------------------------------|---------------------------------|
+| Key Functions |                           |                                     |                              |                                     |                                   |                                 |
+|               | Onboard App Provider      | application onboarding              | Optimal Edge Site Selection  | optimal edge app instance selection | traffic influence                 | Subscriptions and Notifications |
+|               | Onboard App Provider User | application profile / policy mgmt   | application instatiation     |                                     | Quality on Demand                 | authentication                  |
+|               | App Provider mgmt         | application artifact mgmt           | application scaling/resizing |                                     | Slice mapping                     | authorization                   |
+|               | App Provider User mgmt    | application scanning /certification | application migration        |                                     |                                   |                                 |
+|               |                           |                                     | application decommision      |                                     |                                   |                                 |
+|               |                           |                                     | application monitoring       |
