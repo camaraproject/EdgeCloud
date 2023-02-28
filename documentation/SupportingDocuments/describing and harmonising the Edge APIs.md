@@ -26,7 +26,7 @@ Please refer to the [Edge Terminology document](https://github.com/camaraproject
 
 ## Intents and mapping to APIs
 How to use this table: 
-- If an API supports an intent its anem will appear in **bold**. 
+- If an API supports an intent its name will appear in **bold**. 
 - If an API does not support an intent, its name is in ~~strikethrough.~~ 
 - If an API partially supports an intent, or we are not sure, its name is in _italics_ and followed by a '?'
 Abbreviations used for API names: 
@@ -39,26 +39,30 @@ Abbreviations used for API names:
 
 ### Developer intents
 #### Provisioning intents 
-1.	“I can retrieve a list of the operator’s MECs and their status” ~~5SED~~ **5MEE**
-2.	"I can discover the capabilities/resources available at an operator’s MEC" ~~5SED~~ **5MEE**
+1.	“I can retrieve a list of the operator’s MECs and their status, ordering the results by location and filtering by status (active/inactive/unknown)” ~~5SED~~ **5MEE**
+2.	"I can discover the capabilities/resources available at an operator’s MEC: CPU, Memory, Storage, GPU" ~~5SED~~ **5MEE**
 3.	"I can discover the geographical regions covered by the operators MECs" ~~5SED~~ **5MEE**
-4.	"I can discover the closest MEC platform to a particular UE" **5SED** **5MEE**
-5.	"I can ask the operator to provision my application server to the optimal MEC for a particular UE" ~~5SED~~ **5MEE** 
-6.	 "I can ask the operator to inform me if the optimal MEC for my application and a particular UE changes" ~~5SED~~ **5MEE**
+4.	"I can discover the closest MEC platform to a specific terminal (closest in terms of shortest network path)" **5SED** **5MEE**
+5.	"I can ask the operator to provision my application server to the optimal MEC for a specific terminal, taking into account connectivity, shortest network path, cost, network load, MEC platform load, application privacy considerations etc." ~~5SED~~ **5MEE** 
+  *  "I can ask the operator to provision my application server to all MECs that meet these criteria (note this is not focussing on a specific terminal)" 
+  *  "I can ask the operator to provision my application server to a minimal set of MECs that meet these criteria across a given footprint (note this is not focussing on a specific terminal)" 
+6.	 "I can ask the operator to inform me if the optimal MEC for my application and a specific terminal changes, taking into account mobility events, connectivity, shortest network path, cost, network load, MEC platform load etc." ~~5SED~~ **5MEE**
 #### Runtime intents 
-7.    "I can discover the closest MEC platform to a particular UE" **5SED** **5MEE**
-8.    "I can discover the optimal MEC platform for my application and a particular UE" (`A`) ~~5SED~~ **5MEE**
-9.    "I can discover the optimal application service endpoint for a particular UE" ~~5SED~~ **5MEE**
-10.   "I can ask the operator to move my running application instance to a different MEC if the closest MEC changes" ~~5SED~~ _5MEE?_
+7.    "I can discover the closest MEC platform to a particular terminal (closest in terms of shortest network path)" **5SED** **5MEE**
+8.    "I can discover the optimal MEC platform for my application and a particular terminal, taking into account connectivity, shortest network path, cost, network load etc." (`A`) ~~5SED~~ **5MEE**
+9.    "I can discover the optimal application service endpoint for a specific terminal, taking into account mobility events, connectivity, shortest network path, cost, network load, MEC platform load etc." ~~5SED~~ **5MEE**
+10.   "I can ask the operator to move my running application instance to a different MEC if the closest MEC changes, taking into account mobility events, connectivity, shortest network path, cost, network load, MEC platform load etc." `B` ~~5SED~~ _5MEE?_
 ### Operator intents
 #### Provisioning intents
-11. “I can publish a list of my MECs, their coverage, capabilities and status” _(aligns with 1,2,3 in the developer intents)_ ~~5SED~~ **5MEE**
-12. “I can map an application’s requirements to the best MEC for hosting it” _(aligns with 4,5,8,9)_ ~~5SED~~ **5MEE**
-13. “I can inform the developer of any event which changes which MEC is optimal for their application and connected UEs” _(aligns with  6)_ ~~5SED~~ **5MEE**
-14. “I can move a running application to a new MEC and inform the developer of the new service endpoint to connect to” _(aligns with 10)_ ~~5SED~~ _5MEE?_
+11. “I can publish an (ordered, filtered) list of my MECs, their coverage, capabilities and status” _(aligns with 1,2,3 in the developer intents)_ ~~5SED~~ **5MEE**
+12. “I can map an application’s requirements to the best MEC for hosting it, based on application demands for CPU,Memory,Storage,GPU,bandwith,Network forecast, mobility” _(aligns with 4,5,8,9)_ ~~5SED~~ **5MEE**
+#### Runtime intents 
+13. “I can inform the developer of any event which changes which MEC is optimal for their application and connected terminals” _(aligns with  6)_ ~~5SED~~ **5MEE**
+14. “I can move a running application to a new MEC and inform the developer of the new service endpoint to connect to” `B` _(aligns with 10)_ ~~5SED~~ _5MEE?_
 
 **Notes**: 
-`A` this may not be the closest MEC, rather the 'best MEC for this job' which accounts for current MEC or network load, MEC copmute power and features etc.
+* `A` this may not be the closest MEC, rather the 'best MEC for this job' which accounts for current MEC or network load, MEC copmute power and features etc.
+* `B` the operator may wish to achieve this through signalling the terminal to change to a network anchor point ('user plane function'/'packet gateway) instead.
 
 ## Constraints of the APIs
 ### Simple Edge Discovery
