@@ -5,3 +5,4 @@
 | Capgemini | Deepak Gunjal |
 | Telefonica | Cristina Santana Casillas |
 | EdgeXR | Jon Gainsley |
+| Orange | Frederic Fieau |
