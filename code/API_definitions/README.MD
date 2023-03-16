@@ -15,3 +15,6 @@ Since events and subscription notifications can apply to many CAMARA APIs, that 
 
 # Simple Discovery API
 This API allows a client application to discover the closest MEC platform to the UE hosting the client application. 'Closest' means 'shorteset network path' as that will give the shortest propogation distance, which is a major factor in latency.
+
+# Traffic Influence API
+The Traffic Influence API hides the complexity of the network providing the developer with the possibility to modify the connection policies of UEs and EAS in terms of how the traffic flows. For a 5G network, the UPF connected to the target Data Network can be updated with new traffic steering rules, for a set of users and for a specific time period. Furthermore, in a UE mobility scenario, the  PDU Session Anchor, may be relocated to a different UPF considering the requirements provided by the AF.
