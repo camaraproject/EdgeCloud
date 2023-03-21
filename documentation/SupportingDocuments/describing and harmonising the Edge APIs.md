@@ -90,14 +90,15 @@ Abbreviations used for API names:
 4.	"I can ask the operator to link artifacts to the applications when onboarding my applications"  **GMEC**
 5.		"I can ask the operator to delete an existing artifact(s)"  **GMEC**
 6.	“I can ask the operator to onboard my application to a set of MEC locations”  **GMEC**
-7.	"I can specify quality of service information e.g., end to end latency, bandwidth, jitter etc that the application clients expect with the application server"  **GMEC**
-8.	"I can ask the operator to reserve compute, network and storage required for my application in various MEC locations"  **GMEC**
-9.	“I can ask the operator to use reserved resources for my application to earlier on various MEC locations”  **GMEC**
-10.		"I can ask the operator to delete an existing reserve reservation"  **GMEC**
-11.	“I can ask the operator to remove my application from a set of MEC locations”  **GMEC**
-12.	“I can ask the operator to provide the details of all the onboarded applications”  **GMEC**
+7.	"I can specify quality of service information e.g., end to end latency, bandwidth, jitter etc that the application clients expect with the application server"  **GMEC 5MEE EXRA**
+8.	"I can specify edge resources that my application requires when it is lanuched e.g., vCPU, Memory, network interfaces, storage, GPU etc that the application clients expect with the application server"  **GMEC 5MEE EXRA**
+9.	"I can ask the operator to reserve compute, network and storage required for my application in various MEC locations"  **GMEC**
+10.	“I can ask the operator to use reserved resources for my application to earlier on various MEC locations”  **GMEC**
+11.		"I can ask the operator to delete an existing reserve reservation"  **GMEC**
+12.	“I can ask the operator to remove my application from a set of MEC locations”  **GMEC**
+13.	“I can ask the operator to provide the details of all the onboarded applications”  **GMEC**
 #### Provisioning intents
-1.	"I can ask the operator to instantiate my application server in given MEC locations where I onboarded my application"  **GMEC**
-2.	"I can ask the operator to instantiate my application server in MEC locations determined by operator"  **GMEC**
+1.	"I can ask the operator to instantiate my application server in given MEC locations where I onboarded my application"  **GMEC 5MEE EXRA**
+2.	"I can ask the operator to instantiate my application server in MEC locations determined by operator"  **GMEC 5MEE EXRA**
 3.	"I can ask the operator to inform about the application instance details e.g., communication endpoints, resource consumed etc"  **GMEC**
 4.	"I can ask the operator to terminate the running instance of my application"  **GMEC**
