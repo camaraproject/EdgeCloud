@@ -43,22 +43,35 @@ Abbreviations used for API names:
 2.	"I can discover the capabilities/resources available at an operator’s MEC: CPU, Memory, Storage, GPU" ~~5SED~~ **5MEE** **EXRA**
 3.	"I can discover the geographical regions covered by the operators MECs" ~~5SED~~ **5MEE** **EXRA**
 4.	"I can discover the closest MEC platform to a specific terminal (closest in terms of shortest network path)" **5SED** **5MEE** **EXRC**
-5.	"I can ask the operator to provision my application server to the optimal MEC for a specific terminal, taking into account connectivity, shortest network path, cost, network load, MEC platform load, application privacy considerations etc." ~~5SED~~ **5MEE** **EXRA**
+5.	"I can ask the operator to provision my application server to the optimal MEC for a specific terminal, taking into account connectivity, resources (e.g. vCPU, Memory, network interfaces, storage, GPU) shortest network path, cost, network load, MEC platform load, application privacy considerations etc." ~~5SED~~ **5MEE** **EXRA** **GMEC**
   *  "I can ask the operator to provision my application server to all MECs that meet these criteria (note this is not focussing on a specific terminal)" 
   *  "I can ask the operator to provision my application server to a minimal set of MECs that meet these criteria across a given footprint (note this is not focussing on a specific terminal)" 
 6.	 "I can ask the operator to inform me if the optimal MEC for my application and a specific terminal changes, taking into account mobility events, connectivity, shortest network path, cost, network load, MEC platform load etc." ~~5SED~~ **5MEE** **EXRC**
+7.	“I can ask the operator to store artifacts e.g., container images or VM images and manifests describing required resources, Helm charts etc”  **GMEC**
+8.	“I can ask the operator to provide the artifacts details for already stored artifacts”  **GMEC**
+9.	“I can query the list of applications linked with a given artifact”  **GMEC**
+10.	"I can ask the operator to link artifacts to the applications when onboarding my applications"  **GMEC**
+11.	"I can ask the operator to delete an existing artifact(s)"  **GMEC**
+12.	"I can ask the operator to reserve compute, network and storage required for my application in various MEC locations"  **GMEC**
+13.	“I can ask the operator to use reserved resources for my application to earlier on various MEC locations”  **GMEC**
+14.		"I can ask the operator to delete an existing reserve reservation"  **GMEC**
+15.	“I can ask the operator to remove my application from a set of MEC locations”  **GMEC**
+16.	“I can ask the operator to provide the details of all the onboarded applications”  **5MEE** **GMEC**
+17.	"I can ask the operator to inform about the application instance details e.g., communication endpoints, resource consumed etc" **5MEE** **GMEC**
+18.	"I can ask the operator to terminate the running instance of my application"  **GMEC**
+
 #### Runtime intents 
-7.    "I can discover the closest MEC platform to a particular terminal (closest in terms of shortest network path)" **5SED** **5MEE** **EXRC**
-8.    "I can discover the optimal MEC platform for my application and a particular terminal, taking into account connectivity, shortest network path, cost, network load etc." (`A`) ~~5SED~~ **5MEE** **EXRC**
-9.    "I can discover the optimal application service endpoint for a specific terminal, taking into account mobility events, connectivity, shortest network path, cost, network load, MEC platform load etc." ~~5SED~~ **5MEE** **EXRC**
-10.   "I can ask the operator to move my running application instance to a different MEC if the closest MEC changes, taking into account mobility events, connectivity, shortest network path, cost, network load, MEC platform load etc." `B` ~~5SED~~ _5MEE?_ _EXRC_?
+19.    "I can discover the closest MEC platform to a particular terminal (closest in terms of shortest network path)" **5SED** **5MEE** **EXRC**
+20.    "I can discover the optimal MEC platform for my application and a particular terminal, taking into account connectivity, shortest network path, cost, network load etc." (`A`) ~~5SED~~ **5MEE** **EXRC**
+21.    "I can discover the optimal application service endpoint for a specific terminal, taking into account mobility events, connectivity, shortest network path, cost, network load, MEC platform load etc." ~~5SED~~ **5MEE** **EXRC**
+22.   "I can ask the operator to move my running application instance to a different MEC if the closest MEC changes, taking into account mobility events, connectivity, shortest network path, cost, network load, MEC platform load etc." `B` ~~5SED~~ _5MEE?_ _EXRC_?
 ### Operator intents
 #### Provisioning intents
-11. “I can publish an (ordered, filtered) list of my MECs, their coverage, capabilities and status” _(aligns with 1,2,3 in the developer intents)_ ~~5SED~~ **5MEE** **EXRA**
-12. “I can map an application’s requirements to the best MEC for hosting it, based on application demands for CPU,Memory,Storage,GPU,bandwith,Network forecast, mobility” _(aligns with 4,5,8,9)_ ~~5SED~~ **5MEE** **EXRA**
+23. “I can publish an (ordered, filtered) list of my MECs, their coverage, capabilities and status” _(aligns with 1,2,3 in the developer intents)_ ~~5SED~~ **5MEE** **EXRA**
+24. “I can map an application’s requirements to the best MEC for hosting it, based on application demands for CPU,Memory,Storage,GPU,bandwith,Network forecast, mobility” _(aligns with 4,5,8,9)_ ~~5SED~~ **5MEE** **EXRA**
 #### Runtime intents 
-13. “I can inform the developer of any event which changes which MEC is optimal for their application and connected terminals” _(aligns with  6)_ ~~5SED~~ **5MEE** **EXRC**
-14. “I can move a running application to a new MEC and inform the developer of the new service endpoint to connect to” `B` _(aligns with 10)_ ~~5SED~~ _5MEE?_ _EXRC_?
+25. “I can inform the developer of any event which changes which MEC is optimal for their application and connected terminals” _(aligns with  6)_ ~~5SED~~ **5MEE** **EXRC**
+26. “I can move a running application to a new MEC and inform the developer of the new service endpoint to connect to” `B` _(aligns with 10)_ ~~5SED~~ _5MEE?_ _EXRC_?
 
 **Notes**: 
 * `A` this may not be the closest MEC, rather the 'best MEC for this job' which accounts for current MEC or network load, MEC copmute power and features etc.
@@ -77,7 +90,15 @@ Abbreviations used for API names:
 
 ## API Workflows
 # Simple Edge Discovery
-(todo)
+```mermaid
+sequenceDiagram
+    participant app
+    participant operator
+    Note over app,operator: PRE App on device attached <br/> to operator network
+    Note over app,operator: PRE App developer registered, <br/> authenticated and authorised
+    app->>operator: GET /mecplatforms
+    operator->>app: name of closest MEC platform
+```
 
 # MEC Exposure and Experience Management
 (todo)
@@ -85,24 +106,3 @@ Abbreviations used for API names:
 # EdgeXR APIs 
 (todo)
 
-# GSMA OPAG Capgemini APIs 
-### Developer intents
-#### Onboarding intents
-1.	“I can ask the operator to store artifacts e.g., container images or VM images and manifests describing required resources, Helm charts etc”  **GMEC**
-2.	“I can ask the operator to provide the artifacts details for already stored artifacts”  **GMEC**
-3.	“I can query the list of applications linked with a given artifact”  **GMEC**
-4.	"I can ask the operator to link artifacts to the applications when onboarding my applications"  **GMEC**
-5.		"I can ask the operator to delete an existing artifact(s)"  **GMEC**
-6.	“I can ask the operator to onboard my application to a set of MEC locations”  **GMEC**
-7.	"I can specify quality of service information e.g., end to end latency, bandwidth, jitter etc that the application clients expect with the application server"  **GMEC 5MEE EXRA**
-8.	"I can specify edge resources that my application requires when it is lanuched e.g., vCPU, Memory, network interfaces, storage, GPU etc that the application clients expect with the application server"  **GMEC 5MEE EXRA**
-9.	"I can ask the operator to reserve compute, network and storage required for my application in various MEC locations"  **GMEC**
-10.	“I can ask the operator to use reserved resources for my application to earlier on various MEC locations”  **GMEC**
-11.		"I can ask the operator to delete an existing reserve reservation"  **GMEC**
-12.	“I can ask the operator to remove my application from a set of MEC locations”  **GMEC**
-13.	“I can ask the operator to provide the details of all the onboarded applications”  **GMEC**
-#### Provisioning intents
-1.	"I can ask the operator to instantiate my application server in given MEC locations where I onboarded my application"  **GMEC 5MEE EXRA**
-2.	"I can ask the operator to instantiate my application server in MEC locations determined by operator"  **GMEC 5MEE EXRA**
-3.	"I can ask the operator to inform about the application instance details e.g., communication endpoints, resource consumed etc"  **GMEC**
-4.	"I can ask the operator to terminate the running instance of my application"  **GMEC**
