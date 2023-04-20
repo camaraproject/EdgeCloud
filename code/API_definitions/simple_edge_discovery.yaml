@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Simple MEC Discovery API
-  version: 0.8.0
+  version: 0.8.1
   description: |
     # Find your nearest MEC platform
     ---
@@ -39,12 +39,12 @@ paths:
                   resources:
                     type: array
                     items: 
-                      $ref: '#/components/schemas/resources'
+                      $ref: '#/components/schemas/Resources'
                   links:
                     type: array
                     items:
                       oneOf:
-                        - $ref: '#/components/schemas/linksCommon'
+                        - $ref: '#/components/schemas/LinksCommon'
         '401':
           $ref: '#/components/responses/Unauthorized'
         default:
@@ -77,13 +77,13 @@ paths:
                   MECPlatforms:
                     type: array
                     items:
-                      $ref: '#/components/schemas/resources_mecplatform'
+                      $ref: '#/components/schemas/ResourcesMecPlatform'
                   links:
                     type: array
                     items:
                       oneOf:
-                        - $ref: '#/components/schemas/links_All-mec-platforms'
-                        - $ref: '#/components/schemas/linksCommon'
+                        - $ref: '#/components/schemas/LinksAllMecPlatforms'
+                        - $ref: '#/components/schemas/LinksCommon'
         '401':
           $ref: '#/components/responses/Unauthorized'
         default:
@@ -95,21 +95,21 @@ paths:
    
 components:
   schemas:
-    resources:
+    Resources:
       type: array
       items:
         oneOf:
-          - $ref: '#/components/schemas/links_All-mec-platforms' 
+          - $ref: '#/components/schemas/LinksAllMecPlatforms' 
       additionalProperties: false
-    resources_mecplatform:
+    ResourcesMecPlatform:
       type: object
       properties:
         ern:
-          $ref: '#/components/schemas/types_edgeResource'
+          $ref: '#/components/schemas/TypesEdgeResource'
         zone:
-          $ref: '#/components/schemas/types_zone_Id'
+          $ref: '#/components/schemas/TypesZoneId'
         region:
-          $ref: '#/components/schemas/types_region_Id'
+          $ref: '#/components/schemas/TypesRegionId'
         status:
           description: Status of the MEC Platform (default is 'unknown')
           type: string
@@ -129,22 +129,22 @@ components:
                 type: object
       additionalProperties: false
 
-    types_edgeResource:
+    TypesEdgeResource:
       description: |
         An object defined by the service provider representing an edge resource within its network domain, such as a MEC Platform.  The string contains colon-separated metadata in the form   ern:<tsp-identifier>:<tsp-region>:<resource-type>:<resource-identifier>:<tsp-extensions>
       type: string
       additionalProperties: false     
-    types_zone_Id:
+    TypesZoneId:
       description: |
         Unique identifier representing a zone
       type: string
       additionalProperties: false  
-    types_region_Id:
+    TypesRegionId:
       description: |
         Unique identifier representing a region
       type: string
       additionalProperties: false
-    typesError:
+    TypesSuccess:
       type: object
       properties:
         code:
@@ -152,13 +152,13 @@ components:
         message:
           type: string
         links:
-          $ref: '#/components/schemas/linksCommon'
+          $ref: '#/components/schemas/LinksCommon'
       required:
         - code
         - message
         - links
       additionalProperties: false
-    types_success:
+    TypesError:
       type: object
       properties:
         code:
@@ -166,27 +166,13 @@ components:
         message:
           type: string
         links:
-          $ref: '#/components/schemas/linksCommon'
+          $ref: '#/components/schemas/LinksCommon'
       required:
         - code
         - message
         - links
       additionalProperties: false
-    types_error:
-      type: object
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        links:
-          $ref: '#/components/schemas/linksCommon'
-      required:
-        - code
-        - message
-        - links
-      additionalProperties: false
-    types_UEIdentityType:
+    TypesUEIdentityType:
       description: Type of User Equipment identifier used in `UEIdentity`.
       type: string
       enum:
@@ -195,13 +181,13 @@ components:
         - IMEI
         - MDN
         - GPSI
-    types_UEIdentity:
+    TypesUEIdentity:
       description: Identifier value for User Equipment. The type of identifier is defined by the 'UEIdentityType' parameter.
       type: string         
 ###########################################
 # LINKS
 ###########################################
-    links_All-mec-platforms:
+    LinksAllMecPlatforms:
       type: object
       readOnly: true
       properties:
@@ -226,7 +212,7 @@ components:
             - method
       additionalProperties: false 
 
-    linksSelf:
+    LinksSelf:
       type: object
       readOnly: true
       properties:
@@ -249,7 +235,7 @@ components:
             - rel
             - method
       additionalProperties: false
-    linksVersionHistory:
+    LinksVersionHistory:
       type: object
       readOnly: true
       properties:
@@ -272,7 +258,7 @@ components:
             - rel
             - method
       additionalProperties: false
-    linksTermsOfService:
+    LinksTermsOfService:
       type: object
       readOnly: true
       properties:
@@ -295,7 +281,7 @@ components:
             - rel
             - method
       additionalProperties: false
-    linksBookmark:
+    LinksBookmark:
       type: object
       readOnly: true
       properties:
@@ -318,45 +304,16 @@ components:
             - rel
             - method
       additionalProperties: false
-    linksCommon:
+    LinksCommon:
       type: array
       readOnly: true
       items:
         oneOf:
-          - $ref: '#/components/schemas/linksSelf'
-          - $ref: '#/components/schemas/linksVersionHistory'
-          - $ref: '#/components/schemas/linksTermsOfService'
-          - $ref: '#/components/schemas/linksBookmark'
+          - $ref: '#/components/schemas/LinksSelf'
+          - $ref: '#/components/schemas/LinksVersionHistory'
+          - $ref: '#/components/schemas/LinksTermsOfService'
+          - $ref: '#/components/schemas/LinksBookmark'
 
-###################################
-# RESPONSES
-####################################
-  responses:
-    OK:
-      description: HTTP 200 OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/types_success'  
-    Unauthorized:
-      description: HTTP 401 Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/types_error'
-    NotFound:
-      description: HTTP 404 The specified resource was not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/types_error'            
-    Unexpected:
-      description: HTTP 500 Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/typesError'
- 
 ################################
 # PARAMETERS
 ################################
@@ -391,16 +348,45 @@ components:
       schema:
         type: integer
     UEIdentityType:
-      name: UEIdentityType
+      name: ueIdentityType
       description: Type of User Equipment identifier used in `UEIdentity`.
       in: query
       required: false
       schema:
-        $ref: '#/components/schemas/types_UEIdentityType'
+        $ref: '#/components/schemas/TypesUEIdentityType'
     UEIdentity:
-      name: UEIdentity
+      name: ueIdentity
       description: Identifier value for User Equipment. The type of identifier is defined by the UEIdentityType parameter.
       in: query
       required: false
       schema:
-        $ref: '#/components/schemas/types_UEIdentity'
+        $ref: '#/components/schemas/TypesUEIdentity'
+###################################
+# RESPONSES
+####################################
+  responses:
+    OK:
+      description: HTTP 200 OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TypesSuccess'  
+    Unauthorized:
+      description: HTTP 401 Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TypesError'
+    NotFound:
+      description: HTTP 404 The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TypesError'            
+    Unexpected:
+      description: HTTP 500 Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TypesError'
+ 
