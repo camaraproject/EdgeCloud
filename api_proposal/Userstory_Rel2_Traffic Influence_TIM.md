@@ -1,0 +1,16 @@
+
+| Item | Description | Support Qualifier |
+|----|----|----|
+|Summary|A Service is provided in different geographical locations by Edge instances of an Application Server. The user Device has a session active with the PDU anchor point in one Edge and its traffic is routed to the Application Server local instance. The Device moves from that Edge to another Edge. The Service requests the network to guarantee an optimal connection between the Device and the Application Server Instance in the destination Edge.<br>Two behaviors are foreseen:<br>1) Multiple TI API invocation on Mobily detection: the API Consumer invokes the TI API every time it detects the Device has moved in a different Edge.<br>2) One TI API invocation: the API Consumer invokes the TI API just one time with the intent of always having the better network connectivity to the optimal Edge Application Server instance. Note: supported in a future release.| M |
+|Roles, Actor(s) and scope|Application Function: role of Traffic Influence API Consumer<br>Operator Platform: role of Traffic Influence API Provider<br>User Device: role of Service consumer<br>Edge Application Server (EAS): role of Service Producer<br><br>Scope: B2B use case where the Service influences the network to provide a traffic flow toward an existing EAS Instance in the Edge datacenters when the user moves from one Edge to another Edge| M |
+|Pre-conditions|•The Device moves from one geographical area (EDGE1) to a different geographical area (EDGE2)<br>• The optimal traffic routing, at EDGE1, is already configured  between the local EAS instance and the local UPF (e.g by the API Consumer invoking the TI API to activate LBO or for existing network policies).<br>• The Service can detect the Device moving among different geographical areas. Different means can be used, e.g specific techniques from the Application itself or leveraging on other CAMARA APIs such Edge discovery.| M |
+|Begins when|The Service, autonomously or via other CAMARA APIs, detects the Device moving from EDGE 1 to EDGE2 and the TI API Consumer Invokes the Traffic Influence API to guarantee the optimal routing toward the Edge Application Server Instance at EDGE2.| M |
+|Step 1|The OP authorizes the request (terminates with a notification to the TI API Consumer if it is not valid)| M |
+|Step 2|The Traffic Influence API Producer validates the request (terminates with a notification to the TI API Consumer if it is not coherent with the policies)| M|
+|Step 3|The API Producer checks for network resources to implement the request (terminates with a notification to the API Consumer  if not available)| M |
+|Step 4|The API Producer according to the request parameters and network policies may influence UPF (re)selection and allow the optimal routing of user traffic to a local access of the Data Network| M |
+|Step 5|The API Producer notifies the API Consumer that the requested routing has been activated. The API Producer returns and Identifier for the created resource.| M |
+|Step 6|The TI API Consumer invokes the TI API each time it detects the user has moved to a different location| M |
+|Ends when|The optimal routing is properly configured| M |
+|Post-conditions|The PDU anchor point is moved to the new UPF in the new Edge Zone.| M |
+|Exceptions|Step 4 can generate an exception to be notified to the TI API Consumer| M | 
