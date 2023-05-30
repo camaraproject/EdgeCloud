@@ -2,16 +2,17 @@
 # OPAG-CAMARA Traffic Influence API
 ## Overview
 
-The reference scenario foresees a Service owned by a Developer, composed by one or more Service Producers provided by the Developer and deployed in different geographical locations on Telco Operator Edge sites (MEC sites) or in Cloud. The Service Producer, deployed at the Edge, is referred as Edge Application Server (EAS).
-The Traffic Influence API provides the fastest routing from the user equipment (e.g. a Smartphone) to the optimal Edge Application Server (EAS) Instance in a specific geographical location, installed in a Telco Operator Edge site.
-If a Service is offered by a Cloud Instance and by Edge Instances, the API can be used to route a selected set of users on the Edge Instance.
+The reference scenario foresees a Service owned by a Developer, composed by one or more Service Producers provided by the Developer and deployed in different geographical locations on Telco Operator Edge sites (Mobile Edge Computing - MEC sites) or in Cloud. The Service Producer, deployed at the Edge, is referred as Edge Application Server (EAS).
+The Traffic Influence API provides the fastest routing from the user Device (e.g. a Smartphone) to the optimal Edge Application Server Instance in a specific geographical location, installed in a Telco Operator Edge site.
+If a Service is offered by Cloud Instances and by Edge Instances, the API can be used to route the traffic on the Edge Instances.
 
 ## 1. Introduction
 
-The Traffic Influence API provides the capability to establish the best connectivity, in terms of latency, in a specific geographical area, between the User Equipment (UE), e.g. the user’s smartphone, and the optimal Edge Application Server instance nearby.
-The Service architecture foresees one or more EASs and a component, the Application Function (AF), that is the API consumer. Invoking the TI API, the AF can create a "TrafficInfluence" resource specifying the desired request.
-The TI API provider implements the intent specified in the Traffic Influence resource.
+The Traffic Influence API provides the capability to establish the best connectivity, in terms of latency, in a specific geographical area, between the user Device, e.g. the user’s smartphone, and the optimal Edge Application Server instance nearby.
+The generic architecture for the Serivice can foresee some Cloud instances of the Application, one or more Edge Instances of the Application. A  component of the Service is the TI API Consumer. This logical component can be integrated in other components of the Service to invoke the TI API, creating a "TrafficInfluence" resource specifying the desired intent.
+The TI API Producer implements the intent specified in the "TrafficInfluence" resource.
 While the API is usually invoked to activate the fastest routing for any user,  it can also be used to request the routing for a specific user. Invoking the API for each user (using the same "trafficInfluenceID"), the "TrafficInfluence" resource provides the requested routing for a set of users.
+The same approach is used for the geographical locations where the influece of the traffic must be applied. Invoking the API without specifying a geographical area activates the optimal routing toward any EAS instance, while invoking the API specifying a geographical area activates the optimal routing only toward the EAS instance located closest to that geographical area. To activate the routing in selected geographical areas, the TI API must be invoked for each geographical area.
 
 ## 2. Quick Start
 The usage of the Traffic Influence API is based on the management of a "TrafficInfluence" resource, an object containing the intent requested invoking the Traffic Influence API and that is implemented by the platform configuring the Mobile Network for the optimal routing toward the EAS Instance.
@@ -33,23 +34,26 @@ This object represents the resource that carries the requirements from the user 
 **trafficInfluenceID**
 Identifier for the Traffic Influence resource. This parameter ir returned by the API and must be used to update it (e.g., adding new users or deleting it)
 
-**applicationFunctionId**
-Unique identifier for the Application Function (AF), the TI API consumer.
+**apiConsumerId**
+Unique identifier for the TI API Consumer.
 
 **region**
-The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Region is a wide geographical area and it contains one ore more Zones. A Zone is where the Edge Datacenters are located. Zones and Regions identifiers are defined and provided by the Telco Operator and can also be used or retrieved with other CAMARA APIs ("MEC Exposure & Experience Management API" and "Simple Edge Discovery"). To add more regions the API must be invoked (PUT) of each region. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId").
+The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Region is a wide geographical area and it contains one ore more Zones. A Zone is where the Edge Datacenters are located. Zones and Regions identifiers are defined and provided by the Telco Operator and can also be used or retrieved with other CAMARA APIs ("MEC Exposure & Experience Management API" and "Simple Edge Discovery"). To add more regions the API must be invoked (PUT) for each region. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId").
 
 **zone**
-The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Zone is a smaller geographical area inside a Region. A Zone is where the Edge Datacenters are located. To add more zones the API must be invoked (PUT) of each zone. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId").
+The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Zone is a smaller geographical area inside a Region. A Zone is where the Edge Datacenters are located. To add more zones the API must be invoked (PUT) for each zone. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId").
 
 **applicationId**
-Unique Application identifier inside the Telco Operator Platform.
+Unique Application identifier inside the Telco Operator Platform. To influece the traffic toward a specific Application. It is the OP that detects the appropriate Application Instance in the selected Region or Zone.
+
+**instanceId**
+Unique identifier generated by the partner OP to identify an instance of the Application on a specific zone. To influence a traffic toward a specific Application Instance.
 
 **trafficFilters**
 The Application can expose different service on different interfaces, with this parameter it is possible to enable just some of those services maybe for different sets of users.
 
-**usersId**
-Optionally a user can be provided as an input. To add more users the API must be invoked (PUT) of each user. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Applicatoin (identified by "applicatoinId"). The routing toward the selected Application Instance is only applied for provided users.
+**Device**
+Optionally a user Device can be provided as an input. To add more users the API must be invoked (PUT) of each user Device. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicatoinId"). The routing toward the selected Application Instance is only applied for provided user Devices.
 
 **Notification URL and token**
 Developers have a chance to specify callback URL on which notifications (eg. session termination) regarding the session can be received from the service provider. This is also an optional parameter.
@@ -61,23 +65,22 @@ In this method the API invoker client is registered as a confidential client wit
 ## 4. API Documentation
 ## 4.1 Details
 
-The Traffic Influence (TI) API is consumed by an Application Function (AF) requesting for the fastest routing of the traffic flow from the User Equipments toward an instance of the Edge Application Server (EAS) in a Telco Operator Edge sites (MEC sites).
+The Traffic Influence (TI) API is consumed by an Application Function (AF) requesting for the fastest routing of the traffic flow from the Devices toward an instance of the Edge Application Server (EAS) in a Telco Operator Edge sites (MEC sites).
 
 When the EAS is onboarded and deployed in the MEC site, the Application is identified with a unique identifier (applicationId).
 
 Using the application identifier ("applicationId") and specifying a Zone or a Region, the Telco Operator Platform, autonomously identifies the best instance of the EAS toward routing the traffic flow and configures the Mobile Network accordingly to get the fastest routing.
 If just the application identifier is used, the Telco Operator Platform  identifies all the EAS Instances and activates the optimal routing on the Mobile Network.
-If the fastest routing should be available just for a set of users, the API must be invoked for each user also passing the same TrafficInfluce resource identifier ("trafficInfluenceID")
+If the fastest routing should be available just for a set of users, the API must be invoked for each user creating a new TrafficInfluce resource for each one.
 If the Application offers different services on different interfaces a  traffic filter based on IP, Port and Protocol can be used. I this way it is also possible to redirect different users to different interfaces.
 
 Here are some possible intents:
 
 1) activate the optimal routing for any EAS Instance: the API must be invoked with the applicationId. The Telco Operator Platform identifies all the EAS Instances and activates the optimal routing on the Mobile Network.
 2) activate the optimal routing in a specific Region or Zone: the API must be invoked with the applicationId and the Zones and Regions identifiers.
-3) activate the optimal routing for a specific set of users: the API can also be invoked with a user identifier ("userId"). The same TrafficInfluce resource identifier ("trafficInfluenceID") must be used in each call.
+3) activate the optimal routing for a specific set of users: the API can also be invoked with a user identifier ("UserId"). The same TrafficInfluce resource identifier ("trafficInfluenceID") must be used in each call.
 
-### 4.2 Endpoint Definitions
-## Version: 0.8.1
+## Version: 0.9.0
 
 **License:** [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -91,7 +94,7 @@ Retries existing TrafficInfluence Resources
 
 ##### Description
 
-Reads all of the active TrafficInfluence resources owned by the AF authenticated via oAuth2
+Reads all of the active TrafficInfluence resources owned by the same API Consumer authenticated via oAuth2
 
 ##### Parameters
 
@@ -117,31 +120,31 @@ Creates a new TrafficInfluence resource
 
 ##### Description
 
-Gets in input an object containing the intents from the AF and creates a TrafficInfluence resourse accordingly. The trafficInfluenceID parameter, that is part of the object, must not be valorized when creating a new resource. It is automatically generated by the system and returned the response
+Gets in input an object containing the intents from the API Consumer and creates a TrafficInfluence resourse accordingly. The trafficInfluenceID parameter, that is part of the object, must not be valorized when creating a new resource. For this reason the trafficInfluenceID parameter must be avoided in the object, anyway it will be ignored by the API Producer. It is automatically generated by the system and returned in the response.
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
-| 201 | TrafficInfluence resource created, the related object is returned with the resource ID (TIResource_id) and status (state) valorised, |
+| 201 | TrafficInfluence resource created, the related object is returned with the resource ID (trafficInfluenceID) and status (state) valorised, |
 | 401 | Unauthorized |
 | 403 | Forbidden |
 | 500 | An unknow error has occurred |
 | 503 | Service unavailable |
 | 504 | Connection timeout towards backend service has occurred |
 
-### /traffic-influences/{TIResource_id}
+### /traffic-influences/{trafficInfluenceID}
 
 #### GET
 ##### Summary
 
-read a specific TrafficInfluence resource identified by the TIResource_id value
+read a specific TrafficInfluence resource identified by the trafficInfluenceID value
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| TIResource_id | path | Identifier of the specific TrafficInfluence resource to be retrieved, modified or deleted. It is the value used to fill trafficInfluenceID parameter | Yes | string |
+| trafficInfluenceID | path | Identifier of the specific TrafficInfluence resource to be retrieved, modified or deleted. It is the value used to fill trafficInfluenceID parameter | Yes | string |
 
 ##### Responses
 
@@ -158,17 +161,17 @@ read a specific TrafficInfluence resource identified by the TIResource_id value
 #### PUT
 ##### Summary
 
-updates a specific TrafficInfluence resource, identified by the TIResource_id value
+updates a specific TrafficInfluence resource, identified by the trafficInfluenceID value
 
 ##### Description
 
-The resource identified by the TIResource_id value can be modified
+The resource identified by the trafficInfluenceID value can be modified
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| TIResource_id | path | Identifier of the specific TrafficInfluence resource to be retrieved, modified or deleted. It is the value used to fill trafficInfluenceID parameter | Yes | string |
+| trafficInfluenceID | path | Identifier of the specific TrafficInfluence resource to be retrieved, modified or deleted. It is the value used to fill trafficInfluenceID parameter | Yes | string |
 
 ##### Responses
 
@@ -191,7 +194,7 @@ Delete an existing TrafficInfluence resource
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| TIResource_id | path | Identifier of the specific TrafficInfluence resource to be retrieved, modified or deleted. It is the value used to fill trafficInfluenceID parameter | Yes | string |
+| trafficInfluenceID | path | Identifier of the specific TrafficInfluence resource to be retrieved, modified or deleted. It is the value used to fill trafficInfluenceID parameter | Yes | string |
 | callbackUrl | query | the location where updated data will be sent.  Must be network accessible by the source server  | No | string (uri) |
 
 ##### Responses
@@ -217,66 +220,106 @@ Delete an existing TrafficInfluence resource
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| trafficInfluenceID | string | Identifier for the Traffic Influence resource. This parameter ir returned by the API and must be used to update it (e.g., adding new users or deleting it) passing it as TIResource_id value in the API call. | No |
-| applicationFunctionId | string | Unique Identifier of the Application Function, the TI API consumer. | Yes |
+| trafficInfluenceID | string | Identifier for the Traffic Influence resource. This parameter ir returned by the API and must be used to update it (e.g., adding new users or deleting it). | No |
+| apiConsumerId | string | Unique Identifier of the TI API Consumer. | Yes |
 | applicationId | string | Unique ID representing the Edge Application<br>_Example:_ `"Virtual_Reality_Arena"` | Yes |
+| instanceId | string | Unique identifier generated by the partner OP to identify an instance of the application on a specific zone. | No |
 | region | string | Unique identifier representing a region  | No |
 | zone | string | Unique identifier representing a zone  | No |
-| userId | object | User equipment identifier, it is composed by a value and a type for that value | No |
-| state | string | _Enum:_ `"ordered"`, `"created"`, `"active"`, `"not active"`, `"error"`, `"deleted"` | No |
-| trafficFilters | [ object ] | Identifies IP packet filters. To be used when a the Application needs a traffic flow towards a specific EAS interface | No |
+| device | object | Device identifier | No |
+| state | string | it reports the state of the TrafficInfluence resource. When first invoked, the resource is 'ordered'. When the platforms prepares the resource, it is 'created'. When the new routing is enabled in the network, the state is 'active'.  If an error occurs in the resource creation or in its activation, the state is 'error'. After the resource is deleted (with the DELETE method) the state is 'deleted'.<br>_Enum:_ `"ordered"`, `"created"`, `"active"`, `"error"`, `"deleted"` | No |
+| trafficFilters | [ string ] | Identifies IP packet filters. To be used when a the Application needs a traffic flow towards a specific EAS interface | No |
 | notificationUri | string | Defines the callback uri which should be notified in asynchronous way when the state for the requested resources changes (i.e. ordered to activated) | No |
 | notificationAuthToken | string | Authentification token for callback API | No |
 
-#### types_zone_Id
+#### TypesZoneId
 
 Unique identifier representing a zone
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| types_zone_Id | string | Unique identifier representing a zone  |  |
+| TypesZoneId | string | Unique identifier representing a zone  |  |
 
-#### types_region_Id
+#### TypesRegionId
 
 Unique identifier representing a region
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| types_region_Id | string | Unique identifier representing a region  |  |
+| TypesRegionId | string | Unique identifier representing a region  |  |
 
-#### userId
+#### Device
 
-User equipment identifier, it is composed by a value and a type for that value
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| UEIdentityType | string | Type of User Equipment identifier used in `UEIdentity`.<br>_Enum:_ `"IPAddress"`, `"MSISDN"`, `"IMEI"`, `"MDN"`, `"GPSI"` | No |
-| UEIdentity | string | Identifier value for User Equipment. The type of identifier is defined by the 'UEIdentityType' parameter. | No |
-
-#### types_UEIdentityType
-
-Type of User Equipment identifier used in `UEIdentity`.
+Device identifier
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| types_UEIdentityType | string | Type of User Equipment identifier used in `UEIdentity`. |  |
+| phoneNumber | string | Subscriber number in E.164 format (starting with country code). Optionally prefixed with '+'.<br>_Example:_ `"123456789"` | No |
+| networkAccessIdentifier | string | _Example:_ `"123456789@domain.com"` | No |
+| ipv4Address | string (ipv4) | IPv4 address may be specified in form <address/mask> as:   - address - an IPv4 number in dotted-quad form 1.2.3.4. Only this exact IP number will match the flow control rule.   - address/mask - an IP number as above with a mask width of the form 1.2.3.4/24.     In this case, all IP numbers from 1.2.3.0 to 1.2.3.255 will match. The bit width MUST be valid for the IP version. <br>_Example:_ `"192.168.0.1/24"` | No |
+| ipv6Address |  | IPv6 address, following IETF 5952 format, may be specified in form <address/mask> as:   - address - The /128 subnet is optional for single addresses:     - 2001:db8:85a3:8d3:1319:8a2e:370:7344     - 2001:db8:85a3:8d3:1319:8a2e:370:7344/128   - address/mask - an IP v6 number with a mask:     - 2001:db8:85a3:8d3::0/64     - 2001:db8:85a3:8d3::/64 <br>_Example:_ `"2001:db8:85a3:8d3:1319:8a2e:370:7344"` | No |
 
-#### types_UEIdentity
-
-Identifier value for User Equipment. The type of identifier is defined by the 'UEIdentityType' parameter.
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| types_UEIdentity | string | Identifier value for User Equipment. The type of identifier is defined by the 'UEIdentityType' parameter. |  |
-
-#### FlowInfo
+#### NetworkAccessIdentifier
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| flowId | integer | Indicates the IP flow. | Yes |
-| flowDescriptions | [ string ] | Indicates the packet filters of the IP flow. The source IP is according to the TI API request, any IP (if no userId is provided) or the IP related to userId so it doesn't need to be specified int flowDescription. The protocol is identified by a number as defined by IANA (<https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml>), e.g. 1 (UDP) or 2 (TCP).  The destination IP and port must be specified.<br>_Example:_ `"protocol 1 to 10.98.0.0/24 5060"` | No |
+| NetworkAccessIdentifier | string |  |  |
 
-### 4.3 Errors
+**Example**
+<pre>123456789@domain.com</pre>
+
+#### PhoneNumber
+
+Subscriber number in E.164 format (starting with country code). Optionally prefixed with '+'.
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| PhoneNumber | string | Subscriber number in E.164 format (starting with country code). Optionally prefixed with '+'. |  |
+
+**Example**
+<pre>123456789</pre>
+
+#### Ipv4Address
+
+IPv4 address may be specified in form <address/mask> as:
+
+- address - an IPv4 number in dotted-quad form 1.2.3.4. Only this exact IP number will match the flow control rule.
+- address/mask - an IP number as above with a mask width of the form 1.2.3.4/24.
+    In this case, all IP numbers from 1.2.3.0 to 1.2.3.255 will match. The bit width MUST be valid for the IP version.
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| Ipv4Address | string | IPv4 address may be specified in form <address/mask> as:   - address - an IPv4 number in dotted-quad form 1.2.3.4. Only this exact IP number will match the flow control rule.   - address/mask - an IP number as above with a mask width of the form 1.2.3.4/24.     In this case, all IP numbers from 1.2.3.0 to 1.2.3.255 will match. The bit width MUST be valid for the IP version.  |  |
+
+**Example**
+<pre>192.168.0.1/24</pre>
+
+#### Ipv6Address
+
+IPv6 address, following IETF 5952 format, may be specified in form <address/mask> as:
+
+- address - The /128 subnet is optional for single addresses:
+  - 2001:db8:85a3:8d3:1319:8a2e:370:7344
+  - 2001:db8:85a3:8d3:1319:8a2e:370:7344/128
+- address/mask - an IP v6 number with a mask:
+  - 2001:db8:85a3:8d3::0/64
+  - 2001:db8:85a3:8d3::/64
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| Ipv6Address | string | IPv6 address, following IETF 5952 format, may be specified in form <address/mask> as:   - address - The /128 subnet is optional for single addresses:     - 2001:db8:85a3:8d3:1319:8a2e:370:7344     - 2001:db8:85a3:8d3:1319:8a2e:370:7344/128   - address/mask - an IP v6 number with a mask:     - 2001:db8:85a3:8d3::0/64     - 2001:db8:85a3:8d3::/64  |  |
+
+**Example**
+<pre>2001:db8:85a3:8d3:1319:8a2e:370:7344</pre>
+
+#### InstanceIdentifier
+
+Unique identifier generated by the partner OP to identify an instance of the application on a specific zone.
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| InstanceIdentifier | string | Unique identifier generated by the partner OP to identify an instance of the application on a specific zone. |  |
+
 #### ErrResponse
 
 | Name | Type | Description | Required |
@@ -308,7 +351,18 @@ N/A
 
 ###  4.8 Release Notes
 
-The Traffic Influence API reduces the complexity of the 3GPP Traffic Influence API exposed by the 3GPP Network Exposure Function (NEF) [1]. While the 3GPP TI API offers fastest routing activation and user mobility among different edge sites, this version of the CAMARA Traffic Influence API covers only the fastest routing activation, also for selected users. User mobility will be introduced in a future version. These release also has no effect on existing PDU sessions.
+The Traffic Influence API reduces the complexity of the 3GPP Traffic Influence API exposed by the 3GPP Network Exposure Function (NEF) [1]. While the 3GPP TI API offers fastest routing activation and user mobility among different edge sites, this version of the CAMARA Traffic Influence API covers only the fastest routing activation, also for selected users. User mobility will be introduced in a future version. 
+
+Enhancements with respect to the previous release:
+
+ - These release also effects existing PDU sessions.
+ - The ueId paramter is renamed into Device
+ - The parameter Device, that identifies the User, is now simplified to guarantee the identification of an existing PDU session
+ - instanceId added
+- trafficFilters description updated
+- CAMEL type adopted 
+- FlowInfo deleted
+- OpenAPI version updated to 3.0.3
 
 ##  References
 
