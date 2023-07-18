@@ -94,30 +94,32 @@ Abbreviations used for API names:
 
 Constraints:
 - Network: cellular (4G/5G)
-- Application: none, browser or app calls API over HTTP (no UNI SDK required) 
+- Application: none, browser or app calls API over HTTP
+- Northbound Interface only (no 'UNI' client SDK required) 
 
-Dependencies:
-- developer has hyperscaler account 
+Note:
+- the MEC platform may be hosted by the operator or a 3rd party hyperscaler (in which case the developer will need an account with that hyperscaler to create instances)
+
 
 ```mermaid
 sequenceDiagram
     participant app
     participant operator
-    participant "developer server" as dev
-    participant hyperscaler
+    participant developer server
+    participant MEC platform
     Note over app,operator: PRE App on device attached <br/> to operator network
-    Note over dev,operator: PRE App developer registered, <br/> authenticated and authorised
+    Note over developer server,operator: PRE App developer registered, <br/> authenticated and authorised
     app->>operator: GET /mecplatforms
     operator->>app: name of closest MEC platform
    alt app has a local mapping of server endpoints to MEC platforms
     app->>app: lookup app server endpoint (MEC platform name)
     app->>operator: connect to app server endpoint
    else no local mapping
-    app->>dev: report closest MEC for app
+    app->>developer server: report closest MEC for app
     opt spin up instance on closest MEC platform
-     dev->>hyperscaler: create instance(MEC platform name)
-     hyperscaler->>dev: instance endpoint
-     dev->>app: instance endpoint
+     developer server->>MEC platform: create instance(MEC platform name)
+     MEC platform->>developer server: instance endpoint
+     developer server->>app: instance endpoint
     end
    end
 ```
@@ -125,26 +127,29 @@ sequenceDiagram
 
 Constraints:
 - Network: WiFi or cellular (4G/5G)
-- Application: none, browser or app calls API over HTTP (no UNI SDK required)
+- Application: none, browser or app calls API over HTTP
+- Northbound Interface only (no 'UNI' client SDK required)
 - Dependency: the call must include an identifier for the terminal (UE) for which 'closest MEC' is being calculated
+
+Note: the MEC platform may be hosted by the operator or a 3rd party hyperscaler (in which case the developer will need an account with that hyperscaler to create instances)
 
 ```mermaid
 sequenceDiagram
     participant app
     participant operator
-    participant "developer server" as dev
-    participant hyperscaler
-    Note over dev,operator: PRE developer has acquired an identifier for the terminal in question
-    Note over dev,operator: PRE App developer registered, <br/> authenticated and authorised
-    dev->>operator: GET /mecplatforms?ueIdentityType={value}&ueIdentity={value}
-    operator->>dev: name of closest MEC platform
+    participant developer server
+    participant MEC platform
+    Note over developer server,operator: PRE developer has acquired an identifier for the terminal in question
+    Note over developer server,operator: PRE App developer registered, <br/> authenticated and authorised
+    developer server->>operator: GET /mecplatforms?ueIdentityType={value}&ueIdentity={value}
+    operator->>developer server: name of closest MEC platform
     opt inform app
-     dev->>app: report closest MEC for app
+     developer server->>app: report closest MEC for app
     end
     opt spin up instance on closest MEC platform
-     dev->>hyperscaler: create instance(MEC platform name)
-     hyperscaler->>dev: instance endpoint
-     dev->>app: instance endpoint
+     developer server->> MEC platform: create instance(MEC platform name)
+      MEC platform->>developer server: instance endpoint
+     developer server->>app: instance endpoint
     end
 ```
 # MEC Exposure and Experience Management
