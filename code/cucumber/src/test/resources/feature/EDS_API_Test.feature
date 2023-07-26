@@ -43,6 +43,6 @@ Feature: EDS API test
   @EDSInternalServerError
   Scenario: Operator unable to resolve closest MEC platform
     Given  the target UE is attached to the operator network
-    But the operator network is unable to resolve the closest MEC platform
     When API Client makes a valid GET request
+    But the operator network is unable to resolve the closest MEC platform
     Then Response code is 500 Internal Server Error
