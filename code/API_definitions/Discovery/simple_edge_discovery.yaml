@@ -19,17 +19,20 @@ info:
     
      # Usage
      
-     The API defines a single service endpoint `/mecplatforms?filter=closest`. To call this endpoint, the API consumer must first obtain a valid OAuth2 token from the token endpoint, which is then passed as an `Authorization` header. 
+     The API may be called either by an application client hosted on a device attached to the operator network (i.e. phone, tablet), or by a server.
      
-     The API consumer must also pass at least one of the available mobile subscription identifiers as a header:
+     There is a single API endpoint: `/mecplatforms?filter=closest`. To call this endpoint, the API consumer must first obtain a valid OAuth2 token from the token endpoint, and pass it as an `Authorization` header in the API request.
 
-     * `IP-Address`). This is the public IP address of the user device: this can be obtained by an application hosted on that device calling a public IP address API (e.g. GET https://api.ipify.org?format=json)
-     * `Phone-Number` 
-     * `Network-Access-Identifier` (where available from the API host operator)
      
-    The Simple Edge Discovery API may be called either by an application client hosted on a device attached to the operator network (i.e. phone, tablet), or by a server.
-    * if you call the API from a device attached to the operator network, you may omit the explicit device identifier (see below) from the request header. If such a request fails with a `404 Not Found` error then retry the request but this time include a device identifier.
-    * if you call the API from a server, you must explicitly pass a device identifier in the request header (one of `Network-Access-Identifier`, or `Phone-Number`, or `IP-Address`)
+     The API returns the closest MEC platform to a given device, so that device needs to be identifiable by the network:
+    * if you call the API from a server, you must explicitly pass one or more device identifiers in the HTTP request header:
+      * `IP-Address`. This is the public IP address of the user device: this can be obtained by an application hosted on that device calling a public IP address API (e.g. GET https://api.ipify.org?format=json)
+      * `Phone-Number` . The international E.164 format (starting with country code), e.g. +4407123123456
+      * `Network-Access-Identifier` (where available from the API host operator)
+      
+    * if you call the API from a device attached to the operator network, you _may_ omit the explicit device identifier(s)from the request header. If such a request fails with a `404 Not Found` error then retry the request but this time include a device identifier.
+
+
     
     # Example requests:
     
@@ -63,9 +66,12 @@ info:
     A JSON object is returned containing a `MECPlatforms` array with a single member, along with the HTTP `200 OK` status code. The value of the Ern (Edge Resource Name) object is the name of the closest MEC platform to the user device. An example of this JSON object is as follows:
     ```
     {
-       "MecPlatforms": [
-         {"Ern": "eu-west-2-wl1-man-wlz-1"}
-       ]
+      "MecPlatforms": [
+        {
+          "Provider": "AWS",
+          "Ern": "eu-west-2-wl1-man-wlz-1
+        }
+      ]
     }
     ```
     ## Errors
@@ -138,6 +144,7 @@ paths:
             oneOf:
               - pattern: '^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$'
               - pattern: '^((:|(0?|([1-9a-f][0-9a-f]{0,3}))):)((0?|([1-9a-f][0-9a-f]{0,3})):){0,6}(:|(0?|([1-9a-f][0-9a-f]{0,3})))$'
+
         - name: Network-Access-Identifier
           in: header
           description: 3GPP network access identifier for the subscription being used by the device
@@ -195,28 +202,38 @@ components:
           tokenUrl: "{tokenUrl}"
           scopes: {}
   schemas:
-    MecPlatforms:
-      type: array
-      items:
-        $ref: '#/components/schemas/EdgeResource'
-      description:  The name of the MEC Platform closest to the network-attached user device identified in the request.
-      additionalProperties: false
-    
-    EdgeResource:
-      description: |
-        Edge Resource Name - an identifier for an edge reource in the operator domain 
-      type: object
-      properties:
-        Ern:
-          type: string
-      additionalProperties: false    
-      
     successResponse:
       type: object
       properties:
         MecPlatforms:
-          $ref: '#/components/schemas/MecPlatforms'   
+          $ref: '#/components/schemas/MecPlatforms'  
+    
+    MecPlatforms:
+      type: array
+      items:
+        $ref: '#/components/schemas/MecPlatform'
+      description:  The name of the MEC Platform closest to the network-attached user device identified in the request.
+      additionalProperties: false
       
+    MecPlatform:
+      type: object
+      properties:
+        Provider:
+          $ref: "#/components/schemas/Provider"
+        Ern:
+          $ref: "#/components/schemas/EdgeResource"
+    
+    Provider:
+      description: |
+        The company name of the MEC Platform provider  
+      type: string
+    
+    EdgeResource:
+      description: |
+        Edge Resource Name - an identifier for an edge reource in the operator domain 
+      type: string
+      additionalProperties: false  
+  
     errorResponse:
       type: object
       properties:
