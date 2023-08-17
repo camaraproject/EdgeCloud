@@ -22,27 +22,34 @@
 @EDS
 Feature: EDS API test
 
-  Background:
-    Given Use the EDS MOCK URL
-
   @EDSGetClosestMECPlatform
   Scenario: API Client requests name of closest MEC platform to a target UE
-    Given the target UE is attached to the operator network
+    Given Use the EDS MOCK URL
     When API Client makes a valid GET request
-    Then Response code is 200 OK
-    And the response includes the name of the closest MEC platform
+    Then Response code is 200
+    And The response includes the name of the closest MEC platform
+    And The response includes the name of the MEC platform provider
 
+  @EDSNoFilterParameter
+  Scenario: API Client omits filter parameter
+    Given Use the EDS MOCK URL
+    When The filter parameter is omitted
+    Then Response code is 400
 
+  @EDSIncorrectFilterParameterValue
+  Scenario: API Client provides incorrect filter value
+    Given Use the EDS MOCK URL
+    When The filter parameter is omitted
+    Then Response code is 400
+    
   @EDSInvalidUEIdentity
-  Scenario: API Client passes an invalid UE identity
-    Given  the target UE identity is invalid
-    When API Client makes a GET request with invalid UE identity
-    Then Response code is 500 Internal Server Error
-
-
+  Scenario: the user device cannot be identified from the provided parameters
+    Given Use the EDS MOCK URL
+    When API is requested with invalid user device identity
+    Then Response code is 404
+    
   @EDSInternalServerError
   Scenario: Operator unable to resolve closest MEC platform
-    Given  the target UE is attached to the operator network
-    When API Client makes a valid GET request
-    But the operator network is unable to resolve the closest MEC platform
-    Then Response code is 500 Internal Server Error
+    Given Use the EDS MOCK URL
+    When The operator is unable to resolve the closest MEC platform
+    Then Response code is 500
