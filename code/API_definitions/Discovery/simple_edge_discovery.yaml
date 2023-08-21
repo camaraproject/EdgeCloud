@@ -69,7 +69,7 @@ info:
       "MecPlatforms": [
         {
           "Provider": "AWS",
-          "Ern": "eu-west-2-wl1-man-wlz-1
+          "Ern": "eu-west-2-wl1-man-wlz-1"
         }
       ]
     }
