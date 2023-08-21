@@ -32,7 +32,7 @@ info:
       
     * if you call the API from a device attached to the operator network, you _may_ omit the explicit device identifier(s)from the request header. If such a request fails with a `404 Not Found` error then retry the request but this time include a device identifier.
 
-
+    The provider of the MEC Platform may be an operator, or a cloud provider. The 
     
     # Example requests:
     
@@ -63,7 +63,7 @@ info:
     
     ## Success
     
-    A JSON object is returned containing a `MECPlatforms` array with a single member, along with the HTTP `200 OK` status code. The value of the Ern (Edge Resource Name) object is the name of the closest MEC platform to the user device. An example of this JSON object is as follows:
+    A JSON object is returned containing a `MECPlatforms` array with a single member, along with the HTTP `200 OK` status code. The value of the `Provider` object is the name of the operator or cloud provider of the MEC Platform. `Ern` (Edge Resource Name) object is the name of the closest MEC platform to the user device. An example of this JSON object is as follows:
     ```
     {
       "MecPlatforms": [
@@ -84,9 +84,11 @@ info:
     
     Any more general service failures will result in an error in the `5xx`range with an explanation.
     
-    # Further info and support 
-
+    # Note for Simple Edge API publishers
+    The API publisher (i.e. the operator implementation) must ensure that the tuple of Provider+Ern in the success reponse is unique.
     
+    # Further info and support 
+   
     ---
   contact:
     email: sp-edc@lists.camaraproject.org
