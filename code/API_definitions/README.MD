@@ -1,20 +1,13 @@
-These APIs are contributed by 5GFF:
+The Edge Cloud suite of APIs is split into 4 categories, based on the intents listed [here](https://github.com/camaraproject/EdgeCloud/blob/main/documentation/SupportingDocuments/Harmonisation%20of%20APIs/describing%20and%20harmonising%20the%20Edge%20APIs.md).
 
-# MEC Experience Management and Exposure API
-This API allows a developer to:
-- discover available MEC platforms, ranked by proximity to a UE.
-- read the state (availability and capabilities) of an operator's various MEC platforms.
-- register a service profile (a description of the developer's edge service) with the MEC operator
-- register the deployed service endpoints with the MEC operator, which allows the closest service endpoint to be discovered at runtime
+# Discovery
+Discover the Edge site with the shortest network path to an end user terminal,find out which is the optimal Edge site for your specifc application, register your Edge-hosted application endpoints for rapid connectivity to the optimal Edge site.
 
-The API will also support the following capabilities: 
-- events(such as change of status of a MEC platform or another event which could affect their service)
-- subscription to notification of events.
+Workload Orchestration
+Lifecycle management of the Edge resources and servers for your applications
 
-Since events and subscription notifications can apply to many CAMARA APIs, that part will be defined in the Commonalities working group to ensure consistency.
+# Resource Management
+Information about the resources (compute, storage, networking etc) at a given Edge site
 
-# Simple Discovery API
-This API allows a client application to discover the closest MEC platform to the UE hosting the client application. 'Closest' means 'shorteset network path' as that will give the shortest propogation distance, which is a major factor in latency.
-
-# Traffic Influence API
-The Traffic Influence API hides the complexity of the network providing the developer with the possibility to modify the connection policies of UEs and EAS in terms of how the traffic flows. For a 5G network, the UPF connected to the target Data Network can be updated with new traffic steering rules, for a set of users and for a specific time period. Furthermore, in a UE mobility scenario, the  PDU Session Anchor, may be relocated to a different UPF considering the requirements provided by the AF.
+# Traffic Influence
+Influence traffic routing to ensure optimal network perfromance based on user mobility, application demand, best edge site. 
