@@ -166,7 +166,11 @@ paths:
 
       responses:
         "200":
-          $ref: '#/components/responses/200OK'        
+          description: Successful reaponse, returning the closest MEC platform to the user device identified in the request header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MecPlatforms'
         "400":
           $ref: '#/components/responses/400BadRequest'
         "401":
@@ -204,21 +208,16 @@ components:
           tokenUrl: "{tokenUrl}"
           scopes: {}
   schemas:
-    successResponse:
-      type: object
-      properties:
-        MecPlatforms:
-          $ref: '#/components/schemas/MecPlatforms'  
-    
     MecPlatforms:
       type: array
       items:
         $ref: '#/components/schemas/MecPlatform'
-      description:  The name of the MEC Platform closest to the network-attached user device identified in the request.
+      description:  A collection of MEC Platforms. For this Simple Edge Discovery API the collection will have at most one member (the closest MEC Platform to the user device indicated in the request).
       additionalProperties: false
       
     MecPlatform:
       type: object
+      description:  A MEC Platform, uniquely identified by a combination of the value of the ERN (Edge Resource Name) object and the value of the Provider object (the name of the cloud provider or operator hosting that platform).
       properties:
         Provider:
           $ref: "#/components/schemas/Provider"
@@ -254,14 +253,6 @@ components:
 # RESPONSES
 ####################################
   responses:
-    200OK:
-      description: Closest MEC platform to the provided user device identifier
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/successResponse'
-
-  
     400BadRequest: 
       description: Bad Request
       content:
