@@ -44,10 +44,10 @@ info:
     Unique identifier for the TI API Consumer.
     
     **region**
-    The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Region is a wide geographical area and it contains one ore more Zones. A Zone is where the Edge Datacenters are located. Zones and Regions identifiers are defined and provided by the Telco Operator and can also be used or retrieved with other CAMARA APIs ("MEC Exposure & Experience Management API" and "Simple Edge Discovery"). To add more regions the API must be invoked (PUT) for each region. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId").
+    The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Region is a wide geographical area and it contains one ore more Zones. A Zone is where the Edge Datacenters are located. Zones and Regions identifiers are defined and provided by the Telco Operator and can also be used or retrieved with other CAMARA APIs ("MEC Exposure & Experience Management API" and "Simple Edge Discovery"). To add more regions the API must be invoked (POST) for each region. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId").
     
     **zone**
-    The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Zone is a smaller geographical area inside a Region. A Zone is where the Edge Datacenters are located. To add more zones the API must be invoked (PUT) for each zone. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId").
+    The developer can specify in which geographical area he requires the fastest routing toward the nearest application instance. A Zone is a smaller geographical area inside a Region. A Zone is where the Edge Datacenters are located. To add more zones the API must be invoked (POST) for each zone. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId").
     
     **applicationId**
     Unique Application identifier inside the Telco Operator Platform. To influece the traffic toward a specific Application. It is the OP that detects the appropriate Application Instance in the selected Region or Zone.
@@ -59,7 +59,7 @@ info:
     The Application can expose different service on different interfaces, with this parameter it is possible to enable just some of those services maybe for different sets of users.
    
     **Device**
-    A user Device can be provided as an input. To add more users the API must be invoked (PUT) of each user Device. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId"). The routing toward the selected Application Instance is only applied for provided user Devices.
+    A user Device can be provided as an input. To add more users the API must be invoked (POST) of each user Device. New "TrafficInfluence" resources are created (with different "trafficInfluenceID"). All the created resources are aggregated by the Application (identified by "applicationId"). The routing toward the selected Application Instance is only applied for provided user Devices.
    
     **Notification URL and token**
     Developers have a chance to specify callback URL on which notifications (eg. session termination) regarding the session can be received from the service provider. This is also an optional parameter.
@@ -166,7 +166,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TrafficInfluence'
+              $ref: '#/components/schemas/PostTrafficInfluence'
 
       responses:
         '201':
@@ -227,19 +227,19 @@ paths:
           $ref: "#/components/responses/Generic403"
         "503":
           $ref: "#/components/responses/Generic503"
-    put:
+    patch:
       tags:
-        - TrafficInfluence API PUT Operation
+        - TrafficInfluence API PATCH Operation
       summary: updates a specific TrafficInfluence resource, identified by the trafficInfluenceID value
       description: The resource identified by the trafficInfluenceID value can be modified
-      operationId: PutTrafficInfluence
+      operationId: PatchTrafficInfluence
       requestBody:
         description: Describes the request body
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TrafficInfluence'
+              $ref: '#/components/schemas/PatchTrafficInfluence'
       responses:
         '200':
           description: TrafficInfluence resource edited, the related object is returned,  the status (state) is updated. 
@@ -340,14 +340,7 @@ components:
  #  RESOURCES
  #######################################################
   
-  schemas: 
-    TrafficInfluenceNotification:
-      type: object
-      required:
-        - trafficInfluenceChanged
-      properties:
-        trafficInfluenceChanged:
-          $ref: "#/components/schemas/TrafficInfluence"
+  schemas:
 
     TrafficInfluence:
       type: object
@@ -399,6 +392,37 @@ components:
       required:
         - apiConsumerId
         - applicationId
+        
+    PatchTrafficInfluence:
+      allOf:
+        - $ref: "#/components/schemas/TrafficInfluence"
+      properties:
+        trafficInfluenceID:
+          readOnly: true
+        apiConsumerId:
+          readOnly: true
+        applicationId:
+          readOnly: true
+        state:
+          readOnly: true
+
+    PostTrafficInfluence:
+      allOf:
+        - $ref: "#/components/schemas/TrafficInfluence"
+      properties:
+        trafficInfluenceID:
+          readOnly: true
+        state:
+          readOnly: true
+    
+    TrafficInfluenceNotification:
+      type: object
+      required:
+        - trafficInfluenceChanged
+      properties:
+        trafficInfluenceChanged:
+          $ref: "#/components/schemas/TrafficInfluence"
+
     
  #######################################################
  #  TYPES
