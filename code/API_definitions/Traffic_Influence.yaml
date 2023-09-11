@@ -181,7 +181,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TrafficInfluence'
-
+        "400":
+          $ref: "#/components/responses/Generic400"   
         '500':
           $ref: '#/components/responses/GenericError'
         '504':
@@ -253,6 +254,8 @@ paths:
               schema:
                 type: string
                 description: Link to the created traffic influence resource
+        "400":
+          $ref: "#/components/responses/Generic400"   
         '404':
           $ref: '#/components/responses/ResNotFound'
         '500':
@@ -284,8 +287,8 @@ paths:
             format: uri
             example: https://my-notification-server.com
       responses:
-        '200':
-          $ref: '#/components/responses/OkDeleted'
+        '202':
+          $ref: '#/components/responses/OkDeletionInProgress'
         '404':
           $ref: '#/components/responses/ResNotFound'
         '504':
@@ -365,12 +368,13 @@ components:
           $ref: '#/components/schemas/Device'
         state:
           type: string
-          description: it reports the state of the TrafficInfluence resource. When first invoked, the resource is 'ordered'. When the platforms prepares the resource, it is 'created'. When the new routing is enabled in the network, the state is 'active'.  If an error occurs in the resource creation or in its activation, the state is 'error'. After the resource is deleted (with the DELETE method) the state is 'deleted'.
+          description: it reports the state of the TrafficInfluence resource. When first invoked, the resource is 'ordered'. When the platforms prepares the resource, it is 'created'. When the new routing is enabled in the network, the state is 'active'.  If an error occurs in the resource creation or in its activation, the state is 'error'. When the DELETE method is invoked the state is 'deletion in progress'. After the resource is deleted (as a consequence of the previous invokation of the DELETE method) the state is 'deleted'.
           enum:
             - 'ordered'
             - 'created'
             - 'active'
             - 'error'
+            - 'deletion in progress'
             - 'deleted'
         trafficFilters:
           type: array
@@ -549,13 +553,13 @@ components:
           example:
             status: ERROR
             message: Backend connection timeout
-    OkDeleted:
-      description: The resource has been successfully deleted
+    OkDeletionInProgress:
+      description: The resource delation request has been accepted
       content:
         application/json:
           example:
             status: OK
-            message: Deleted
+            message: Accepted
     Generic400:
       description: Invalid input
       content:
