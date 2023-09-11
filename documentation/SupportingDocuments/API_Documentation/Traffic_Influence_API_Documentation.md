@@ -1,4 +1,3 @@
-
 # OPAG-CAMARA Traffic Influence API
 ## Overview
 
@@ -127,6 +126,7 @@ Gets in input an object containing the intents from the API Consumer and creates
 | Code | Description |
 | ---- | ----------- |
 | 201 | TrafficInfluence resource created, the related object is returned with the resource ID (trafficInfluenceID) and status (state) valorised, |
+| 400 | Invalid input |
 | 401 | Unauthorized |
 | 403 | Forbidden |
 | 500 | An unknow error has occurred |
@@ -178,6 +178,7 @@ The resource identified by the trafficInfluenceID value can be modified
 | Code | Description |
 | ---- | ----------- |
 | 200 | TrafficInfluence resource edited, the related object is returned,  the status (state) is updated. |
+| 400 | Invalid input |
 | 401 | Unauthorized |
 | 403 | Forbidden |
 | 404 | The specified resource was not found |
@@ -201,7 +202,7 @@ Delete an existing TrafficInfluence resource
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | The resource has been successfully deleted |
+| 202 | The resource delation request has been accepted |
 | 401 | Unauthorized |
 | 403 | Forbidden |
 | 404 | The specified resource was not found |
@@ -221,7 +222,7 @@ Delete an existing TrafficInfluence resource
 | region | string | Unique identifier representing a region  | No |
 | zone | string | Unique identifier representing a zone  | No |
 | device | object | Device identifier | No |
-| state | string | it reports the state of the TrafficInfluence resource. When first invoked, the resource is 'ordered'. When the platforms prepares the resource, it is 'created'. When the new routing is enabled in the network, the state is 'active'.  If an error occurs in the resource creation or in its activation, the state is 'error'. After the resource is deleted (with the DELETE method) the state is 'deleted'.<br>_Enum:_ `"ordered"`, `"created"`, `"active"`, `"error"`, `"deleted"` | No |
+| state | string | it reports the state of the TrafficInfluence resource. When first invoked, the resource is 'ordered'. When the platforms prepares the resource, it is 'created'. When the new routing is enabled in the network, the state is 'active'.  If an error occurs in the resource creation or in its activation, the state is 'error'. When the DELETE method is invoked the state is 'deletion in progress'. After the resource is deleted (as a consequence of the previous invokation of the DELETE method) the state is 'deleted'.<br>_Enum:_ `"ordered"`, `"created"`, `"active"`, `"error"`, `"deletion in progress"`, `"deleted"` | No |
 | trafficFilters | [ string ] | Identifies IP packet filters. To be used when a the Application needs a traffic flow towards a specific EAS interface | No |
 | notificationUri | string | Defines the callback uri which should be notified in asynchronous way when the state for the requested resources changes (i.e. ordered to activated) | No |
 | notificationAuthToken | string | Authentification token for callback API | No |
