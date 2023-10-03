@@ -53,7 +53,7 @@ Feature: Automated Traffic Influence API Test
 	
   @TI_Resource_LCM_Invalid_Parameters
   Scenario: Manage Traffic Influence Resource with invalid paramters
-    Given the usage of the Traffic Influece API URL
+    Given the usage of the Traffic Influence API URL
     When creating a new TI Resource, with POST, with invalid parameters (mandatory or optionals)
     Then no new TI Resource is created and no optimal routing will be activated
     And Response Code is 400 
