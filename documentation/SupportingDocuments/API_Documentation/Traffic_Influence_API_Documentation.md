@@ -64,7 +64,7 @@ In this method the API invoker client is registered as a confidential client wit
 ## 4. API Documentation
 ## 4.1 Details
 
-The Traffic Influence (TI) API is consumed by an Application Function (AF) requesting for the fastest routing of the traffic flow from the User Equipments toward an instance of the Edge Application Server (EAS) in a Telco Operator Edge sites (MEC sites).
+The Traffic Influence (TI) API is consumed by an Application Function (AF) requesting for the fastest routing of the traffic flow from the Device toward an instance of the Edge Application Server (EAS) in a Telco Operator Edge sites (MEC sites).
 
 When the EAS is onboarded and deployed in the MEC site, the Application is identified with a unique identifier (applicationId).
 
