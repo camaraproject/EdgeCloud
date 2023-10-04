@@ -38,7 +38,7 @@ info:
     This object represents the resource that carries the requirements from the user to be implemented. The Traffic Influence API is invoked for the life cycle management of this resource (CRUD). The resource contains the intents from the API Consumer. Managing this resource, the developer can specify in which geographical location the routing must be applied, toward which application,  maybe for a specific set of users or for a limited period pf time.
    
     **trafficInfluenceID**
-    Identifier for the Traffic Influence resource. This parameter ir returned by the API and must be used to update it (e.g., adding a Device or deleting it). A different Traffic Influece resource must be created for any Device or Zone or Region. All these resources are reletad to an Application identified by the applicationId.
+    Identifier for the Traffic Influence resource. This parameter is returned by the API and must be used to update it (e.g., adding a Device or deleting it). A different Traffic Influece resource must be created for any Device or Zone or Region. All these resources are reletad to an Application identified by the applicationId.
     
     **apiConsumerId**
     Unique identifier for the TI API Consumer.
@@ -350,7 +350,7 @@ components:
       properties:
         trafficInfluenceID:
           type: string
-          description: Identifier for the Traffic Influence resource. This parameter ir returned by the API and must be used to update it (e.g., adding new users or deleting it).
+          description: Identifier for the Traffic Influence resource. This parameter is returned by the API and must be used to update it (e.g., adding new users or deleting it).
         apiConsumerId:
             type: string
             description: Unique Identifier of the TI API Consumer.
