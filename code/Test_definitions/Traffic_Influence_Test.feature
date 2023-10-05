@@ -24,6 +24,7 @@ Feature: Automated Traffic Influence API Test
 
   @TI_Resource_LCM_Mandatory_Parameters_Valid
   Scenario: Manage Traffic Influence (TI) Resource with mandatory parameters
+    Given the usage of the Traffic Influence API URL
     When creating a new TI Resource, with POST, with mandatory parameters ("apiConsumerId", "applicationId")
     Then it should be created a new TI Resource and the optimal routing will be activated for any user on any location
     And Response Code is 201 
@@ -36,7 +37,9 @@ Feature: Automated Traffic Influence API Test
 	 
   @TI_Resource_LCM_Optional_Parameters_Valid
   Scenario: Manage Traffic Influence (TI) Resource with also optional parameters
-    Given the usage of the Traffic Influece API URL
+    Given the usage of the Traffic Influence API URL
+    Given the acquisition of the applicationId via the EdgeCloudAPI
+    Given the acquisition of Regions and Zones
     When creating a new TI Resource, with POST, with mandatory parameters ("apiConsumerId", "applicationId") and any other optional parameter (e.g. "instanceId, "zone" etc.)
     Then it should be created a new TI Resource and the optimal routing will be activated according to the optional paramters specified (e.g. only in a specific zone or for a specific user)
     And Response Code is 201 
@@ -68,7 +71,7 @@ Feature: Automated Traffic Influence API Test
 	
   @TI_Incomplete_Parameters_TI_Creation
   Scenario: Creation of new TI Resource without all the mandatory parameters
-    Given the usage of the Traffic Influece API URL
+    Given the usage of the Traffic Influence API URL
     When creating a new TI Resource, with POST, without all the mandatory parameters ("apiConsumerId", "applicationId")
     Then no new TI Resource is created and no optimal routing will be activated
     And Response Code is 400 
