@@ -40,7 +40,7 @@ Feature: Automated Traffic Influence API Test
     Given the usage of the Traffic Influence API URL
     Given the acquisition of the applicationId via the EdgeCloudAPI
     Given the acquisition of Regions and Zones
-    When creating a new TI Resource, with POST, with mandatory parameters ("apiConsumerId", "applicationId") and any other optional parameter (e.g. "instanceId, "zone" etc.)
+    When creating a new TI Resource, with POST, with mandatory parameters ("apiConsumerId", "applicationId") and any other optional parameter (e.g. "instanceId", "zone")
     Then it should be created a new TI Resource and the optimal routing will be activated according to the optional paramters specified (e.g. only in a specific zone or for a specific user)
     And Response Code is 201 
     And response contains the TI Resource with the resource identifier ("trafficInfluenceID"), the status of the request ("state=ordered") and the previously used paramters valorised as in the POST request
