@@ -202,7 +202,7 @@ components:
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
-      description: This API uses OAuth 2 with the client credentials grant flow.
+      description: The Simple Edge Discovery API makes use of the OAUTH 2.0 client credentials grant, which is applicable for server-to-server use cases involving trusted partners or clients without any protected user data involved. In this method the API invoker client is registered as a confidential client with an authorization grant type of client_credentials.
       flows:
         clientCredentials:
           tokenUrl: "{tokenUrl}"
