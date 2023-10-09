@@ -28,10 +28,6 @@ These APIs fulfil the ['discovery' intents](https://github.com/camaraproject/Edg
 2.	"I can discover the capabilities/resources available at an operator’s MEC: CPU, Memory, Storage, GPU"
 3.	"I can discover the geographical regions covered by the operators MECs"
 4.	"I can discover the closest MEC platform to a specific terminal (closest in terms of shortest network path)"
-5.	"I can ask the operator to provision my application server to the optimal MEC for a specific terminal, taking into account connectivity, resources (e.g. vCPU, Memory, network interfaces, storage, GPU) shortest network path, cost, network load, MEC platform load, application privacy considerations etc." 
-  *  "I can ask the operator to provision my application server to all MECs that meet these criteria (note this is not focussing on a specific terminal)" 
-  *  "I can ask the operator to provision my application server to a minimal set of MECs that meet these criteria across a given footprint (note this is not focussing on a specific terminal)" 
-6.	 "I can ask the operator to inform me if the optimal MEC for my application and a specific terminal changes, taking into account mobility events, connectivity, shortest network path, cost, network load, MEC platform load etc."
 
 16.	“I can ask the operator to provide the details of all the onboarded applications”
 17.	"I can ask the operator to inform about the application instance details e.g., communication endpoints, resource consumed etc"
