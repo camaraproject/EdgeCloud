@@ -14,7 +14,7 @@ info:
     
     Once you have the name of the closest MEC platform to the user device, you may:
     
-    * connect your application client to your server instance on that MEC platform. Note: the address of that server instance is not part of the API response, but should be known in advance.
+    * connect the application client on the user device to your application server instance on that MEC platform. Note: the address of that server instance is not part of the API response, but should be known in advance.
     * or, if you have no instance on that MEC platform, you may wish to deploy one there.
     
      # Usage
