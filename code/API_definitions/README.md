@@ -7,7 +7,7 @@ Workload Orchestration
 Lifecycle management of the Edge resources and servers for your applications
 
 # Resource Management
-Information about the resources (compute, storage, networking etc) at a given Edge site
+Management (CRUD) of the edge resources by the application providers for the consumption by edge applications.
 
 # Traffic Influence
 Influence traffic routing to ensure optimal network perfromance based on user mobility, application demand, best edge site. 
