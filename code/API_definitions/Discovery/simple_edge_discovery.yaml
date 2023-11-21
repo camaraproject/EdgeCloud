@@ -63,7 +63,7 @@ info:
     
     ## Success
     
-    A JSON object is returned containing a `MECPlatforms` array with a single member, along with the HTTP `200 OK` status code. The value of the `edgeCloudProvider` object is the name of the operator or cloud provider of the MEC Platform. Edge Resource Name object is the name of the closest MEC platform to the user device. An example of this JSON object is as follows:
+    A JSON object is returned containing a `MECPlatforms` array with a single member, along with the HTTP `200 OK` status code. The value of the `edgeCloudProvider` object is the name of the operator or cloud provider of the MEC Platform. `edgeResourceName` object is the name of the closest MEC platform to the user device. An example of this JSON object is as follows:
     ```
     {
       "MecPlatforms": [
