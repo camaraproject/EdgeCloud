@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Simple Edge Discovery API
-  version: 0.9.2
+  version: 0.9.3
   description: |
     # Find the closest MEC platform
     ---
@@ -63,13 +63,13 @@ info:
     
     ## Success
     
-    A JSON object is returned containing a `MECPlatforms` array with a single member, along with the HTTP `200 OK` status code. The value of the `Provider` object is the name of the operator or cloud provider of the MEC Platform. `Ern` (Edge Resource Name) object is the name of the closest MEC platform to the user device. An example of this JSON object is as follows:
+    A JSON object is returned containing a `MECPlatforms` array with a single member, along with the HTTP `200 OK` status code. The value of the `edgeCloudProvider` object is the name of the operator or cloud provider of the MEC Platform. `edgeResourceName` object is the name of the closest MEC platform to the user device. An example of this JSON object is as follows:
     ```
     {
       "MecPlatforms": [
         {
-          "Provider": "AWS",
-          "Ern": "eu-west-2-wl1-man-wlz-1"
+          "edgeCloudProvider": "AWS",
+          "edgeResourceName": "eu-west-2-wl1-man-wlz-1"
         }
       ]
     }
@@ -85,7 +85,7 @@ info:
     Any more general service failures will result in an error in the `5xx`range with an explanation.
     
     # Note for Simple Edge API publishers
-    The API publisher (i.e. the operator implementation) must ensure that the tuple of Provider+Ern in the success reponse is unique.
+    The API publisher (i.e. the operator implementation) must ensure that the tuple of edgeCloudProvider+edgeResourceName in the success reponse is unique.
     
     # Further info and support 
    
@@ -217,14 +217,14 @@ components:
       
     MecPlatform:
       type: object
-      description:  A MEC Platform, uniquely identified by a combination of the value of the ERN (Edge Resource Name) object and the value of the Provider object (the name of the cloud provider or operator hosting that platform).
+      description:  A MEC Platform, uniquely identified by a combination of the value of the Edge Resource Name object and the value of the Provider object (the name of the cloud provider or operator hosting that platform).
       properties:
-        Provider:
-          $ref: "#/components/schemas/Provider"
-        Ern:
+        edgeCloudProvider:
+          $ref: "#/components/schemas/EdgeCloudProvider"
+        edgeResourceName:
           $ref: "#/components/schemas/EdgeResource"
     
-    Provider:
+    EdgeCloudProvider:
       description: |
         The company name of the MEC Platform provider  
       type: string
