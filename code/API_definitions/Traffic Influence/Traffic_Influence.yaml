@@ -10,7 +10,8 @@ info:
     
     The reference scenario foresees a Service, composed by one or more Service Producers deployed in different geographical locations on Telco Edge sites (Edge datacentres of Telco Operator) or in Cloud. The Service Producer, deployed at the Edge, is referred as Edge Application Server (EAS).
     The Traffic Influence API (TI API) provides the fastest routing from the user Device (e.g. a Smartphone) to the optimal EAS instance in a specific geographical location, installed in a Telco Edge site.
-    If a Service is offered by Cloud Instances and by Edge Instances, the TI API can be used get the optimal routing of the traffic to the Edge Instances, maybe for a set of users. Getting the optimal routing can be used to improve latency maybe in combination with other CAMARA APIs such as QoD (Quality On Demand). Providing the optimal routing is indeed an important step to get the optimal latency.
+    If a Service is offered by Cloud Instances and by Edge Instances, the TI API can be used to get the optimal routing of the traffic to the Edge Instances, maybe for a set of users. Getting the optimal routing can be used to improve latency maybe in combination with other CAMARA APIs such as QoD (Quality On Demand). Providing the optimal routing is indeed an important step to get the optimal latency.
+
     If the TI API is used to get the best routing at the Edge for a Device in a geographical location and the Device moves to another geographical location, the TI API can be invoked to get the optimal routing in the new geographical location for that Device.
     
     ## 1. Introduction
