@@ -1,21 +1,21 @@
-openapi: 3.0.3
+openapi: 0.1.0
 info:
   title: Edge Cloud API
   description:  |
 
-    Edge Cloud API for artifact managment, application management and resource management. 
-    Edge Cloud API for artifact managment, application management and resource management. 
+    Edge Cloud API for artifact managment, application management and resource management.  
     # Introduction
     APIs defined in this version of the specification can be categorized into the following areas:
     * __Application Management__ - Deploy and remove applications within artifacts
     * __Application Artifacts Management__ - Management of application descriptors, binaries, charts and packages 
-    * __MEC Platfform information__ - Retrieves all the Edge nodes available according to some defined parameters
+    * __MEC Platform information__ - Retrieves all the Edge nodes available according to some defined parameters
     
     # Relevant terms and definitions
     This section provides definitions of terminologies commonly referred to throughout the API descriptions.
 
     * __Application Provider__ - An application developer, onboarding his/her edge application on operator platform (MEC).    
     * __Artifact__ - Descriptor, binary image, charts or any other package assosiated with the application.
+    * __OP__ - Operator Platform.
     * __Region__ - Human readable name of the geografical zone of the MEC. Defined by the OP.
     
     # API Functionality
@@ -27,7 +27,7 @@ info:
     * __onboardArtifact__  Submits an artifact to operator platform
     * __removeArtifact__  Removes an artifact from operator platform
     
-    __MEC Platfform information__
+    __MEC Platform information__
     *  __retrieveEdgeNodes__ List of the operator’s MECs and their status, ordering the results by location and filtering by status (active/inactive/unknown)
        
     # Further info and support
