@@ -26,7 +26,7 @@ info:
      
      The API returns the closest MEC platform to a given device, so that device needs to be identifiable by the network:
     * if you call the API from a server, you must explicitly pass one or more device identifiers in the HTTP request header:
-      * `IP-Address`. This is the public IP address of the user device: this can be obtained by an application hosted on that device calling a public IP address API (e.g. GET https://api.ipify.org?format=json)
+      * `ipAddress`. This is the public IP address of the user device: this can be obtained by an application hosted on that device calling a public IP address API (e.g. GET https://api.ipify.org?format=json)
       * `Phone-Number` . The international E.164 format (starting with country code), e.g. +4407123123456
       * `Network-Access-Identifier` (where available from the API host operator)
       
@@ -46,7 +46,7 @@ info:
         GET /mec-platforms?filter=closest HTTP/1.1
         Host: example.com
         Accept: application/json
-        IP-Address: 84.125.93.10
+        ipAddress: 84.125.93.10
         
         GET /mec-platforms?filter=closest HTTP/1.1
         Host: example.com
@@ -131,7 +131,7 @@ paths:
               "closest"
               ]
             
-        - name: IP-Address
+        - name: ipAddress
           in: header
           required: false
           description: The public IP allocated to the device.
@@ -266,7 +266,7 @@ components:
                 { 
                   "code": "INVALID_ARGUMENT",
                   "status": 400,
-                  "message": "Insufficient parameters: At least one of Network-Access-Identifier, Phone-Number or IP-Address must be specified, or, the API must be called by a client on a netwok-attached device (hence passing the source IP in the request header) "
+                  "message": "Insufficient parameters: At least one of Network-Access-Identifier, Phone-Number or ipAddress must be specified, or, the API must be called by a client on a netwok-attached device (hence passing the source IP in the request header) "
                 }
             InvalidExternalId:
               value:
@@ -288,7 +288,7 @@ components:
                 { 
                   "code": "INVALID_ARGUMENT",
                   "status": 400,
-                  "message": "Invalid Header Format: IP-Address"
+                  "message": "Invalid Header Format: ipAddress"
                 }
     401Unauthorized:
       description: Unauthorized 
