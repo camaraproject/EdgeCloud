@@ -30,3 +30,4 @@ Repository to describe, develop, document and test the EdgeCloud API family
 ## Contributorship and mailing list
 * To subscribe / unsubscribe to the mailing list of this Sub Project and thus be / resign as Contributor please visit <https://lists.camaraproject.org/g/sp-edc>.
 * A message to all Contributors of this Sub Project can be sent using <sp-edc@lists.camaraproject.org>.
+* CAMARA sp-edge-cloud: [Slack Channel](https://camara-project.slack.com/archives/C062PJNGW9F)
