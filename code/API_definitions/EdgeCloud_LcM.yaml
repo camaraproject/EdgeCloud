@@ -1,4 +1,4 @@
-openapi: 0.1.0
+openapi: 3.0.3
 info:
   title: Edge Cloud API
   description:  |
@@ -40,7 +40,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.0
+  version: 0.1.0
 externalDocs:
   description: Product documentation at Camara
   url: https://github.com/camaraproject/
