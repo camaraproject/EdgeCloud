@@ -130,7 +130,12 @@ paths:
             enum: [
               "closest"
               ]
-            
+        - name: appId
+          in: query
+          required: false
+          description: Application ID of the user request
+          schema:
+            $ref: '#/components/schemas/AppId'
         - name: IP-Address
           in: header
           required: false
@@ -170,7 +175,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MecPlatforms'
+                type: object
+                properties:  
+                  mecPlatform:
+                      $ref: '#/components/schemas/MecPlatform'
+                  uri:
+                      $ref: '#/components/schemas/Uri'
+                        
         "400":
           $ref: '#/components/responses/400BadRequest'
         "401":
@@ -208,6 +219,11 @@ components:
           tokenUrl: "{tokenUrl}"
           scopes: {}
   schemas:
+    AppId:
+      type: string
+      format: uuid
+      description: A globally unique identifier associated with the artifact. Originating OP generates this identifier when artifact is submitted over NBI. If this parameter is provided, Uri of the application instance running in the selected edge is returned.
+      
     MecPlatforms:
       type: array
       items:
@@ -247,6 +263,10 @@ components:
         message: 
           type: string
           description: This parameter appears when there was an error. Human readable explanation specific to this occurrence of the problem
+    Uri:
+      type: string
+      description: URI of Service Endpoint if available where the application instance is deployed. Uri is only returned if the appId is provided
+      format: uri
       
 
 ###################################
