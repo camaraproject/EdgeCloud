@@ -298,7 +298,7 @@ components:
     AppId:
       type: string
       format: uuid
-      description: A globally unique identifier assosiated with the artifact. Originating OP generates this identifier when artifact is submitted over NBI.
+      description: A globally unique identifier associated with the artifact. Originating OP generates this identifier when artifact is submitted over NBI.
        
     AppProviderId:
       type: string
