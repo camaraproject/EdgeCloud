@@ -74,10 +74,10 @@ Feature: Automated Traffic Influence API Test
     And Response Code is 400  
 	
   @TI_Resource_LCM_Modify_Resource_User_Mobility
-  Scenario: Modify an aready created Traffic Influence (TI) Resource when user moves to another geographical area
+  Scenario: Modify an already created Traffic Influence (TI) Resource when a Device moves to another geographical area
     Given the usage of the Traffic Influece API URL
-    When modifiyng a new TI Resource, with PATCH, with mandatory parameters ("apiConsumerId", "applicationId"), with the identifier for the existing resource ("trafficInfluenceID") and other optional, editable, parameters (e.g. "instanceId, "zone" etc.) to identify a new Edge Application instance closer to the Device that has moved in a new geographical area. 
-    Then it should be modified  TI Resource and the new optimal routing will be activated according to the optional paramters specified (e.g. in a new zone)
+    When modifiyng a existing TI Resource, with PATCH, with mandatory parameters ("apiConsumerId", "applicationId"), with the identifier for the existing resource ("trafficInfluenceID") and other optional, editable, parameters (e.g. "instanceId, "zone" etc.) to identify a new Edge Application instance closer to the Device that has moved in a new geographical area. 
+    Then it should be modified the TI Resource and the new optimal routing will be activated according to the optional paramters specified (e.g. in a new zone)
     And Response Code is 201 
     And response contains the original TI Resource with the resource identifier ("trafficInfluenceID") unmodified, the status of the request ("state=ordered"), the new parameters valorised as in the PATCH request and the other original paramenters unmodified.
 
