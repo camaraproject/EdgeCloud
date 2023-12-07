@@ -14,7 +14,7 @@ info:
  
     * __Application Provider__ - An application developer, onboarding his/her edge application on operator platform (MEC).    
     * __Artifact__ - Descriptor, binary image, charts or any other package assosiated with the application.
-    * __OP__ - Operator Platform.
+    * __OP__ - Operator Platform. An Operator Platform (facilitates access to the Edge Cloud and other capabilities of an Operator or federation of Operators and Partners. Defined by [GSMA in OPG.02](https://www.gsma.com/futurenetworks/wp-content/uploads/2023/07/OPG.02-v5.0-Operator-Platform-Requirements-and-Architecture.pdf)
     * __Region__ - Human readable name of the geografical zone of the MEC. Defined by the OP.
     # API Functionality
     __Application Management__
@@ -71,7 +71,7 @@ paths:
       description: Ask the operator to provision an application to one or several Edge Application Servers taking into account resources (e.g. vCPU, Memory, network interfaces, storage, GPU) 
       operationId: appProvisioning
       requestBody:
-        description: Details about application and zones where application instance should be instantiated
+        description: Details regarding where the application instance should be instantiated
         content:
           application/json:
             schema:
@@ -237,7 +237,7 @@ paths:
         '503':
           $ref: '#/components/responses/503'
  
-  /edgeCloudPlatform:
+  /edge-cloud-platforms:
     get:
       tags: 
         - Mobile Edge Cloud Platform
@@ -295,10 +295,7 @@ components:
       type: string
       format: uuid
       description: A globally unique identifier associated with a running instance of an application. Originating OP generates this identifier. 
-    AppProviderId:
-      type: string
-      pattern: ^[A-Za-z][A-Za-z0-9_]{7,63}$
-      description: UserId of the app provider.  Identifier is relevant only in context of federation.
+
     AppProvisioning:
       description: Attributes required to provision an application
       type: object
@@ -319,18 +316,16 @@ components:
       description: Name given by the application provider
     ArtifactId:
       type: string
-      pattern: 6sa85a64-5117-3562-c3fd-2c913a66aba1
+      format: uuid
       description: A globally unique identifier assosiated with the artifact. Originating OP generates this identifier when artifact is submitted over NBI.
  
     ArtifactDetails:
       properties:
         name:
           type: string
-          pattern: ^[A-Za-z][A-Za-z0-9_]{7,31}$
           description: Name of the artifact. 
         version:
-          type: string
-          pattern: ^(\d{1,2}\.)?(\d{1,2}\.)?(\d{1,2})$
+          type: integer
           description: Artifact version information
         virtType:
           type: string
@@ -373,7 +368,7 @@ components:
                               App provider should  define all information needed to instantiate the component. 
                               If artifact is being defined at component level  this section should have information just about the component. 
                               In case the artifact is being defined at application level  the section should provide details about all the components.
-          type: array
+          type: object
           items:
             type: object
             required:
@@ -543,7 +538,7 @@ components:
             - UBUNTU
             - COREOS
             - WINDOWS
-            - OTROS
+            - OTHERS
         version:
           type: string
           enum:
@@ -562,11 +557,6 @@ components:
     RegionId:
       type: string
       description:  Human readable name of the geografical zone of the MEC. Defined by the OP.
-      enum:
-        - North
-        - South
-        - West
-        - East
  
     Status:
         description: Status of the MEC Platform (default is 'unknown')
