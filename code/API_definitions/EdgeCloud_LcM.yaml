@@ -3,29 +3,34 @@ info:
   title: Edge Cloud API
   description:  |
  
-    Edge Cloud API for artifact managment, application management and resource management.  
+    Edge Cloud API for Life Cycle Management and discovery of an application.
     # Introduction
     APIs defined in this version of the specification can be categorized into the following areas:
-    * __Application Management__ - Deploy and remove applications within artifacts
-    * __Application Artifacts Management__ - Management of application descriptors, binaries, charts and packages 
-    * __MEC Platform information__ - Retrieves all the Edge nodes available according to some defined parameters
+    * __Application__ - The Application Provider submit application metadata to the Operator Platform.
+    * __Application Instance__ -  An Operator Platform instantiate an Application on an Edge Cloud Node when the Application Provider resquest it.
+    * __Edge Cloud information__ - Retrieves all the Edge nodes available according to some defined parameters.
     # Relevant terms and definitions
     This section provides definitions of terminologies commonly referred to throughout the API descriptions.
  
-    * __Application Provider__ - An application developer, onboarding his/her edge application on operator platform (MEC).    
-    * __Artifact__ - Descriptor, binary image, charts or any other package assosiated with the application.
+    * __Application Provider__ - The provider of the application that accesses an OP to deploy its application on the Edge Cloud. An Application Provider may be part of a larger organisation, like an enterprise, enterprise customer of an OP, or be an independent entity.
+    * __Application__ - Contains the information about the application to be instantiated. Descriptor, binary image, charts or any other package assosiated with the application. The Application Provider request contains mandatory criteria (e.g. required CPU, memory,
+      storage, bandwidth) defined in an Application. 
     * __OP__ - Operator Platform. An Operator Platform (facilitates access to the Edge Cloud and other capabilities of an Operator or federation of Operators and Partners. Defined by [GSMA in OPG.02](https://www.gsma.com/futurenetworks/wp-content/uploads/2023/07/OPG.02-v5.0-Operator-Platform-Requirements-and-Architecture.pdf)
-    * __Region__ - Human readable name of the geografical zone of the MEC. Defined by the OP.
+    * __Region__ - Human readable name of the geografical zone of the Edge Cloud. Defined by the OP.
+    * __Edge Cloud__ - Cloud-like capabilities located at the network edge including, from the Application Provider's perspective, access to elastically allocated compute, data storage and network resources.
     # API Functionality
     __Application Management__
-    * __onboardApplication__ - Submits an application details to an OP. Based on the details provided,  OP shall do bookkeeping, resource validation and other pre-deployment operations. 
-    * __removeApplication__ - Removes an application from an OP
+    * __submitApp__ - Submits an application details to an OP. Based on the details provided,  OP shall do bookkeeping, resource validation and other pre-deployment operations. 
+    * __deleteApp__ - Removes an application from an OP, if there is a running instance of the given application, the request cannot be done.
+    * __getApp__ - Retrieves the information of a given application.
  
-    __Application Artifacts Management__
-    * __onboardArtifact__  Submits an artifact to operator platform
-    * __removeArtifact__  Removes an artifact from operator platform
-    __MEC Platform information__
-    *  __retrieveEdgeNodes__ List of the operator’s MECs and their status, ordering the results by location and filtering by status (active/inactive/unknown)
+    __Application Instance Management__
+    * __appInstantiation__  Request the OP to instatiate an instance of an application in a given Edge Cloud Node, if this parameter is not set, the OP will instantiate the applications in all the Edge Cloud Nodes available.
+    * __getAppInstance__  Retrieves the list with information of the instances related to a given application.
+    * __deleteAppInstance__ - Removes a given application instance from an Edge Cloud Node.
+
+    __Edge Cloud information__
+    *  __getEdgeCloudNodes__ List of the operator’s Edge Cloud Nodes and their status, ordering the results by location and filtering by status (active/inactive/unknown)
     # Further info and support
     (FAQs will be added in a later version of the documentation)
  
@@ -35,7 +40,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.1.0
+  version: 0.2.0
 externalDocs:
   description: Product documentation at Camara
   url: https://github.com/camaraproject/
@@ -55,31 +60,31 @@ security:
     - nbi-mgmt
  
 tags:
-  - name: Applications
-    description: Manage of Applications
-  - name: Application Artifacts 
-    description: Manage of Artifacts
-  - name: Mobile Edge Cloud Platform
-    description: Mobile Edge Nodes Available
+  - name: Application
+    description: Application Management
+  - name: Application Instance 
+    description: Application Instance Management
+  - name: Edge Cloud
+    description: Edge Cloud Nodes Available
  
 paths:
-  /app:
+  /appInstance:
     post: 
       tags:
-        - Applications
-      summary: Provision an application 
-      description: Ask the operator to provision an application to one or several Edge Application Servers taking into account resources (e.g. vCPU, Memory, network interfaces, storage, GPU) 
-      operationId: appProvisioning
+        - Application Instance
+      summary: Instantiation of an Application
+      description: Ask the OP to instantiate an application to one or several Edge Cloud Nodes with an Application as an input and an Application Instance as the output. 
+      operationId: appInstantiation
       requestBody:
-        description: Details regarding where the application instance should be instantiated
+        description: Details regarding where the application should be instantiated
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AppProvisioning'
+              $ref: '#/components/schemas/AppInstantiation'
         required: true      
       responses:
         '201':
-          description: Application provisioned
+          description: Application instantiated successfully
           content: 
             application/json:
               schema:
@@ -90,7 +95,7 @@ paths:
                   aplicationInstace:
                     type: array
                     items:
-                      $ref:  '#/components/schemas/ProvisionedApp'
+                      $ref:  '#/components/schemas/InstantiatedApp'
                 minItems: 1                 
         '400':
           $ref: '#/components/responses/400'
@@ -107,35 +112,76 @@ paths:
               example:
                 status: 409
                 code: CONFLICT
-                message: "Application already provisioned"
+                message: "Application already instantiated in the given Edge or Region"
         '500':
           $ref: '#/components/responses/500'
         '501':
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
- 
-  /app/{appId}:
-    delete:
+  /appInstance/{appId}:
+    get:
       tags:
-        - Applications
-      summary: Terminate an Application
-      description: Terminate the running instance of an application in one or several Edge Application Servers
-      operationId: deleteApplication
+        - Application Instance
+      summary: Retrieve the information of Application Instances for a given App
+      description: Ask the OP the information of the instances for a given application
+      operationId: getAppInstance
       parameters:
         - name: appId
-          in: query
-          description: Identificator of the application generated by the OP NBI once the provisioning was successful, terminate all the instances related to this appId
-          required: false
-          schema:
-            $ref: "#/components/schemas/AppId"
+          description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
+          in: path
+          required: true
+          schema: 
+              $ref: '#/components/schemas/AppId'
         - name: appInstanceId
+          description:  A globally unique identifier associated with a running instance of an application. OP generates this identifier. 
           in: query
-          description: Identificator of the specific application instance that will be terminated
           required: false
+          schema: 
+              $ref: '#/components/schemas/AppInstanceId'     
+      responses:
+        '201':
+          description: Information of Aplication Instances
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appId:
+                    $ref: '#/components/schemas/AppId'
+                  aplicationInstace:
+                    type: array
+                    items:
+                      $ref:  '#/components/schemas/InstantiatedApp'
+                minItems: 1                 
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+ 
+  /appInstance/{appInstanceId}:
+    delete:
+      tags:
+        - Application Instance
+      summary: Terminate an Application Instance
+      description: Terminate a running instance of an application within an Edge Cloud Node
+      operationId: deleteAppInstance
+      parameters:
+        - name: appInstanceId
+          in: path
+          description: Identificator of the specific application instance that will be terminated
+          required: true
           schema:
             $ref: "#/components/schemas/AppInstanceId"
       responses:
+        '202':
+          description: Request accepted to be processed. It applies for async deletion process
         '204':
           description: Application deleted      
         '400':
@@ -151,28 +197,27 @@ paths:
         '503':
           $ref: '#/components/responses/503'
  
-  /artifact:
+  /app:
     post:
       tags:  
-        - Application Artifacts 
-      summary: Uploads artifact  on an OP.                       
-      description: Artifact is a zip file containing  scripts and/or packaging files like Terraform or Helm which are required to create an instance of an application.
-      operationId: uploadArtifact
+        - Application
+      summary: Submit application metadata to the Operator Platform.                     
+      description: Contains the information about the application to be instantiated
+      operationId: submitApp
       requestBody:
-        description: An application can consist of multiple components. App providers are allowed to define seperate artifacts for each component  
-                            or  they could define a consolidated artifact at application level. 
+        description: The Application Provider request contains mandatory criteria (e.g. required CPU, memory, storage, bandwidth) and optional parameters. 
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ArtifactDetails'
+              $ref: '#/components/schemas/AppManifest'
         required: true
       responses:
         '201':
-          description: Artifact uploaded successfully
+          description: Application submitted successfully
           content: 
             application/json:
               schema:
-                $ref:  '#/components/schemas/UploadedArtifact'                
+                $ref:  '#/components/schemas/SubmittedApp'                
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -188,32 +233,66 @@ paths:
               example:
                 status: 409
                 code: CONFLICT
-                message: "Artifacf duplicated"
+                message: "App duplicated"
         '500':
           $ref: '#/components/responses/500'
         '501':
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'       
- 
-  /artifact/{artifactId}:
+  /app/{appId}:
+    get:
+      tags:
+        - Application
+      summary: Retrieve the information of an Application
+      description: Ask the OP the information for a given application
+      operationId: getApp
+      parameters:
+        - name: appId
+          description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
+          in: path
+          required: true
+          schema: 
+              $ref: '#/components/schemas/AppId'
+      responses:
+        '201':
+          description: Information of Aplication
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appId:
+                    $ref: '#/components/schemas/AppManifest'                
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
     delete:
       tags:
-        - Application Artifacts
-      summary: Delete an artifact from an OP
-      description: Delete an artifact
-      operationId: deleteArtifact
+        - Application
+      summary: Delete an Application from an OP
+      description: Delete all the information and content related to an Application
+      operationId: deleteApp
       parameters:
-        - name: artifactId
+        - name: appId
           in: path
-          description: Identificator of the artifact to be deleted provided by the OP NBI once the uploading was successful
+          description: Identificator of the application to be deleted provided by the OP NBI once the submission was successful
           required: true
           schema:
-            $ref: "#/components/schemas/ArtifactId"
+            $ref: "#/components/schemas/AppId"
  
       responses:
+        '202':
+          description: Request accepted
         '204':
-          description: Artifact deleted
+          description: App deleted
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -231,22 +310,22 @@ paths:
               example:
                 status: 409
                 code: CONFLICT
-                message: "Artifact with a running application cannot be deleted"
+                message: "App with a running application instance cannot be deleted"
         '500':
           $ref: '#/components/responses/500'
         '503':
           $ref: '#/components/responses/503'
  
-  /edge-cloud-platforms:
+  /edge-cloud-nodes:
     get:
       tags: 
-        - Mobile Edge Cloud Platform
-      summary: Retrieve a list of the operator’s MECs and their status
-      description: List of the operator’s MECs and their status, ordering the results by location and filtering by status (active/inactive/unknown)
-      operationId: getMecPlatforms
+        - Edge Cloud
+      summary: Retrieve a list of the operator’s Edge Clouds and their status
+      description: List of the operator’s Edge Clouds and their status, ordering the results by location and filtering by status (active/inactive/unknown)
+      operationId: getEdgeCloudNodes
       parameters:
         - name: regionId
-          description: Human readable name of the geografical zone of the MEC. Defined by the OP.
+          description: Human readable name of the geografical zone of the Edge Cloud. Defined by the OP.
           in: query
           required: false
           schema: 
@@ -258,13 +337,13 @@ paths:
               $ref: '#/components/schemas/Status'
       responses:
         '200':
-          description: Available MEC Platforms 
+          description: Available Edge Cloud Nodes 
           content:
             application/json:
               schema:
                 type: array
                 items:                  
-                  $ref: '#/components/schemas/MecDetails'
+                  $ref: '#/components/schemas/EdgeCloudNodeDetails'
                 minItems: 1
         '401':
           $ref: '#/components/responses/401'
@@ -290,43 +369,33 @@ components:
     AppId:
       type: string
       format: uuid
-      description: A globally unique identifier associated with the artifact. Originating OP generates this identifier when artifact is submitted over NBI.
+      description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
     AppInstanceId:
       type: string
       format: uuid
-      description: A globally unique identifier associated with a running instance of an application. Originating OP generates this identifier. 
+      description: A globally unique identifier associated with a running instance of an application. OP generates this identifier. 
 
-    AppProvisioning:
-      description: Attributes required to provision an application
+    AppInstantiation:
+      description: Attributes with information where to instantiate a given application
       type: object
       properties:
-        artifactId:
-          $ref: '#/components/schemas/ArtifactId'
-        appName:
-          $ref: '#/components/schemas/AppName'
-        edgeResourceName:
-          $ref: '#/components/schemas/EdgeResourceName'
+        appId:
+          $ref: '#/components/schemas/AppId'
+        edgeCloudNodeName:
+          $ref: '#/components/schemas/EdgeCloudNodeName'
         regionId:
           $ref: '#/components/schemas/RegionId'
       required:
-        - artifactId
-        - appName
-    AppName:
-      type: string
-      description: Name given by the application provider
-    ArtifactId:
-      type: string
-      format: uuid
-      description: A globally unique identifier assosiated with the artifact. Originating OP generates this identifier when artifact is submitted over NBI.
- 
-    ArtifactDetails:
+        - appId
+
+    AppManifest:
       properties:
         name:
           type: string
-          description: Name of the artifact. 
+          description: Name of the application. 
         version:
           type: integer
-          description: Artifact version information
+          description: Application version information
         virtType:
           type: string
           enum:
@@ -337,7 +406,7 @@ components:
           type: string
           minLength:  8
           maxLength: 32
-          description: Name of the file with the extension eg. zip, targz,etc.
+          description: Name of the file with the extension eg. zip, targz, etc.
         repository:       
           type: object
           required:
@@ -355,7 +424,6 @@ components:
               $ref: '#/components/schemas/Uri'
             userName:
               type: string
-              pattern: ^[A-Za-z][A-Za-z0-9_]{7,63}$
               description:  Username to acces the artifact repository
             password:
               type: string      
@@ -368,36 +436,27 @@ components:
                               App provider should  define all information needed to instantiate the component. 
                               If artifact is being defined at component level  this section should have information just about the component. 
                               In case the artifact is being defined at application level  the section should provide details about all the components.
-          type: object
+          type: array
           items:
             type: object
             required:
               - componentName
               - operatingSystem
               - cpuArchitecture
-              - images
               - networkInterfaces
               - numOfInstances
               - restartPolicy
             properties:
               componentName: 
                 type: string
-                pattern:  ^[A-Za-z0-9][A-Za-z0-9_]{6,62}[A-Za-z0-9]$
-                description: Must be a valid RFC 1035 label name.  Component name must be unique with an application
+                description: Component name must be unique with an application
               operatingSystem:
                 $ref: '#/components/schemas/OperatingSystem'
               cpuArchitecture:
                 $ref: '#/components/schemas/CpuArchType'
-              images:
-                description: List of all images assosiated with the component. Images are uploaded or specified using UploadFile apis
-                type: array
-                items: 
-                  $ref: '#/components/schemas/FileId' 
-                minItems: 1
               networkInterfaces:
                 description: Each application component exposes some ports either for external users or for inter component communication.
                                     Application provider is required to specify which ports are to be exposed and the type of traffic that will flow through these ports.
- 
                 type: array
                 items:                          
                   type: object
@@ -413,10 +472,8 @@ components:
                       type: string
                       description:  Each Port and corresponding traffic protocol exposed by the component is identified by a name. 
                                             Application client on user device requires this to uniquley idenify the interface. 
-                      pattern: ^[A-Za-z0-9][A-Za-z0-9_]{6,30}[A-Za-z0-9]$
                     network:
                       type: string
-                      pattern: ^[A-Za-z][A-Za-z0-9_]{6,30}[A-Za-z0-9]$
                       description: Name of the network.  In case the application has to be assoisated with more then 1 network then app provider
                                           must define the name of the network on which this interface has to be exposed.  This parameter is required only if 
                                           the port has to be exposed on a specific network other then default.
@@ -425,8 +482,8 @@ components:
                       enum:
                         - TCP
                         - UDP
-                        - HTTP/HTTPS
-                      description: Defines the IP transport communication protocol i.e., TCP, UDP or HTTP
+                        - ANY
+                      description: Defines the IP transport communication protocol i.e., TCP, UDP or ANY
                     port:
                       type: integer
                       format: int32
@@ -436,7 +493,6 @@ components:
                                           corresponding to this internal port and forward the client traffic from dynamic port to containerPort.
                     interfaceName:
                       type: string
-                      pattern: ^[a-z][a-z0-9]{3}$
                       description:  Interface Name. Required only if application has to be attatched to a network other then default.
                     visibilityType:
                       description: Defines whether the interface is exposed to outer world or not i.e., external, or internal.
@@ -470,16 +526,28 @@ components:
             - x86_64
             - arm_64
           description: CPU Instruction Set Architecture (ISA) E.g., Intel, Arm etc. 
-    ProvisionedApp:
-      description: Information about the provisioned application
+    InstantiatedApp:
+      description: Information about the instantiated application
       type: object
       properties:
         appInstanceId:
           $ref: '#/components/schemas/AppInstanceId'
-        edgeResourceName:
-          $ref: '#/components/schemas/EdgeResourceName'
-    EdgeResourceName:
-      description: Edge Resource Name - an identifier for an edge reource in the operator domain 
+        edgeCloudNodeName:
+          $ref: '#/components/schemas/EdgeCloudNodeName'
+        uri:
+          $ref: '#/components/schemas/Uri'
+        status:
+          description: Status of the application instance (default is 'unknown')
+          type: string
+          enum:
+          - ready
+          - instantiating
+          - failed
+          - terminating
+          - unknown   
+          default: unknown 
+    EdgeCloudNodeName:
+      description: Edge Cloud Node Name - an identifier for an edge cloud node in the operator domain 
       type: string
  
     ErrorInfo:
@@ -498,18 +566,14 @@ components:
         - status
         - code
         - message
-    FileId:
-      type: string
-      format: uuid
-      description: A globally unique identifier assosiated with the image file. Originating OP generates this identifier when file is uploaded over NBI.
- 
-    MecDetails:
+
+    EdgeCloudNodeDetails:
       type: object
       required:
         - geolocation
       properties:
-        edgeResourceName: 
-          $ref: '#/components/schemas/EdgeResourceName'
+        edgeCloudNodeName: 
+          $ref: '#/components/schemas/EdgeCloudNodeName'
         status:
           $ref: '#/components/schemas/Status'
         region:
@@ -538,42 +602,42 @@ components:
             - UBUNTU
             - COREOS
             - WINDOWS
-            - OTHERS
+            - OTHER
         version:
           type: string
           enum:
             - OS_VERSION_UBUNTU_2204_LTS
             - OS_VERSION_RHEL_8
-            - OS_VERSION_RHEL_7
-            - OS_VERSION_ DEBIAN_11
-            - OS_VERSION_COREOS_STABLE
-            - OS_MS_WINDOWS_2012_R2
+            - OS_MS_WINDOWS_2022
+            - OTHER
         license:
           type: string
           enum:
             - OS_LICENSE_TYPE_FREE
             - OS_LICENSE_TYPE_ON_DEMAND
- 
+            - OTHER
+
     RegionId:
       type: string
-      description:  Human readable name of the geografical zone of the MEC. Defined by the OP.
+      description:  Human readable name of the geografical zone of the Edge Cloud Node. Defined by the OP.
  
     Status:
-        description: Status of the MEC Platform (default is 'unknown')
+        description: Status of the Edge Cloud Node (default is 'unknown')
         type: string
         enum:
           - active
           - inactive
           - unknown   
         default: unknown 
-    UploadedArtifact:
-      description: Information about the uploaded artifact
+    SubmittedApp:
+      description: Information about the submitted app
       type: object
       properties:
-        artifactId:
-          $ref: '#/components/schemas/ArtifactId'   
+        appId:
+          $ref: '#/components/schemas/AppId'   
     Uri:
       type: string
+      description: A Uniform Resource Identifier (URI) as per RFC 3986, identifies the endpoint within an Edge Cloud Node where the user equipment may connect to the selected application instance
  
   responses:
     '400':
