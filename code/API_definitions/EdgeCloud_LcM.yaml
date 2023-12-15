@@ -83,8 +83,8 @@ paths:
               $ref: '#/components/schemas/AppInstantiation'
         required: true      
       responses:
-        '201':
-          description: Application instantiated successfully
+        '202':
+          description: Application instantiation accepted
           content: 
             application/json:
               schema:
