@@ -1,0 +1,724 @@
+openapi: 3.0.3
+info:
+  title: Edge Cloud API
+  description:  |
+ 
+    Edge Cloud API for Life Cycle Management and discovery of an application.
+    # Introduction
+    APIs defined in this version of the specification can be categorized into the following areas:
+    * __Application__ - The Application Provider submit application metadata to the Operator Platform.
+    * __Application Instance__ -  An Operator Platform instantiate an Application on an Edge Cloud Node when the Application Provider resquest it.
+    * __Edge Cloud information__ - Retrieves all the Edge nodes available according to some defined parameters.
+    # Relevant terms and definitions
+    This section provides definitions of terminologies commonly referred to throughout the API descriptions.
+ 
+    * __Application Provider__ - The provider of the application that accesses an OP to deploy its application on the Edge Cloud. An Application Provider may be part of a larger organisation, like an enterprise, enterprise customer of an OP, or be an independent entity.
+    * __Application__ - Contains the information about the application to be instantiated. Descriptor, binary image, charts or any other package assosiated with the application. The Application Provider request contains mandatory criteria (e.g. required CPU, memory,
+      storage, bandwidth) defined in an Application. 
+    * __OP__ - Operator Platform. An Operator Platform (facilitates access to the Edge Cloud and other capabilities of an Operator or federation of Operators and Partners. Defined by [GSMA in OPG.02](https://www.gsma.com/futurenetworks/wp-content/uploads/2023/07/OPG.02-v5.0-Operator-Platform-Requirements-and-Architecture.pdf)
+    * __Region__ - Human readable name of the geografical zone of the Edge Cloud. Defined by the OP.
+    * __Edge Cloud__ - Cloud-like capabilities located at the network edge including, from the Application Provider's perspective, access to elastically allocated compute, data storage and network resources.
+    # API Functionality
+    __Application Management__
+    * __submitApp__ - Submits an application details to an OP. Based on the details provided,  OP shall do bookkeeping, resource validation and other pre-deployment operations. 
+    * __deleteApp__ - Removes an application from an OP, if there is a running instance of the given application, the request cannot be done.
+    * __getApp__ - Retrieves the information of a given application.
+ 
+    __Application Instance Management__
+    * __appInstantiation__  Request the OP to instatiate an instance of an application in a given Edge Cloud Node, if this parameter is not set, the OP will instantiate the applications in all the Edge Cloud Nodes available.
+    * __getAppInstance__  Retrieves the list with information of the instances related to a given application.
+    * __deleteAppInstance__ - Removes a given application instance from an Edge Cloud Node.
+
+    __Edge Cloud information__
+    *  __getEdgeCloudNodes__ List of the operator’s Edge Cloud Nodes and their status, ordering the results by location and filtering by status (active/inactive/unknown)
+    # Further info and support
+    (FAQs will be added in a later version of the documentation)
+ 
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: sp-edc@lists.camaraproject.org
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.2.0
+externalDocs:
+  description: Product documentation at Camara
+  url: https://github.com/camaraproject/
+ 
+servers:
+  - url: "{apiRoot}/{basePath}"
+    variables:
+      apiRoot:
+        default: http://localhost:9091
+        description: API root
+      basePath:
+        default: edge-cloud/v1
+        description: Base path for the Edge Cloud API
+ 
+security:
+  - oAuth2ClientCredentials: 
+    - nbi-mgmt
+ 
+tags:
+  - name: Application
+    description: Application Management
+  - name: Application Instance 
+    description: Application Instance Management
+  - name: Edge Cloud
+    description: Edge Cloud Nodes Available
+ 
+paths:
+  /appInstance:
+    post: 
+      tags:
+        - Application Instance
+      summary: Instantiation of an Application
+      description: Ask the OP to instantiate an application to one or several Edge Cloud Nodes with an Application as an input and an Application Instance as the output. 
+      operationId: appInstantiation
+      requestBody:
+        description: Details regarding where the application should be instantiated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppInstantiation'
+        required: true      
+      responses:
+        '202':
+          description: Application instantiation accepted
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appId:
+                    $ref: '#/components/schemas/AppId'
+                  aplicationInstace:
+                    type: array
+                    items:
+                      $ref:  '#/components/schemas/AppInstanceInfo'
+                minItems: 1                 
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                status: 409
+                code: CONFLICT
+                message: "Application already instantiated in the given Edge or Region"
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  /appInstance/{appId}:
+    get:
+      tags:
+        - Application Instance
+      summary: Retrieve the information of Application Instances for a given App
+      description: Ask the OP the information of the instances for a given application
+      operationId: getAppInstance
+      parameters:
+        - name: appId
+          description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
+          in: path
+          required: true
+          schema: 
+              $ref: '#/components/schemas/AppId'
+        - name: appInstanceId
+          description:  A globally unique identifier associated with a running instance of an application. OP generates this identifier. 
+          in: query
+          required: false
+          schema: 
+              $ref: '#/components/schemas/AppInstanceId'
+        - name: edgeCloudName
+          description:  Edge Cloud Node Name - an identifier for an edge cloud node in the operator domain
+          in: query
+          required: false
+          schema: 
+              $ref: '#/components/schemas/EdgeCloudNodeName'
+        - name: regionId
+          description:  Human readable name of the geografical zone of the Edge Cloud Node. Defined by the OP.
+          in: query
+          required: false
+          schema: 
+              $ref: '#/components/schemas/RegionId'
+      responses:
+        '200':
+          description: Information of Aplication Instances
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appId:
+                    $ref: '#/components/schemas/AppId'
+                  aplicationInstace:
+                    type: array
+                    items:
+                      $ref:  '#/components/schemas/AppInstanceInfo'
+                minItems: 1                 
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+ 
+  /appInstance/{appInstanceId}:
+    delete:
+      tags:
+        - Application Instance
+      summary: Terminate an Application Instance
+      description: Terminate a running instance of an application within an Edge Cloud Node
+      operationId: deleteAppInstance
+      parameters:
+        - name: appInstanceId
+          in: path
+          description: Identificator of the specific application instance that will be terminated
+          required: true
+          schema:
+            $ref: "#/components/schemas/AppInstanceId"
+      responses:
+        '202':
+          description: Request accepted to be processed. It applies for async deletion process
+        '204':
+          description: Application deleted      
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+ 
+  /app:
+    post:
+      tags:  
+        - Application
+      summary: Submit application metadata to the Operator Platform.                     
+      description: Contains the information about the application to be instantiated
+      operationId: submitApp
+      requestBody:
+        description: The Application Provider request contains mandatory criteria (e.g. required CPU, memory, storage, bandwidth) and optional parameters. 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppManifest'
+        required: true
+      responses:
+        '201':
+          description: Application submitted successfully
+          content: 
+            application/json:
+              schema:
+                $ref:  '#/components/schemas/SubmittedApp'                
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                status: 409
+                code: CONFLICT
+                message: "App duplicated"
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'       
+  /app/{appId}:
+    get:
+      tags:
+        - Application
+      summary: Retrieve the information of an Application
+      description: Ask the OP the information for a given application
+      operationId: getApp
+      parameters:
+        - name: appId
+          description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
+          in: path
+          required: true
+          schema: 
+              $ref: '#/components/schemas/AppId'
+      responses:
+        '200':
+          description: Information of Aplication
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appId:
+                    $ref: '#/components/schemas/AppManifest'                
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+    delete:
+      tags:
+        - Application
+      summary: Delete an Application from an OP
+      description: Delete all the information and content related to an Application
+      operationId: deleteApp
+      parameters:
+        - name: appId
+          in: path
+          description: Identificator of the application to be deleted provided by the OP NBI once the submission was successful
+          required: true
+          schema:
+            $ref: "#/components/schemas/AppId"
+ 
+      responses:
+        '202':
+          description: Request accepted
+        '204':
+          description: App deleted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                status: 409
+                code: CONFLICT
+                message: "App with a running application instance cannot be deleted"
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+ 
+  /edge-cloud-nodes:
+    get:
+      tags: 
+        - Edge Cloud
+      summary: Retrieve a list of the operator’s Edge Clouds and their status
+      description: List of the operator’s Edge Clouds and their status, ordering the results by location and filtering by status (active/inactive/unknown)
+      operationId: getEdgeCloudNodes
+      parameters:
+        - name: regionId
+          description: Human readable name of the geografical zone of the Edge Cloud. Defined by the OP.
+          in: query
+          required: false
+          schema: 
+              $ref: '#/components/schemas/RegionId'
+        - name: status
+          in: query
+          required: false
+          schema: 
+              $ref: '#/components/schemas/Status'
+      responses:
+        '200':
+          description: Available Edge Cloud Nodes 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:                  
+                  $ref: '#/components/schemas/EdgeCloudNodeDetails'
+                minItems: 1
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+ 
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '/oauth2/token'
+          scopes:
+            nbi-mgmt: Access to the APIs
+  schemas:
+    AppId:
+      type: string
+      format: uuid
+      description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
+    AppInstanceId:
+      type: string
+      format: uuid
+      description: A globally unique identifier associated with a running instance of an application. OP generates this identifier. 
+
+    AppInstantiation:
+      description: Attributes with information where to instantiate a given application
+      type: object
+      properties:
+        appId:
+          $ref: '#/components/schemas/AppId'
+        edgeCloudNodeName:
+          $ref: '#/components/schemas/EdgeCloudNodeName'
+        regionId:
+          $ref: '#/components/schemas/RegionId'
+      required:
+        - appId
+
+    AppManifest:
+      properties:
+        name:
+          type: string
+          description: Name of the application. 
+        version:
+          type: integer
+          description: Application version information
+        virtType:
+          type: string
+          enum:
+            - VM
+            - CONTAINER
+            - HELM 
+        fileName:
+          type: string
+          minLength:  8
+          maxLength: 32
+          description: Name of the file with the extension eg. zip, targz, etc.
+        repository:       
+          type: object
+          required:
+            - type
+            - url
+          properties:
+            type:                 
+              type: string
+              enum:
+                - PRIVATEREPO
+                - PUBLICREPO
+              description: Artifact repository location. PUBLICREPO is used of public urls like github, helm repo etc, 
+                                  PRIVATEREPO  is used for private repo managed by the application developer.
+            url:
+              $ref: '#/components/schemas/Uri'
+            userName:
+              type: string
+              description:  Username to acces the artifact repository
+            password:
+              type: string      
+              description:  Password to acces the artifact repository
+            token:
+              type: string          
+              description:  Authorization token acces the artifact repository   
+        componentSpec:
+          description: Details about compute, networking and storage requirements for each component of the application.  
+                              App provider should  define all information needed to instantiate the component. 
+                              If artifact is being defined at component level  this section should have information just about the component. 
+                              In case the artifact is being defined at application level  the section should provide details about all the components.
+          type: array
+          items:
+            type: object
+            required:
+              - componentName
+              - operatingSystem
+              - cpuArchitecture
+              - networkInterfaces
+              - numOfInstances
+              - restartPolicy
+            properties:
+              componentName: 
+                type: string
+                description: Component name must be unique with an application
+              operatingSystem:
+                $ref: '#/components/schemas/OperatingSystem'
+              cpuArchitecture:
+                $ref: '#/components/schemas/CpuArchType'
+              networkInterfaces:
+                description: Each application component exposes some ports either for external users or for inter component communication.
+                                    Application provider is required to specify which ports are to be exposed and the type of traffic that will flow through these ports.
+                type: array
+                items:                          
+                  type: object
+                  required:
+                    - interfaceId
+                    - protocol
+                    - port
+                    - network
+                    - interfaceName
+                    - visibilityType
+                  properties:
+                    interfaceId:
+                      type: string
+                      description:  Each Port and corresponding traffic protocol exposed by the component is identified by a name. 
+                                            Application client on user device requires this to uniquley idenify the interface. 
+                    network:
+                      type: string
+                      description: Name of the network.  In case the application has to be assoisated with more then 1 network then app provider
+                                          must define the name of the network on which this interface has to be exposed.  This parameter is required only if 
+                                          the port has to be exposed on a specific network other then default.
+                    protocol:
+                      type: string
+                      enum:
+                        - TCP
+                        - UDP
+                        - ANY
+                      description: Defines the IP transport communication protocol i.e., TCP, UDP or ANY
+                    port:
+                      type: integer
+                      format: int32
+                      minimum: 1
+                      maximum: 65535
+                      description: Port number exposed by the component. OP may generate a dynamic port towards the UCs 
+                                          corresponding to this internal port and forward the client traffic from dynamic port to containerPort.
+                    interfaceName:
+                      type: string
+                      description:  Interface Name. Required only if application has to be attatched to a network other then default.
+                    visibilityType:
+                      description: Defines whether the interface is exposed to outer world or not i.e., external, or internal.
+                                          If this is set to "external", then it is  exposed to external applications otherwise it is exposed 
+                                          internally to edge application components within edge cloud. When exposed to external world, 
+                                          an external dynamic port is assigned for UC traffic and mapped to the internal containerPort
+                      type: string
+                      enum:
+                        - VISIBILITY_EXTERNAL
+                        - VISIBILITY_INTERNAL
+                minItems: 1                
+              numOfInstances:
+                type: integer
+                format: int32
+                description: Number of component instances to be launched. 
+              restartPolicy:
+                type: string
+                enum:
+                  - RESTART_POLICY_ALWAYS
+                  - RESTART_POLICY_NEVER
+                description: How the platform shall handle component failure                        
+      required:
+        - name
+        - virtType
+        - fileName
+        - repository
+        - componentSpec
+    CpuArchType:
+          type: string
+          enum:
+            - x86_64
+            - arm_64
+          description: CPU Instruction Set Architecture (ISA) E.g., Intel, Arm etc. 
+    AppInstanceInfo:
+      description: Information about the application instance.
+      type: object
+      properties:
+        appInstanceId:
+          $ref: '#/components/schemas/AppInstanceId'
+        edgeCloudNodeName:
+          $ref: '#/components/schemas/EdgeCloudNodeName'
+        uri:
+          $ref: '#/components/schemas/Uri'
+        status:
+          description: Status of the application instance (default is 'unknown')
+          type: string
+          enum:
+          - ready
+          - instantiating
+          - failed
+          - terminating
+          - unknown   
+          default: unknown 
+    EdgeCloudNodeName:
+      description: Edge Cloud Node Name - an identifier for an edge cloud node in the operator domain 
+      type: string
+ 
+    ErrorInfo:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: HTTP status code returned along with this error response
+        code:
+          type: string
+          description: Code given to this error
+        message:
+          type: string
+          description: Detailed error description
+      required:
+        - status
+        - code
+        - message
+
+    EdgeCloudNodeDetails:
+      type: object
+      required:
+        - geolocation
+      properties:
+        edgeCloudNodeName: 
+          $ref: '#/components/schemas/EdgeCloudNodeName'
+        status:
+          $ref: '#/components/schemas/Status'
+        region:
+            $ref: '#/components/schemas/RegionId'
+ 
+      minItems: 1
+ 
+    OperatingSystem:
+      type: object
+      required:
+        - architecture
+        - family
+        - version
+        - license
+      properties:
+        architecture: 
+          type: string
+          enum:
+            - x86_64
+            - x86
+          example: x86_64  
+        family:
+          type: string
+          enum:
+            - RHEL
+            - UBUNTU
+            - COREOS
+            - WINDOWS
+            - OTHER
+        version:
+          type: string
+          enum:
+            - OS_VERSION_UBUNTU_2204_LTS
+            - OS_VERSION_RHEL_8
+            - OS_MS_WINDOWS_2022
+            - OTHER
+        license:
+          type: string
+          enum:
+            - OS_LICENSE_TYPE_FREE
+            - OS_LICENSE_TYPE_ON_DEMAND
+            - OTHER
+
+    RegionId:
+      type: string
+      description:  Human readable name of the geografical zone of the Edge Cloud Node. Defined by the OP.
+ 
+    Status:
+        description: Status of the Edge Cloud Node (default is 'unknown')
+        type: string
+        enum:
+          - active
+          - inactive
+          - unknown   
+        default: unknown 
+    SubmittedApp:
+      description: Information about the submitted app
+      type: object
+      properties:
+        appId:
+          $ref: '#/components/schemas/AppId'   
+    Uri:
+      type: string
+      description: A Uniform Resource Identifier (URI) as per RFC 3986, identifies the endpoint within an Edge Cloud Node where the user equipment may connect to the selected application instance
+ 
+  responses:
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 400
+            code: INVALID_ARGUMENT
+            message: "Schema validation failed at  ..."     
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 401
+            code: UNAUTHENTICATED
+            message: "Authorization failed: ..."
+    '403':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 403
+            code: PERMISSION_DENIED
+            message: "Operation not allowed: ..."
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 404
+            code: NOT_FOUND
+            message: "Resource does not exist"
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 500
+            code: INTERNAL
+            message: "Internal server error: ..."
+    '501':
+      description: Not Implemented
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 501
+            code: NOT_IMPLEMENTED
+            message: "Service not implemented"
+    '503':
+      description: Service Unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 503
+            code: UNAVAILABLE
+            message: "Service unavailable"
