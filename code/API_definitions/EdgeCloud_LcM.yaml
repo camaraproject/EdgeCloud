@@ -413,7 +413,6 @@ components:
           enum:
             - VM
             - CONTAINER
-            - HELM 
         fileName:
           type: string
           minLength:  8
