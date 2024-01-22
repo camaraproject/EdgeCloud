@@ -436,7 +436,7 @@ components:
               $ref: '#/components/schemas/Uri'
             userName:
               type: string
-              description:  Username to acces the artifact repository
+              description:  Username is mandatory to access the artifact repository in case of private repository
             password:
               type: string      
               description:  Password to acces the artifact repository
