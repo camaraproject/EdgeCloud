@@ -546,8 +546,6 @@ components:
           $ref: '#/components/schemas/AppInstanceId'
         edgeCloudNodeName:
           $ref: '#/components/schemas/EdgeCloudNodeName'
-        uri:
-          $ref: '#/components/schemas/Uri'
         status:
           description: Status of the application instance (default is 'unknown')
           type: string
@@ -558,9 +556,68 @@ components:
           - terminating
           - unknown   
           default: unknown 
+        componentEndpointInfo:
+          description: Information about the IP and Port exposed by the OP. Application clients shall use these access points to reach this application instance
+          type: array
+          items:
+            type: object
+            required:
+              - interfaceId
+              - accessPoints
+            properties:
+              interfaceId:
+                type: string
+                pattern: ^[A-Za-z0-9][A-Za-z0-9_]{6,30}[A-Za-z0-9]$
+                description: This is the interface Identifier that app provider defines when application is onboarded.
+              accessPoints:
+                $ref: '#/components/schemas/AccessEndpoint'
+          minItems: 1
     EdgeCloudNodeName:
       description: Edge Cloud Node Name - an identifier for an edge cloud node in the operator domain 
       type: string
+    AccessEndpoint:
+      type: object
+      required:
+        - port
+      anyOf:
+        - required:
+            - fqdn
+        - required:
+            - ipv4Addresses
+        - required:
+            - ipv6Addresses
+      properties:
+        port:
+          $ref: '#/components/schemas/Port'
+        fqdn:
+          $ref: '#/components/schemas/Fqdn'
+        ipv4Addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv4Addr'
+          minItems: 1
+        ipv6Addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6Addr'
+          minItems: 1
+
+    Ipv4Addr:
+      type: string
+      pattern: ^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$
+      example: 198.51.100.1
+    Ipv6Addr:
+      type: string
+      allOf:
+        - pattern: ^((:|(0?|([1-9a-f][0-9a-f]{0,3}))):)((0?|([1-9a-f][0-9a-f]{0,3})):){0,6}(:|(0?|([1-9a-f][0-9a-f]{0,3})))$
+        - pattern: ^((([^:]+:){7}([^:]+))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?))$
+      example: 2001:db8:85a3::8a2e:370:7334
+    Fqdn:
+      type: string
+
+    Port:
+      type: integer
+      minimum: 0
  
     ErrorInfo:
       type: object
