@@ -458,7 +458,7 @@ components:
                   required:
                     - interfaceId
                     - protocol
-                    - extPort
+                    - port
                     - visibilityType
                   properties:
                     interfaceId:
@@ -472,12 +472,13 @@ components:
                         - UDP
                         - ANY
                       description: Defines the IP transport communication protocol i.e., TCP, UDP or ANY
-                    extPort:
+                    port:
                       type: integer
                       format: int32
                       minimum: 1
                       maximum: 65535
-                      description: Port number exposed by the component. OP may generate a dynamic port towards the UCs corresponding to this internal port  and forward the client traffic from dynamic port to containerPort.
+                      description: Port number exposed by the component. OP may generate a dynamic port towards the component instance which forwards external traffic to the component port.
+.
                     visibilityType:
                       description: Defines whether the interface is exposed to outer world or not i.e., external, or internal.If this is set to "external", then it is  exposed to external applications otherwise it is exposed internally to edge application components within edge cloud. When exposed to external world, an external dynamic port is assigned for UC traffic and mapped to the extPort
                       type: string
