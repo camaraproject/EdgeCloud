@@ -421,7 +421,7 @@ components:
           type: object
           required:
             - type
-            - url
+            - imagePath
           properties:
             type:                 
               type: string
@@ -429,7 +429,7 @@ components:
                 - PRIVATEREPO
                 - PUBLICREPO
               description: Application repository and image URI information. PUBLICREPO is used of public urls like github, helm repo etc. PRIVATEREPO  is used for private repo managed by the application developer. Private repo can be accessed by using the app developer provided userName and password. Password is recommended to be the personal access token created by developer e.g. in Github repo. 
-            url:
+            imagePath:
               $ref: '#/components/schemas/Uri'
             userName:
               type: string
