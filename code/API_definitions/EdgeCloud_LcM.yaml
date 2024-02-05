@@ -434,10 +434,19 @@ components:
             userName:
               type: string
               description:  Username to acces the Helm chart, docker-compose file or VM image repository
-            password:
+            credentials:
               type: string
               maxLength: 128
-              description:  Password or personal access token created by developerto acces the app repository
+              description:  Password or personal access token created by developer to acces the app repository. API users can generate a personal access token e.g. docker clients to use them as password, 
+            authType:
+              type: string
+              enum:
+                - DOCKER
+                - HTTP_BASIC
+                - HTTP_BEARER
+                - NONE
+              description:  The credentials can also be formatted as a Basic auth or Bearer auth in HTTP "Authorization" header. 
+              
         componentSpec:
           description: Information defined in "appRepo" point to the application descriptor e.g. Helm chart, docker-compose yaml file etc. The descriptor may contain one or more containers and their associated meta-data. A component refers to additional details about these containers to expose the instances of the containers to external client applications. App provider can define one or more components (via the associated network port) in componentSpec corresponding to the containers in helm charts or docker-compose yaml file as part of app descriptors.
           type: array
