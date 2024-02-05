@@ -446,7 +446,9 @@ components:
                 - HTTP_BEARER
                 - NONE
               description:  The credentials can also be formatted as a Basic auth or Bearer auth in HTTP "Authorization" header. 
-              
+            checksum:
+              type: string
+              description: MD5 checksum for VM and file-based images, sha256 digest for containers  
         componentSpec:
           description: Information defined in "appRepo" point to the application descriptor e.g. Helm chart, docker-compose yaml file etc. The descriptor may contain one or more containers and their associated meta-data. A component refers to additional details about these containers to expose the instances of the containers to external client applications. App provider can define one or more components (via the associated network port) in componentSpec corresponding to the containers in helm charts or docker-compose yaml file as part of app descriptors.
           type: array
@@ -487,7 +489,6 @@ components:
                       minimum: 1
                       maximum: 65535
                       description: Port number exposed by the component. OP may generate a dynamic port towards the component instance which forwards external traffic to the component port.
-.
                     visibilityType:
                       description: Defines whether the interface is exposed to outer world or not i.e., external, or internal.If this is set to "external", then it is  exposed to external applications otherwise it is exposed internally to edge application components within edge cloud. When exposed to external world, an external dynamic port is assigned for UC traffic and mapped to the extPort
                       type: string
