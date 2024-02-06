@@ -411,7 +411,8 @@ components:
         packageType:
           type: string
           enum:
-            - VM
+            - QCOW2
+            - OVA
             - CONTAINER
             - HELM
         fileName:
