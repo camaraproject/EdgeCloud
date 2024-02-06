@@ -84,14 +84,14 @@ info:
     
     Any more general service failures will result in an error in the `5xx`range with an explanation.
     
-    # Note for Simple Edge API publishers
-    The API publisher (i.e. the operator implementation) must ensure that the tuple of edgeCloudProvider+edgeResourceName in the success reponse is unique.
-    
-    ### Authorization and authentication
+    # Authorization and authentication
     
     CAMARA guidelines defines a set of authorization flows which can grant API clients access to the API functionality, as outlined in the document [CAMARA-API-access-and-user-consent.md](https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access-and-user-consent.md). Which specific authorization flows are to be used will be determined during onboarding process, happening between the API Client and the Telco Operator exposing the API, taking into account the declared purpose for accessing the API, while also being subject to the prevailing legal framework dictated by local legislation.
     
     It is important to remark that in cases where personal user data is processed by the API, and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of 3-legged access tokens becomes mandatory. This measure ensures that the API remains in strict compliance with user privacy preferences and regulatory obligations, upholding the principles of transparency and user-centric data control.
+    
+    # Note for Simple Edge API publishers
+    The API publisher (i.e. the operator implementation) must ensure that the tuple of edgeCloudProvider+edgeResourceName in the success reponse is unique.
     
     # Further info and support 
    
@@ -239,7 +239,7 @@ components:
       type: string
       additionalProperties: false  
   
-    ErrorResponse:
+    errorResponse:
       type: object
       properties:
         code:
@@ -262,7 +262,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           examples:
             InsufficientParameters:
               description: Sufficient parameters must be specified to allow the target UE to be identified
@@ -299,7 +299,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           examples:
             InvalidCredentials:
               value:
@@ -314,7 +314,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           examples:
             InsufficientPermissions:
               value:
@@ -329,7 +329,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           examples:
             SubscriberNotFound:
               description: No device found for the specified parameters, meaning the closest MEC platform cannot be determined.
@@ -345,7 +345,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           examples:
             MethodNotAllowed:
               description: An HTTP verb other than GET has been used to try and access the resource
@@ -361,7 +361,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           examples:
             NotAcceptable:
               description: A response format other than JSON has been requested
@@ -377,7 +377,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           examples:
             TooManyRequests:
               description: Access to the API has been temporarily blocked due to quota or spike arrest limits being reached
@@ -393,7 +393,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           example:
             { 
               "code": "INTERNAL",
@@ -406,7 +406,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           example:
             { 
               "code": "BAD_GATEWAY",
@@ -419,7 +419,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           example:
             { 
               "code": "UNAVAILABLE",
@@ -432,7 +432,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/errorResponse'
           example:
             { 
               "code": "TIMEOUT",
