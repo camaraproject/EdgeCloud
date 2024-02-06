@@ -408,11 +408,12 @@ components:
         version:
           type: integer
           description: Application version information
-        virtType:
+        packageType:
           type: string
           enum:
             - VM
             - CONTAINER
+            - HELM
         fileName:
           type: string
           minLength:  8
