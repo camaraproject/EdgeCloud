@@ -1,6 +1,7 @@
 openapi: 3.0.3
 info:
   title: Edge Cloud API
+  version: 0.9.1
   description:  |
  
     Edge Cloud API for Life Cycle Management and discovery of an application.
