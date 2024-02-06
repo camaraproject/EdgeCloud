@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Simple Edge Discovery API
-  version: 0.9.3
+  version: 0.9.4
   description: |
     # Find the closest MEC platform
     ---
@@ -87,6 +87,12 @@ info:
     # Note for Simple Edge API publishers
     The API publisher (i.e. the operator implementation) must ensure that the tuple of edgeCloudProvider+edgeResourceName in the success reponse is unique.
     
+    ### Authorization and authentication
+    
+    CAMARA guidelines defines a set of authorization flows which can grant API clients access to the API functionality, as outlined in the document [CAMARA-API-access-and-user-consent.md](https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access-and-user-consent.md). Which specific authorization flows are to be used will be determined during onboarding process, happening between the API Client and the Telco Operator exposing the API, taking into account the declared purpose for accessing the API, while also being subject to the prevailing legal framework dictated by local legislation.
+    
+    It is important to remark that in cases where personal user data is processed by the API, and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of 3-legged access tokens becomes mandatory. This measure ensures that the API remains in strict compliance with user privacy preferences and regulatory obligations, upholding the principles of transparency and user-centric data control.
+    
     # Further info and support 
    
     ---
@@ -106,7 +112,7 @@ servers:
         default: https://localhost:443
         description: API root
       basePath:
-        default: eds/v0
+        default: simple-edge-discovery/v0
         description: Base path for the Simple Edge Discovery API
 
 tags:
@@ -117,8 +123,9 @@ tags:
 paths:
   /mec-platforms:
     get:
-      security: 
-        - oAuth2ClientCredentials: []
+      security:
+        - openId:
+            - simple-edge-discovery-read-closest
       operationId: getMecplatforms
       parameters:
         - name: filter
@@ -200,13 +207,10 @@ paths:
    
 components:
   securitySchemes:
-    oAuth2ClientCredentials:
-      type: oauth2
-      description: The Simple Edge Discovery API makes use of the OAUTH 2.0 client credentials grant, which is applicable for server-to-server use cases involving trusted partners or clients without any protected user data involved. In this method the API invoker client is registered as a confidential client with an authorization grant type of client_credentials.
-      flows:
-        clientCredentials:
-          tokenUrl: "{tokenUrl}"
-          scopes: {}
+    openId:
+          type: openIdConnect
+          openIdConnectUrl: .well-known/openid-configuration
+
   schemas:
     MecPlatforms:
       type: array
