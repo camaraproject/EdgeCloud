@@ -125,7 +125,7 @@ paths:
     get:
       security:
         - openId:
-            - simple-edge-discovery-read-closest
+            - simple-edge-discovery:mec-plaforms:read
       operationId: getMecplatforms
       parameters:
         - name: filter
@@ -171,9 +171,19 @@ paths:
             type: string
             pattern: '^\+?[0-9]{5,15}$'
 
+        - in: header
+          name: X-Correlator
+          required: false
+          schema:
+            type: string
+            format: uuid
+
       responses:
         "200":
           description: Successful reaponse, returning the closest MEC platform to the user device identified in the request header
+          headers:
+            X-Correlator:
+              $ref: "#/components/headers/X-Correlator"
           content:
             application/json:
               schema:
@@ -208,8 +218,16 @@ paths:
 components:
   securitySchemes:
     openId:
-          type: openIdConnect
-          openIdConnectUrl: .well-known/openid-configuration
+      type: openIdConnect
+      openIdConnectUrl: .well-known/openid-configuration
+          
+  headers:
+    X-Correlator:
+      description: Correlation id for the different services
+      required: false
+      schema:
+        type: string
+        format: uuid
 
   schemas:
     MecPlatforms:
@@ -259,6 +277,9 @@ components:
   responses:
     400BadRequest: 
       description: Bad Request
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -295,7 +316,10 @@ components:
                   "message": "Invalid Header Format: IP-Address"
                 }
     401Unauthorized:
-      description: Unauthorized 
+      description: Unauthorized
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -311,6 +335,9 @@ components:
 
     403Forbidden:
       description: Forbidden
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -326,6 +353,9 @@ components:
     
     404NotFound:
       description: Subscriber Not Found
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -342,6 +372,9 @@ components:
     
     405MethodNotAllowed:
       description: Method Not Allowed
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -358,6 +391,9 @@ components:
     
     406Unacceptable:
       description: Not Acceptable
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -374,6 +410,9 @@ components:
     
     429TooManyRequests:
       description: Too Many Requests
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -390,6 +429,9 @@ components:
     
     500InternalServerError:
       description: Internal Server Error
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -403,6 +445,9 @@ components:
 
     502BadGateway:
       description: Bad Gateway
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -416,6 +461,9 @@ components:
 
     503ServiceUnavailable:
       description: Service Unavailable
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -429,6 +477,9 @@ components:
         
     504GatewayTimeout:
       description: Gateway Time-Out
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
