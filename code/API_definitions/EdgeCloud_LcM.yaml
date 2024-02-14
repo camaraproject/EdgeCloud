@@ -225,7 +225,13 @@ paths:
         required: true
       responses:
         '201':
-          description: Application submitted successfully
+          description: Application created successfully
+          headers:
+            Location:
+              description: Contains the URI of the newly created application.
+              required: true
+              schema:
+                type: string
           content: 
             application/json:
               schema:
