@@ -442,13 +442,13 @@ components:
               $ref: '#/components/schemas/Uri'
             userName:
               type: string
-              description:  Username to acces the artifact repository
+              description:  Username is mandatory to access the artifact repository in case of private repository
             password:
               type: string      
-              description:  Password to acces the artifact repository
+              description:  Password to access the artifact repository
             token:
               type: string          
-              description:  Authorization token acces the artifact repository   
+              description:  Authorization token access the artifact repository   
         componentSpec:
           description: Details about compute, networking and storage requirements for each component of the application.  
                               App provider should  define all information needed to instantiate the component. 
