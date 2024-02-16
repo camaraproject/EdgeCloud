@@ -415,15 +415,16 @@ components:
         version:
           type: integer
           description: Application version information
-        virtType:
+        packageType:
           type: string
           enum:
-            - VM
+            - QCOW2
+            - OVA
             - CONTAINER
             - HELM 
         operatingSystem:
           $ref: '#/components/schemas/OperatingSystem'
-        appRepo:       
+        appRepo:
           type: object
           required:
             - type
