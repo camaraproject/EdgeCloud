@@ -7,8 +7,8 @@ info:
     # Introduction
     APIs defined in this version of the specification can be categorized into the following areas:
     * __Application__ - The Application Provider submit application metadata to the Operator Platform.
-    * __Application Instance__ -  An Operator Platform instantiate an Application on an Edge Cloud Node when the Application Provider resquest it.
-    * __Edge Cloud information__ - Retrieves all the Edge nodes available according to some defined parameters.
+    * __Application Instance__ -  An Operator Platform instantiate an Application on an Edge Cloud Zone when the Application Provider resquest it.
+    * __Edge Cloud information__ - Retrieves all the Edge Cloud Zones available according to some defined parameters.
     # Relevant terms and definitions
     This section provides definitions of terminologies commonly referred to throughout the API descriptions.
  
@@ -25,12 +25,12 @@ info:
     * __getApp__ - Retrieves the information of a given application.
  
     __Application Instance Management__
-    * __appInstantiation__  Request the OP to instatiate an instance of an application in a given Edge Cloud Node, if this parameter is not set, the OP will instantiate the applications in all the Edge Cloud Nodes available.
+    * __appInstantiation__  Request the OP to instatiate an instance of an application in a given Edge Cloud Zone, if this parameter is not set, the OP will instantiate the applications in all the Edge Cloud Zones available.
     * __getAppInstance__  Retrieves the list with information of the instances related to a given application.
-    * __deleteAppInstance__ - Removes a given application instance from an Edge Cloud Node.
+    * __deleteAppInstance__ - Removes a given application instance from an Edge Cloud Zone.
 
     __Edge Cloud information__
-    *  __getEdgeCloudNodes__ List of the operator’s Edge Cloud Nodes and their status, ordering the results by location and filtering by status (active/inactive/unknown)
+    *  __getEdgeCloudZones__ List of the operator’s Edge Cloud Zones and their status, ordering the results by location and filtering by status (active/inactive/unknown)
     # Further info and support
     (FAQs will be added in a later version of the documentation)
  
@@ -40,7 +40,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.2.0
+  version: 0.9.1
 externalDocs:
   description: Product documentation at Camara
   url: https://github.com/camaraproject/
@@ -65,15 +65,15 @@ tags:
   - name: Application Instance 
     description: Application Instance Management
   - name: Edge Cloud
-    description: Edge Cloud Nodes Available
+    description: Edge Cloud Zones Available
  
 paths:
-  /appInstance:
+  /app-instance:
     post: 
       tags:
         - Application Instance
       summary: Instantiation of an Application
-      description: Ask the OP to instantiate an application to one or several Edge Cloud Nodes with an Application as an input and an Application Instance as the output. 
+      description: Ask the OP to instantiate an application to one or several Edge Cloud Zones with an Application as an input and an Application Instance as the output. 
       operationId: appInstantiation
       requestBody:
         description: Details regarding where the application should be instantiated
@@ -119,7 +119,7 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
-  /appInstance/{appId}:
+  /app-instance/{appId}:
     get:
       tags:
         - Application Instance
@@ -139,14 +139,14 @@ paths:
           required: false
           schema: 
               $ref: '#/components/schemas/AppInstanceId'
-        - name: edgeCloudName
-          description:  Edge Cloud Node Name - an identifier for an edge cloud node in the operator domain
+        - name: EdgeCloudZone
+          description: An identifier name for an Edge Cloud Zone in the operator domain
           in: query
           required: false
           schema: 
-              $ref: '#/components/schemas/EdgeCloudNodeName'
+              $ref: '#/components/schemas/EdgeCloudZone'
         - name: regionId
-          description:  Human readable name of the geografical zone of the Edge Cloud Node. Defined by the OP.
+          description:  Human readable name of the geografical region of the Edge Cloud. Defined by the OP.
           in: query
           required: false
           schema: 
@@ -176,17 +176,21 @@ paths:
           $ref: '#/components/responses/500'
         '503':
           $ref: '#/components/responses/503'
- 
-  /appInstance/{appInstanceId}:
     delete:
       tags:
         - Application Instance
       summary: Terminate an Application Instance
-      description: Terminate a running instance of an application within an Edge Cloud Node
+      description: Terminate a running instance of an application within an Edge Cloud Zone
       operationId: deleteAppInstance
       parameters:
-        - name: appInstanceId
+        - name: appId
+          description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
           in: path
+          required: true
+          schema: 
+              $ref: '#/components/schemas/AppId'
+        - name: appInstanceId
+          in: query
           description: Identificator of the specific application instance that will be terminated
           required: true
           schema:
@@ -334,16 +338,16 @@ paths:
         '503':
           $ref: '#/components/responses/503'
  
-  /edge-cloud-nodes:
+  /edge-cloud-zones:
     get:
       tags: 
         - Edge Cloud
-      summary: Retrieve a list of the operator’s Edge Clouds and their status
-      description: List of the operator’s Edge Clouds and their status, ordering the results by location and filtering by status (active/inactive/unknown)
-      operationId: getEdgeCloudNodes
+      summary: Retrieve a list of the operator’s Edge Cloud Zones and their status
+      description: List of the operator’s Edge Cloud Zones and their status, ordering the results by location and filtering by status (active/inactive/unknown)
+      operationId: getEdgeCloudZones
       parameters:
         - name: regionId
-          description: Human readable name of the geografical zone of the Edge Cloud. Defined by the OP.
+          description: Human readable name of the geografical region of the Edge Cloud. Defined by the OP.
           in: query
           required: false
           schema: 
@@ -355,13 +359,13 @@ paths:
               $ref: '#/components/schemas/Status'
       responses:
         '200':
-          description: Available Edge Cloud Nodes 
+          description: Available Edge Cloud Zones 
           content:
             application/json:
               schema:
                 type: array
                 items:                  
-                  $ref: '#/components/schemas/EdgeCloudNodeDetails'
+                  $ref: '#/components/schemas/EdgeCloudZoneDetails'
                 minItems: 1
         '401':
           $ref: '#/components/responses/401'
@@ -399,8 +403,8 @@ components:
       properties:
         appId:
           $ref: '#/components/schemas/AppId'
-        edgeCloudNodeName:
-          $ref: '#/components/schemas/EdgeCloudNodeName'
+        EdgeCloudZone:
+          $ref: '#/components/schemas/EdgeCloudZone'
         regionId:
           $ref: '#/components/schemas/RegionId'
       required:
@@ -516,8 +520,8 @@ components:
       properties:
         appInstanceId:
           $ref: '#/components/schemas/AppInstanceId'
-        edgeCloudNodeName:
-          $ref: '#/components/schemas/EdgeCloudNodeName'
+        EdgeCloudZone:
+          $ref: '#/components/schemas/EdgeCloudZone'
         status:
           description: Status of the application instance (default is 'unknown')
           type: string
@@ -544,8 +548,8 @@ components:
               accessPoints:
                 $ref: '#/components/schemas/AccessEndpoint'
           minItems: 1
-    EdgeCloudNodeName:
-      description: Edge Cloud Node Name - an identifier for an edge cloud node in the operator domain 
+    EdgeCloudZone:
+      description: An identifier name for an Edge Cloud Zone in the operator domain 
       type: string
     AccessEndpoint:
       type: object
@@ -608,13 +612,13 @@ components:
         - code
         - message
 
-    EdgeCloudNodeDetails:
+    EdgeCloudZoneDetails:
       type: object
       required:
         - geolocation
       properties:
-        edgeCloudNodeName: 
-          $ref: '#/components/schemas/EdgeCloudNodeName'
+        EdgeCloudZone: 
+          $ref: '#/components/schemas/EdgeCloudZone'
         status:
           $ref: '#/components/schemas/Status'
         region:
@@ -660,10 +664,10 @@ components:
 
     RegionId:
       type: string
-      description:  Human readable name of the geografical zone of the Edge Cloud Node. Defined by the OP.
+      description:  Human readable name of the geografical region of the Edge Cloud. Defined by the OP.
  
     Status:
-        description: Status of the Edge Cloud Node (default is 'unknown')
+        description: Status of the Edge Cloud Zone (default is 'unknown')
         type: string
         enum:
           - active
@@ -679,7 +683,7 @@ components:
     Uri:
       type: string
       example: https://charts.bitnami.com/bitnami/helm/example-chart:0.1.0
-      description: A Uniform Resource Identifier (URI) as per RFC 3986, identifies the endpoint within an Edge Cloud Node where the user equipment may connect to the selected application instance
+      description: A Uniform Resource Identifier (URI) as per RFC 3986, identifies the endpoint within an Edge Cloud Zone where the user equipment may connect to the selected application instance
  
   responses:
     '400':
