@@ -15,9 +15,10 @@ info:
     * __Application Provider__ - The provider of the application that accesses an OP to deploy its application on the Edge Cloud. An Application Provider may be part of a larger organisation, like an enterprise, enterprise customer of an OP, or be an independent entity.
     * __Application__ - Contains the information about the application to be instantiated. Descriptor, binary image, charts or any other package assosiated with the application. The Application Provider request contains mandatory criteria (e.g. required CPU, memory,
       storage, bandwidth) defined in an Application. 
-    * __OP__ - Operator Platform. An Operator Platform (facilitates access to the Edge Cloud and other capabilities of an Operator or federation of Operators and Partners. Defined by [GSMA in OPG.02](https://www.gsma.com/futurenetworks/wp-content/uploads/2023/07/OPG.02-v5.0-Operator-Platform-Requirements-and-Architecture.pdf)
-    * __Region__ - Human readable name of the geografical zone of the Edge Cloud. Defined by the OP.
     * __Edge Cloud__ - Cloud-like capabilities located at the network edge including, from the Application Provider's perspective, access to elastically allocated compute, data storage and network resources.
+    * __Edge Cloud Zone__ - An Edge Cloud Zone is the lowest level of abstraction exposed to an Application Provider who wants to deploy an Application on Edge Cloud. Zones exist within a Region.
+    * __OP__ - Operator Platform. An Operator Platform (facilitates access to the Edge Cloud and other capabilities of an Operator or federation of Operators and Partners. Defined by [GSMA in OPG.02](https://www.gsma.com/futurenetworks/wp-content/uploads/2023/07/OPG.02-v5.0-Operator-Platform-Requirements-and-Architecture.pdf)
+    * __Region__ - An OP Region is equivalent to a Region on a public cloud. The higher construct in the hierarchy exposed to an Application Provider who wishes to deploy an Application on the Edge Cloud and broadly represents a geography. A Region typically contains one or multiple Zones. A Region exists within an Edge Cloud.
     # API Functionality
     __Application Management__
     * __submitApp__ - Submits an application details to an OP. Based on the details provided,  OP shall do bookkeeping, resource validation and other pre-deployment operations. 
@@ -145,12 +146,12 @@ paths:
           required: false
           schema: 
               $ref: '#/components/schemas/EdgeCloudZone'
-        - name: regionId
+        - name: region
           description:  Human readable name of the geografical region of the Edge Cloud. Defined by the OP.
           in: query
           required: false
           schema: 
-              $ref: '#/components/schemas/RegionId'
+              $ref: '#/components/schemas/Region'
       responses:
         '200':
           description: Information of Aplication Instances
@@ -346,12 +347,12 @@ paths:
       description: List of the operator’s Edge Cloud Zones and their status, ordering the results by location and filtering by status (active/inactive/unknown)
       operationId: getEdgeCloudZones
       parameters:
-        - name: regionId
+        - name: region
           description: Human readable name of the geografical region of the Edge Cloud. Defined by the OP.
           in: query
           required: false
           schema: 
-              $ref: '#/components/schemas/RegionId'
+              $ref: '#/components/schemas/Region'
         - name: status
           in: query
           required: false
@@ -405,8 +406,8 @@ components:
           $ref: '#/components/schemas/AppId'
         EdgeCloudZone:
           $ref: '#/components/schemas/EdgeCloudZone'
-        regionId:
-          $ref: '#/components/schemas/RegionId'
+        region:
+          $ref: '#/components/schemas/Region'
       required:
         - appId
 
@@ -549,7 +550,7 @@ components:
                 $ref: '#/components/schemas/AccessEndpoint'
           minItems: 1
     EdgeCloudZone:
-      description: An identifier name for an Edge Cloud Zone in the operator domain 
+      description: Human readable name of the zone of the Edge Cloud. Defined by the OP.
       type: string
     AccessEndpoint:
       type: object
@@ -622,7 +623,7 @@ components:
         status:
           $ref: '#/components/schemas/Status'
         region:
-            $ref: '#/components/schemas/RegionId'
+            $ref: '#/components/schemas/Region'
  
       minItems: 1
  
@@ -662,7 +663,7 @@ components:
             - OS_LICENSE_TYPE_ON_DEMAND
             - OTHER
 
-    RegionId:
+    Region:
       type: string
       description:  Human readable name of the geografical region of the Edge Cloud. Defined by the OP.
  
