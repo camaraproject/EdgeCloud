@@ -3,59 +3,59 @@ info:
   title: Simple Edge Discovery API
   version: 0.9.4
   description: |
-    # Find the closest MEC platform
+    # Find the closest Edge Cloud Zone
     ---
     # Summary
     
-    The Simple Edge Discovery API returns the name of the closest operator MEC platform to a particular user device. 
+    The Simple Edge Discovery API returns the name of the closest operator Edge Cloud Zone to a particular user device. 
     
     # Purpose
-    Network operators may host multiple Multi-access Edge Computing (MEC, or 'Edge') platforms in a given territory. Connecting your application to a server on the closest MEC platform means packets travel the shortest distance between endpoints, typically resulting in the lowest round-trip latency. Note, the physical (GPS) location of a user device is not a reliable way to determine the closest MEC platform, due to the way operator networks are routed - so the operator will calculate the MEC platform with the  _shortest network path_ to the network-attached device identified in the API request.
+    Network operators may host multiple Multi-access Edge Cloud Zones in a given territory. Connecting your application to a server on the closest Edge Cloud Zone means packets travel the shortest distance between endpoints, typically resulting in the lowest round-trip latency. Note, the physical (GPS) location of a user device is not a reliable way to determine the closest Edge Cloud Zone, due to the way operator networks are routed - so the operator will calculate the Edge Cloud Zone with the  _shortest network path_ to the network-attached device identified in the API request.
     
-    Once you have the name of the closest MEC platform to the user device, you may:
+    Once you have the name of the closest Edge Cloud Zone to the user device, you may:
     
-    * connect the application client on the user device to your application server instance on that MEC platform. Note: the address of that server instance is not part of the API response, but should be known in advance.
-    * or, if you have no instance on that MEC platform, you may wish to deploy one there.
+    * connect the application client on the user device to your application server instance on that Edge Cloud Zone. Note: the address of that server instance is not part of the API response, but should be known in advance.
+    * or, if you have no instance on that Edge Cloud Zone, you may wish to deploy one there.
     
      # Usage
      
      The API may be called either by an application client hosted on a device attached to the operator network (i.e. phone, tablet), or by a server.
      
-     There is a single API endpoint: `/mecplatforms?filter=closest`. To call this endpoint, the API consumer must first obtain a valid OAuth2 token from the token endpoint, and pass it as an `Authorization` header in the API request.
+     There is a single API endpoint: `/edge-cloud-zones?filter=closest`. To call this endpoint, the API consumer must first obtain a valid OAuth2 token from the token endpoint, and pass it as an `Authorization` header in the API request.
 
      
-     The API returns the closest MEC platform to a given device, so that device needs to be identifiable by the network:
+     The API returns the closest Edge Cloud Zone to a given device, so that device needs to be identifiable by the network:
     * if you call the API from a server, you must explicitly pass one or more device identifiers in the HTTP request header:
       * `IP-Address`. This is the public IP address of the user device: this can be obtained by an application hosted on that device calling a public IP address API (e.g. GET https://api.ipify.org?format=json)
       * `Phone-Number` . The international E.164 format (starting with country code), e.g. +4407123123456
       * `Network-Access-Identifier` (where available from the API host operator)
       
-    * if you call the API from a device attached to the operator network, you _may_ omit the explicit device identifier(s)from the request header. If such a request fails with a `404 Not Found` error then retry the request but this time include a device identifier.
+    * if you call the API from a device attached to the operator network, then you can attempt the request without passing device identifier(s) parameters in the request header. If such a request fails with a `404 Not Found` error then retry the request but this time include a device identifier as described in the preceding bullet point.
 
-    The provider of the MEC Platform may be an operator, or a cloud provider. The 
+    The provider of the Edge Cloud Zone may be an operator, or a cloud provider.
     
     # Example requests:
     
     Examples for all API clients:
     
-        GET /mec-platforms?filter=closest HTTP/1.1
+        GET /edge-cloud-zones?filter=closest HTTP/1.1
         Host: example.com
         Accept: application/json
         Network-Access-Identifier: 4d596ac1-7822-4927-a3c5-d72e1f922c94@domain.com
 
-        GET /mec-platforms?filter=closest HTTP/1.1
+        GET /edge-cloud-zones?filter=closest HTTP/1.1
         Host: example.com
         Accept: application/json
         IP-Address: 84.125.93.10
         
-        GET /mec-platforms?filter=closest HTTP/1.1
+        GET /edge-cloud-zones?filter=closest HTTP/1.1
         Host: example.com
         Accept: application/json
         Phone-Number: 441234567890
         
     Example where API client is on a network-attached device:
     
-        GET /mec-platforms?filter=closest HTTP/1.1
+        GET /edge-cloud-zones?filter=closest HTTP/1.1
         Host: example.com
         Accept: application/json
  
@@ -63,10 +63,10 @@ info:
     
     ## Success
     
-    A JSON object is returned containing a `MECPlatforms` array with a single member, along with the HTTP `200 OK` status code. The value of the `edgeCloudProvider` object is the name of the operator or cloud provider of the MEC Platform. `edgeResourceName` object is the name of the closest MEC platform to the user device. An example of this JSON object is as follows:
+    A JSON object is returned containing an array of `edgeCloudZone` with a single member, along with the HTTP `200 OK` status code. The value of the `edgeCloudProvider` object is the name of the operator or cloud provider of the Edge Cloud Zone. `edgeResourceName` object is the name of the closest Edge Cloud Zone to the user device. An example of this JSON object is as follows:
     ```
     {
-      "MecPlatforms": [
+      "edgeCloudZone": [
         {
           "edgeCloudProvider": "AWS",
           "edgeResourceName": "eu-west-2-wl1-man-wlz-1"
@@ -84,14 +84,21 @@ info:
     
     Any more general service failures will result in an error in the `5xx`range with an explanation.
     
+    # Notes for Simple Edge API publishers
+    The API publisher (i.e. the operator implementation) must ensure that the tuple of edgeCloudProvider+edgeResourceName in the success reponse is unique.
+    
+    
+    If an `IP-Address` header parameter is provided then the operator should assume the request is coming from a developer's server rather than a device attached to the network. In which case the developer server is expected to have been provided with the device public IP address (e.g. by the application client on that device signalling it back to the server)
+    
+    If neither the `IP-Address parameter` nor any other device identifier is provided in the API request header, then the operator should assume the request is from a device attached to their network, and attempt to use the public IP source address to determine which packet gateway issued it (and hence the closest edge to that gateway).
+    
+    If no `IP-Address` header parameter is provided, but another device identifier(s) is provided, then the operator should assume the request is coming from a device attached to their network and should make use of one or both of the public IP source address (from the IP packet header) and the device identifier(s) provided in the HTTPS request header.
+    
     # Authorization and authentication
     
     CAMARA guidelines defines a set of authorization flows which can grant API clients access to the API functionality, as outlined in the document [CAMARA-API-access-and-user-consent.md](https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access-and-user-consent.md). Which specific authorization flows are to be used will be determined during onboarding process, happening between the API Client and the Telco Operator exposing the API, taking into account the declared purpose for accessing the API, while also being subject to the prevailing legal framework dictated by local legislation.
     
     It is important to remark that in cases where personal user data is processed by the API, and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of 3-legged access tokens becomes mandatory. This measure ensures that the API remains in strict compliance with user privacy preferences and regulatory obligations, upholding the principles of transparency and user-centric data control.
-    
-    # Note for Simple Edge API publishers
-    The API publisher (i.e. the operator implementation) must ensure that the tuple of edgeCloudProvider+edgeResourceName in the success reponse is unique.
     
     # Further info and support 
    
@@ -118,20 +125,20 @@ servers:
 tags:
   - name: Discovery
     description: |
-       Find the closest MEC platform to the user device.
+       Find the closest Edge Cloud Zone to the user device.
 
 paths:
-  /mec-platforms:
+  /edge-cloud-zones:
     get:
       security:
         - openId:
-            - simple-edge-discovery:mec-plaforms:read
-      operationId: getMecplatforms
+            - simple-edge-discovery-read-closest
+      operationId: getEdgeCloudZones
       parameters:
         - name: filter
           in: query
           required: true
-          description: filter the MEC Platforms according to the parameter value. For this API the only supported value is `closest`
+          description: filter the Edge Cloud Zones according to the parameter value. For this API the only supported value is `closest`
           schema:
             type: string
             enum: [
@@ -171,23 +178,13 @@ paths:
             type: string
             pattern: '^\+?[0-9]{5,15}$'
 
-        - in: header
-          name: X-Correlator
-          required: false
-          schema:
-            type: string
-            format: uuid
-
       responses:
         "200":
-          description: Successful reaponse, returning the closest MEC platform to the user device identified in the request header
-          headers:
-            X-Correlator:
-              $ref: "#/components/headers/X-Correlator"
+          description: Successful reaponse, returning the closest Edge Cloud Zone to the user device identified in the request header
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MecPlatforms'
+                $ref: '#/components/schemas/EdgeCloudZones'
         "400":
           $ref: '#/components/responses/400BadRequest'
         "401":
@@ -212,43 +209,40 @@ paths:
           $ref: '#/components/responses/504GatewayTimeout'
       tags:
         - Discovery
-      summary: Returns the name of the MEC platform closest to user device identified in the request.
-      description: On receiving this request, the network will return the name of the MEC platform with the shortest network path to the end user device identified in the request.
+      summary: Returns the name of the Edge Cloud Zone closest to user device identified in the request.
+      description: On receiving this request, the network will return the name of the Edge Cloud Zone with the shortest network path to the end user device identified in the request.
    
 components:
   securitySchemes:
     openId:
+      description: OpenID Provider Configuration Information
       type: openIdConnect
       openIdConnectUrl: .well-known/openid-configuration
-          
-  headers:
-    X-Correlator:
-      description: Correlation id for the different services
-      required: false
-      schema:
-        type: string
-        format: uuid
 
   schemas:
-    MecPlatforms:
+    EdgeCloudZones:
       type: array
       items:
-        $ref: '#/components/schemas/MecPlatform'
-      description:  A collection of MEC Platforms. For this Simple Edge Discovery API the collection will have at most one member (the closest MEC Platform to the user device indicated in the request).
+        $ref: '#/components/schemas/EdgeCloudZone'
+      minItems: 1
+      description:  A collection of Edge Cloud Zones. For this Simple Edge Discovery API the collection will have at most one member (the closest Edge Cloud Zone to the user device indicated in the request).
       additionalProperties: false
       
-    MecPlatform:
+    EdgeCloudZone:
       type: object
-      description:  A MEC Platform, uniquely identified by a combination of the value of the Edge Resource Name object and the value of the Provider object (the name of the cloud provider or operator hosting that platform).
+      description:  A Edge Cloud Zone, uniquely identified by a combination of the value of the Edge Resource Name object and the value of the Provider object (the name of the cloud provider or operator hosting that egde cloud zone).
       properties:
-        edgeCloudProvider:
-          $ref: "#/components/schemas/EdgeCloudProvider"
-        edgeResourceName:
-          $ref: "#/components/schemas/EdgeResource"
+        edgeCloudZone:
+          type: object
+          properties:
+            edgeCloudProvider:
+              $ref: "#/components/schemas/EdgeCloudProvider"
+            edgeResourceName:
+              $ref: "#/components/schemas/EdgeResource"
     
     EdgeCloudProvider:
       description: |
-        The company name of the MEC Platform provider  
+        The company name of the Edge Cloud Zone provider  
       type: string
     
     EdgeResource:
@@ -257,7 +251,8 @@ components:
       type: string
       additionalProperties: false  
   
-    errorResponse:
+    ErrorResponse:
+      description: Error code and human-readable description
       type: object
       properties:
         code:
@@ -277,13 +272,10 @@ components:
   responses:
     400BadRequest: 
       description: Bad Request
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           examples:
             InsufficientParameters:
               description: Sufficient parameters must be specified to allow the target UE to be identified
@@ -316,14 +308,11 @@ components:
                   "message": "Invalid Header Format: IP-Address"
                 }
     401Unauthorized:
-      description: Unauthorized
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
+      description: Unauthorized 
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           examples:
             InvalidCredentials:
               value:
@@ -335,13 +324,10 @@ components:
 
     403Forbidden:
       description: Forbidden
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           examples:
             InsufficientPermissions:
               value:
@@ -353,16 +339,13 @@ components:
     
     404NotFound:
       description: Subscriber Not Found
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           examples:
             SubscriberNotFound:
-              description: No device found for the specified parameters, meaning the closest MEC platform cannot be determined.
+              description: No device found for the specified parameters, meaning the closest Edge Cloud Zone cannot be determined.
               value:
                 { 
                   "code": "NOT_FOUND",
@@ -372,13 +355,10 @@ components:
     
     405MethodNotAllowed:
       description: Method Not Allowed
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           examples:
             MethodNotAllowed:
               description: An HTTP verb other than GET has been used to try and access the resource
@@ -391,13 +371,10 @@ components:
     
     406Unacceptable:
       description: Not Acceptable
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           examples:
             NotAcceptable:
               description: A response format other than JSON has been requested
@@ -410,13 +387,10 @@ components:
     
     429TooManyRequests:
       description: Too Many Requests
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           examples:
             TooManyRequests:
               description: Access to the API has been temporarily blocked due to quota or spike arrest limits being reached
@@ -429,13 +403,10 @@ components:
     
     500InternalServerError:
       description: Internal Server Error
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           example:
             { 
               "code": "INTERNAL",
@@ -445,13 +416,10 @@ components:
 
     502BadGateway:
       description: Bad Gateway
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           example:
             { 
               "code": "BAD_GATEWAY",
@@ -461,13 +429,10 @@ components:
 
     503ServiceUnavailable:
       description: Service Unavailable
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           example:
             { 
               "code": "UNAVAILABLE",
@@ -477,13 +442,10 @@ components:
         
     504GatewayTimeout:
       description: Gateway Time-Out
-      headers:
-        X-Correlator:
-          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/errorResponse'
+            $ref: '#/components/schemas/ErrorResponse'
           example:
             { 
               "code": "TIMEOUT",
