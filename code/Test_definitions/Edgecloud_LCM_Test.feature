@@ -64,24 +64,24 @@ Given appId provided does not exist
 When invoking with the DELETE method to delete an app with just mandatory parameter ("appId")
 Then response code is 404
 
-@EdgeCloud_LCM_app_instantiation_ok_mandatory_parameter
-Scenario: Instantiate an Application with just mandatory parameter ("appId")
+@EdgeCloud_LCM_app_instantiation_ok_mandatory_parameters
+Scenario: Instantiate an Application with just mandatory parameters ("appId" in path, and "region" in body)
 Given an aplication has already been submitted
-When invoking with the POST method to instantiate an app with just mandatory parameter ("appId")
+When invoking with the POST method to instantiate an app with just mandatory parameters ("appId" in path, and "region" in body)
 Then response code is 202
-And the process of instantiating the app starts in all available regions and edge cloud zones 
+And the process of instantiating the app starts in all available edge cloud zones in the region provided 
 
 @EdgeCloud_LCM_app_instantiation_ok_optional_parameters
-Scenario: Instantiate an Application with mandatory parameter ("appId") and optional parameters ("region","EdgeCloudZone")
+Scenario: Instantiate an Application with mandatory parameters ("appId" in path, and "region" in body) and optional parameter ("EdgeCloudZone")
 Given an aplication has already been submitted
-When invoking with the POST method to instantiate an app with mandatory parameter ("appId") and optional parameters ("region","EdgeCloudZone")
+When invoking with the POST method to instantiate an app with mandatory mandatory parameters ("appId" in path, and "region" in body) and optional parameter ("EdgeCloudZone")
 Then response code is 202
 And the process of intantiating the app starts only in given region and edge cloud zone
 
 @EdgeCloud_LCM_app_instantiation_conflict
-Scenario: Instantiate an Application with mandatory parameter ("appId") and optional parameters ("region","EdgeCloudZone")
+Scenario: Instantiate an Application with mandatory parameters ("appId" in path, and "region" in body) and optional parameter ("EdgeCloudZone")
 Given an aplication has already been submitted, but already instantiated in given EdgeCloudZone
-When invoking with the POST method to instantiate an app with mandatory parameter ("appId") and optional parameters ("region","EdgeCloudZone")
+When invoking with the POST method to instantiate an app with mandatory mandatory parameters ("appId" in path, and "region" in body) and optional parameter ("EdgeCloudZone")
 Then response code is 409
 
 @EdgeCloud_LCM_app_instance_get_info_valid_parameter
@@ -100,19 +100,14 @@ Then response code is 404
 Scenario: Delete all running instances of an application in Edge Cloud
 When invoking with the DELETE method to terminate running instances of an application within Edge Cloudwith with just mandatory parameter ("appId")
 Then response code is 202
-And all the application instances are deleted
+And all the application instances termination initiated
 
 @EdgeCloud_LCM_app_innstance_delete_valid_parameter
 Scenario: Delete a running instance of an application within an Edge Cloud Zone with optional parameter ("appInstanceId")
 When invoking with the DELETE method to terminate a running instance of an application including optional parameter ("appInstanceId") and mandatory parameter ("appId")
 Then response code is 202
-And the application instance is deleted
+And the application instance termination initiated
 
-@EdgeCloud_LCM_app_innstance_delete_invalid_parameter
-Scenario: Delete a running instance of an application within an Edge Cloud Zone with optional parameter ("appInstanceId")
-When invoking with the DELETE method to terminate a running instance of an application including optional parameter ("appInstanceId") and mandatory parameter ("appId")
-Then response code is 202
-And the application instance is deleted
 
 @EdgeCloud_LCM_app_innstance_delete_invalid_parameter
 Scenario: Delete a running instance of an application within an Edge Cloud Zone with optional parameter ("appInstanceId")
