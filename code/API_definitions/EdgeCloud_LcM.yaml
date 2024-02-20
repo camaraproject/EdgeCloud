@@ -6,9 +6,8 @@ info:
     Edge Cloud API for Life Cycle Management and discovery of an application.
     # Introduction
     APIs defined in this version of the specification can be categorized into the following areas:
-    * __Application__ - The Application Provider submit application metadata to the Operator Platform.
-    * __Application Instance__ -  An Operator Platform instantiate an Application on an Edge Cloud Zone when the Application Provider resquest it.
-    * __Edge Cloud information__ - Retrieves all the Edge Cloud Zones available according to some defined parameters.
+    * __Application__ - The Application Provider submit application metadata to the Operator Platform. The OP generate an appId for that metadata that will be used to instantiate the application within the Edge Cloud Zone.
+    * __Edge Cloud information__ - Retrieves all the Edge Cloud Zones available according to some defined parameters where an application can be instantiated.
     # Relevant terms and definitions
     This section provides definitions of terminologies commonly referred to throughout the API descriptions.
  
@@ -41,7 +40,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.9.1
+  version: 0.9.2
 externalDocs:
   description: Product documentation at Camara
   url: https://github.com/camaraproject/
@@ -62,158 +61,11 @@ security:
  
 tags:
   - name: Application
-    description: Application Management
-  - name: Application Instance 
-    description: Application Instance Management
+    description: Application and Application Instance Lice Cycle Management
   - name: Edge Cloud
     description: Edge Cloud Zones Available
  
 paths:
-  /app-instance:
-    post: 
-      tags:
-        - Application Instance
-      summary: Instantiation of an Application
-      description: Ask the OP to instantiate an application to one or several Edge Cloud Zones with an Application as an input and an Application Instance as the output. 
-      operationId: appInstantiation
-      requestBody:
-        description: Details regarding where the application should be instantiated
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AppInstantiation'
-        required: true      
-      responses:
-        '202':
-          description: Application instantiation accepted
-          content: 
-            application/json:
-              schema:
-                type: object
-                properties:
-                  appId:
-                    $ref: '#/components/schemas/AppId'
-                  aplicationInstace:
-                    type: array
-                    items:
-                      $ref:  '#/components/schemas/AppInstanceInfo'
-                minItems: 1                 
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorInfo'
-              example:
-                status: 409
-                code: CONFLICT
-                message: "Application already instantiated in the given Edge or Region"
-        '500':
-          $ref: '#/components/responses/500'
-        '501':
-          $ref: '#/components/responses/501'
-        '503':
-          $ref: '#/components/responses/503'
-  /app-instance/{appId}:
-    get:
-      tags:
-        - Application Instance
-      summary: Retrieve the information of Application Instances for a given App
-      description: Ask the OP the information of the instances for a given application
-      operationId: getAppInstance
-      parameters:
-        - name: appId
-          description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
-          in: path
-          required: true
-          schema: 
-              $ref: '#/components/schemas/AppId'
-        - name: appInstanceId
-          description:  A globally unique identifier associated with a running instance of an application. OP generates this identifier. 
-          in: query
-          required: false
-          schema: 
-              $ref: '#/components/schemas/AppInstanceId'
-        - name: EdgeCloudZone
-          description: An identifier name for an Edge Cloud Zone in the operator domain
-          in: query
-          required: false
-          schema: 
-              $ref: '#/components/schemas/EdgeCloudZone'
-        - name: region
-          description:  Human readable name of the geografical region of the Edge Cloud. Defined by the OP.
-          in: query
-          required: false
-          schema: 
-              $ref: '#/components/schemas/Region'
-      responses:
-        '200':
-          description: Information of Aplication Instances
-          content: 
-            application/json:
-              schema:
-                type: object
-                properties:
-                  appId:
-                    $ref: '#/components/schemas/AppId'
-                  aplicationInstace:
-                    type: array
-                    items:
-                      $ref:  '#/components/schemas/AppInstanceInfo'
-                minItems: 1                 
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '500':
-          $ref: '#/components/responses/500'
-        '503':
-          $ref: '#/components/responses/503'
-    delete:
-      tags:
-        - Application Instance
-      summary: Terminate an Application Instance
-      description: Terminate a running instance of an application within an Edge Cloud Zone
-      operationId: deleteAppInstance
-      parameters:
-        - name: appId
-          description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
-          in: path
-          required: true
-          schema: 
-              $ref: '#/components/schemas/AppId'
-        - name: appInstanceId
-          in: query
-          description: Identificator of the specific application instance that will be terminated
-          required: true
-          schema:
-            $ref: "#/components/schemas/AppInstanceId"
-      responses:
-        '202':
-          description: Request accepted to be processed. It applies for async deletion process
-        '204':
-          description: Application deleted      
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '500':
-          $ref: '#/components/responses/500'
-        '503':
-          $ref: '#/components/responses/503'
- 
   /app:
     post:
       tags:  
@@ -263,6 +115,7 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'       
+  
   /app/{appId}:
     get:
       tags:
@@ -339,6 +192,157 @@ paths:
         '503':
           $ref: '#/components/responses/503'
  
+  /app/{appId}/instance:
+    post: 
+      tags:
+        - Application
+      summary: Instantiation of an Application
+      description: Ask the OP to instantiate an application to one or several Edge Cloud Zones with an Application as an input and an Application Instance as the output. 
+      operationId: appInstantiation
+      parameters:
+        - name: appId
+          description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
+          in: path
+          required: true
+          schema: 
+              $ref: '#/components/schemas/AppId'
+      requestBody:
+        description: Details regarding where the application should be instantiated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppInstantiation'
+        required: true      
+      responses:
+        '202':
+          description: Application instantiation accepted
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appId:
+                    $ref: '#/components/schemas/AppId'
+                  aplicationInstace:
+                    type: array
+                    items:
+                      $ref:  '#/components/schemas/AppInstanceInfo'
+                minItems: 1                 
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                status: 409
+                code: CONFLICT
+                message: "Application already instantiated in the given Edge Zone or Region"
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    get:
+      tags:
+        - Application
+      summary: Retrieve the information of Application Instances for a given App
+      description: Ask the OP the information of the instances for a given application
+      operationId: getAppInstance
+      parameters:
+        - name: appId
+          description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
+          in: path
+          required: true
+          schema: 
+              $ref: '#/components/schemas/AppId'
+        - name: appInstanceId
+          description:  A globally unique identifier associated with a running instance of an application. OP generates this identifier. 
+          in: query
+          required: false
+          schema: 
+              $ref: '#/components/schemas/AppInstanceId'
+        - name: EdgeCloudZone
+          description: An identifier name for an Edge Cloud Zone in the operator domain
+          in: query
+          required: false
+          schema: 
+              $ref: '#/components/schemas/EdgeCloudZone'
+        - name: region
+          description:  Human readable name of the geografical region of the Edge Cloud. Defined by the OP.
+          in: query
+          required: false
+          schema: 
+              $ref: '#/components/schemas/Region'
+      responses:
+        '200':
+          description: Information of Aplication Instances
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appId:
+                    $ref: '#/components/schemas/AppId'
+                  aplicationInstace:
+                    type: array
+                    items:
+                      $ref:  '#/components/schemas/AppInstanceInfo'
+                minItems: 1                 
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+    delete:
+      tags:
+        - Application
+      summary: Terminate an Application Instance
+      description: Terminate a running instance of an application within an Edge Cloud Zone
+      operationId: deleteAppInstance
+      parameters:
+        - name: appId
+          description: A globally unique identifier associated with the application. OP generates this identifier when the application is submitted over NBI.
+          in: path
+          required: true
+          schema: 
+              $ref: '#/components/schemas/AppId'
+        - name: appInstanceId
+          in: query
+          description: Identificator of the specific application instance that will be terminated
+          required: false
+          schema:
+            $ref: "#/components/schemas/AppInstanceId"
+      responses:
+        '202':
+          description: Request accepted to be processed. It applies for async deletion process
+        '204':
+          description: Application deleted      
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+ 
   /edge-cloud-zones:
     get:
       tags: 
@@ -402,15 +406,12 @@ components:
       description: Attributes with information where to instantiate a given application
       type: object
       properties:
-        appId:
-          $ref: '#/components/schemas/AppId'
         EdgeCloudZone:
           $ref: '#/components/schemas/EdgeCloudZone'
         region:
           $ref: '#/components/schemas/Region'
       required:
-        - appId
-
+        - region
     AppManifest:
       properties:
         name:
