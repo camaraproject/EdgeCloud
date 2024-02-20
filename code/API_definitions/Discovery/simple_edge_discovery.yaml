@@ -230,9 +230,10 @@ components:
       
     EdgeCloudZone:
       type: object
-      description:  A Edge Cloud Zone, uniquely identified by a combination of the value of the Edge Resource Name object and the value of the Provider object (the name of the cloud provider or operator hosting that egde cloud zone).
+      description:  An Edge Cloud Zone, uniquely identified by a combination of the value of the Edge Resource Name object and the value of the Provider object (the name of the cloud provider or operator hosting that egde cloud zone).
       properties:
-        edgeCloudZone:
+        edgeCloudZone: 
+          description: An Edge Cloud Zone, uniquely identified by a combination of the value of the Edge Resource Name object and the value of the Provider object (the name of the cloud provider or operator hosting that egde cloud zone).
           type: object
           properties:
             edgeCloudProvider:
