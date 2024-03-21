@@ -1,3 +1,4 @@
+---
 openapi: 3.0.3
 info:
   title: Simple Edge Discovery API
@@ -7,62 +8,92 @@ info:
     ---
     # Summary
 
-    The Simple Edge Discovery API returns the name of the closest operator MEC platform to a particular user device.
+    The Simple Edge Discovery API returns the name of the closest operator MEC
+    platform to a particular user device.
 
     # Purpose
-    Network operators may host multiple Multi-access Edge Computing (MEC, or 'Edge') platforms in a given territory. Connecting your application to a server on the closest MEC platform means packets travel the shortest distance between endpoints, typically resulting in the lowest round-trip latency. Note, the physical (GPS) location of a user device is not a reliable way to determine the closest MEC platform, due to the way operator networks are routed - so the operator will calculate the MEC platform with the  _shortest network path_ to the network-attached device identified in the API request.
+    Network operators may host multiple Multi-access Edge Computing (MEC, or
+    'Edge') platforms in a given territory. Connecting your application to a
+    server on the closest MEC platform means packets travel the shortest
+    distance between endpoints, typically resulting in the lowest round-trip
+    latency. Note, the physical (GPS) location of a user device is not a
+    reliable way to determine the closest MEC platform, due to the way operator
+    networks are routed - so the operator will calculate the MEC platform with
+    the  _shortest network path_ to the network-attached device identified in
+    the API request.
 
-    Once you have the name of the closest MEC platform to the user device, you may:
+    Once you have the name of the closest MEC platform to the user device, you
+    may:
 
-    * connect the application client on the user device to your application server instance on that MEC platform. Note: the address of that server instance is not part of the API response, but should be known in advance.
-    * or, if you have no instance on that MEC platform, you may wish to deploy one there.
+    * connect the application client on the user device to your application
+    server instance on that MEC platform. Note: the address of that server
+    instance is not part of the API response, but should be known in advance.
+    * or, if you have no instance on that MEC platform, you may wish to deploy
+    one there.
 
-     # Usage
+    # Usage
 
-     The API may be called either by an application client hosted on a device attached to the operator network (i.e. phone, tablet), or by a server.
+    The API may be called either by an application client hosted on a device
+    attached to the operator network (i.e. phone, tablet), or by a server.
 
-     There is a single API endpoint: `/mecplatforms?filter=closest`. To call this endpoint, the API consumer must first obtain a valid OAuth2 token from the token endpoint, and pass it as an `Authorization` header in the API request.
+    There is a single API endpoint: `/mecplatforms?filter=closest`. To call
+    this endpoint, the API consumer must first obtain a valid OAuth2 token from
+    the token endpoint, and pass it as an `Authorization` header in the API
+    request.
 
-     The API returns the closest MEC platform to a given device, so that device needs to be identifiable by the network:
-    * if you call the API from a server, you must explicitly pass one or more device identifiers in the HTTP request header:
-      * `IP-Address`. This is the public IP address of the user device: this can be obtained by an application hosted on that device calling a public IP address API (e.g. GET https://api.ipify.org?format=json)
-      * `Phone-Number` . The international E.164 format (starting with country code), e.g. +4407123123456
+    The API returns the closest MEC platform to a given device, so that device
+    needs to be identifiable by the network:
+
+    * If you call the API from a server, you must explicitly pass one or
+    more device identifiers in the HTTP request header:
+      * `IP-Address`. This is the public IP address of the user device: this can
+      be obtained by an application hosted on that device calling a public IP
+      address API (e.g. GET https://api.ipify.org?format=json)
+      * `Phone-Number` . The international E.164 format (starting with country
+      code), e.g. +4407123123456
       * `Network-Access-Identifier` (where available from the API host operator)
 
-    * if you call the API from a device attached to the operator network, you _may_ omit the explicit device identifier(s)from the request header. If such a request fails with a `404 Not Found` error then retry the request but this time include a device identifier.
+    * If you call the API from a device attached to the operator network, you
+    _may_ omit the explicit device identifier(s)from the request header. If such
+    a request fails with a `404 Not Found` error then retry the request but this
+    time include a device identifier.
 
-    The provider of the MEC Platform may be an operator, or a cloud provider. The
+    The provider of the MEC Platform may be an operator, or a cloud provider.
 
     # Example requests:
 
     Examples for all API clients:
 
-        GET /mec-platforms?filter=closest HTTP/1.1
-        Host: example.com
-        Accept: application/json
-        Network-Access-Identifier: 4d596ac1-7822-4927-a3c5-d72e1f922c94@domain.com
+      GET /mec-platforms?filter=closest HTTP/1.1
+      Host: example.com
+      Accept: application/json
+      Network-Access-Identifier: 4d596ac1-7822-4927-a3c5-d72e1f922c94@domain.com
 
-        GET /mec-platforms?filter=closest HTTP/1.1
-        Host: example.com
-        Accept: application/json
-        IP-Address: 84.125.93.10
+      GET /mec-platforms?filter=closest HTTP/1.1
+      Host: example.com
+      Accept: application/json
+      IP-Address: 84.125.93.10
 
-        GET /mec-platforms?filter=closest HTTP/1.1
-        Host: example.com
-        Accept: application/json
-        Phone-Number: 441234567890
+      GET /mec-platforms?filter=closest HTTP/1.1
+      Host: example.com
+      Accept: application/json
+      Phone-Number: 441234567890
 
     Example where API client is on a network-attached device:
 
-        GET /mec-platforms?filter=closest HTTP/1.1
-        Host: example.com
-        Accept: application/json
+      GET /mec-platforms?filter=closest HTTP/1.1
+      Host: example.com
+      Accept: application/json
 
     # Responses
 
     ## Success
 
-    A JSON object is returned containing a `MECPlatforms` array with a single member, along with the HTTP `200 OK` status code. The value of the `edgeCloudProvider` object is the name of the operator or cloud provider of the MEC Platform. `edgeResourceName` object is the name of the closest MEC platform to the user device. An example of this JSON object is as follows:
+    A JSON object is returned containing a `MECPlatforms` array with a single
+    member, along with the HTTP `200 OK` status code. The value of the
+    `edgeCloudProvider` object is the name of the operator or cloud provider of
+    the MEC Platform. `edgeResourceName` object is the name of the closest MEC
+    platform to the user device. An example of this JSON object is as follows:
     ```
     {
       "MecPlatforms": [
@@ -75,16 +106,22 @@ info:
     ```
     ## Errors
 
-    If the authentication token is not valid, a `401 UNAUTHENTICATED` error is returned.
+    If the authentication token is not valid, a `401 UNAUTHENTICATED` error is
+    returned.
 
-    If the mobile subscription parameters contain a formatting error, a `400 INVALID_ARGUMENT` error is returned.
+    If the mobile subscription parameters contain a formatting error, a `400
+    INVALID_ARGUMENT` error is returned.
 
-    If the mobile subscription cannot be identified from the provided parameters, a `404 NOT_FOUND` error is returned.
+    If the mobile subscription cannot be identified from the provided
+    parameters, a `404 NOT_FOUND` error is returned.
 
-    Any more general service failures will result in an error in the `5xx`range with an explanation.
+    Any more general service failures will result in an error in the `5xx`range
+    with an explanation.
 
     # Note for Simple Edge API publishers
-    The API publisher (i.e. the operator implementation) must ensure that the tuple of edgeCloudProvider+edgeResourceName in the success response is unique.
+    The API publisher (i.e. the operator implementation) must ensure that the
+    tuple of edgeCloudProvider+edgeResourceName in the success response is
+    unique.
 
     # Further info and support
 
@@ -123,7 +160,8 @@ paths:
         - name: filter
           in: query
           required: true
-          description: Filter the MEC Platforms according to the parameter value. For this API the only supported value is `closest`.
+          description: Filter the MEC Platforms according to the parameter
+            value. For this API the only supported value is `closest`.
           schema:
             type: string
             enum: ["closest"]
@@ -146,7 +184,8 @@ paths:
 
         - name: Network-Access-Identifier
           in: header
-          description: 3GPP network access identifier for the subscription being used by the device.
+          description: 3GPP network access identifier for the subscription being
+            used by the device.
           example: "4d596ac1-7822-4927-a3c5-d72e1f922c94@domain.com"
           required: false
           schema:
@@ -156,14 +195,17 @@ paths:
           in: header
           example: "441234567890"
           required: false
-          description: MSISDN in E.164 format (starting with country code) of the mobile subscription being used by the device. Optionally prefixed with '+'.
+          description: MSISDN in E.164 format (starting with country code) of
+            the mobile subscription being used by the device. Optionally
+            prefixed with '+'.
           schema:
             type: string
             pattern: '^\+?[0-9]{5,15}$'
 
       responses:
         "200":
-          description: Successful response, returning the closest MEC platform to the user device identified in the request header.
+          description: Successful response, returning the closest MEC platform
+            to the user device identified in the request header.
           content:
             application/json:
               schema:
@@ -192,14 +234,22 @@ paths:
           $ref: "#/components/responses/504GatewayTimeout"
       tags:
         - Discovery
-      summary: Returns the name of the MEC platform closest to user device identified in the request.
-      description: On receiving this request, the network will return the name of the MEC platform with the shortest network path to the end user device identified in the request.
+      summary: Returns the name of the MEC platform closest to user device
+        identified in the request.
+      description: On receiving this request, the network will return the name
+        of the MEC platform with the shortest network path to the end user
+        device identified in the request.
 
 components:
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
-      description: The Simple Edge Discovery API makes use of the OAUTH 2.0 client credentials grant, which is applicable for server-to-server use cases involving trusted partners or clients without any protected user data involved. In this method the API invoker client is registered as a confidential client with an authorization grant type of client_credentials.
+      description: The Simple Edge Discovery API makes use of the OAUTH 2.0
+        client credentials grant, which is applicable for server-to-server use
+        cases involving trusted partners or clients without any protected user
+        data involved. In this method the API invoker client is registered as a
+        confidential client with an authorization grant type of
+        client_credentials.
       flows:
         clientCredentials:
           tokenUrl: "{tokenUrl}"
@@ -209,12 +259,17 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/MecPlatform"
-      description: A collection of MEC Platforms. For this Simple Edge Discovery API the collection will have at most one member (the closest MEC Platform to the user device indicated in the request).
+      description: A collection of MEC Platforms. For this Simple Edge Discovery
+        API the collection will have at most one member (the closest MEC
+        Platform to the user device indicated in the request).
       additionalProperties: false
 
     MecPlatform:
       type: object
-      description: A MEC Platform, uniquely identified by a combination of the value of the Edge Resource Name object and the value of the Provider object (the name of the cloud provider or operator hosting that platform).
+      description: A MEC Platform, uniquely identified by a combination of the
+        value of the Edge Resource Name object and the value of the Provider
+        object (the name of the cloud provider or operator hosting that
+        platform).
       properties:
         edgeCloudProvider:
           $ref: "#/components/schemas/EdgeCloudProvider"
@@ -228,7 +283,8 @@ components:
 
     EdgeResource:
       description: |
-        Edge Resource Name - an identifier for an edge resource in the operator domain.
+        Edge Resource Name - an identifier for an edge resource in the operator
+        domain.
       type: string
       additionalProperties: false
 
@@ -243,7 +299,9 @@ components:
           description: The HTTP status code.
         message:
           type: string
-          description: This parameter appears when there was an error. Human readable explanation specific to this occurrence of the problem.
+          description: This parameter appears when there was an error.
+            Human readable explanation specific to this occurrence of the
+            problem.
 
   ###################################
   # RESPONSES
@@ -257,12 +315,17 @@ components:
             $ref: "#/components/schemas/errorResponse"
           examples:
             InsufficientParameters:
-              description: Sufficient parameters must be specified to allow the target UE to be identified.
+              description: Sufficient parameters must be specified to allow the
+                target UE to be identified.
               value:
                 {
                   "code": "INVALID_ARGUMENT",
                   "status": 400,
-                  "message": "Insufficient parameters: At least one of Network-Access-Identifier, Phone-Number or IP-Address must be specified, or, the API must be called by a client on a network-attached device (hence passing the source IP in the request header) ",
+                  "message": "Insufficient parameters: At least one of
+                  Network-Access-Identifier, Phone-Number or IP-Address must be
+                  specified, or, the API must be called by a client on a
+                  network-attached device (hence passing the source IP in the
+                  request header) ",
                 }
             InvalidExternalId:
               value:
@@ -279,7 +342,9 @@ components:
                   "message": "Invalid Header Format: Phone-Number",
                 }
             InvalidIP:
-              description: This error will be returned if the IP address does not have a valid format, or if the IP address is a private IPv4 address.
+              description: This error will be returned if the IP address does
+                not have a valid format, or if the IP address is a private IPv4
+                address.
               value:
                 {
                   "code": "INVALID_ARGUMENT",
@@ -298,7 +363,8 @@ components:
                 {
                   "code": "UNAUTHENTICATED",
                   "status": 401,
-                  "message": "Request not authenticated due to missing, invalid, or expired credentials",
+                  "message": "Request not authenticated due to missing, invalid,
+                  or expired credentials",
                 }
 
     403Forbidden:
@@ -313,7 +379,8 @@ components:
                 {
                   "code": "PERMISSION_DENIED",
                   "status": 403,
-                  "message": "Client does not have sufficient permissions to perform this action",
+                  "message": "Client does not have sufficient permissions to
+                  perform this action",
                 }
 
     404NotFound:
@@ -324,7 +391,8 @@ components:
             $ref: "#/components/schemas/errorResponse"
           examples:
             SubscriberNotFound:
-              description: No device found for the specified parameters, meaning the closest MEC platform cannot be determined.
+              description: No device found for the specified parameters, meaning
+                the closest MEC platform cannot be determined.
               value:
                 {
                   "code": "NOT_FOUND",
@@ -340,12 +408,14 @@ components:
             $ref: "#/components/schemas/errorResponse"
           examples:
             MethodNotAllowed:
-              description: An HTTP verb other than GET has been used to try and access the resource.
+              description: An HTTP verb other than GET has been used to try and
+                access the resource.
               value:
                 {
                   "code": "METHOD_NOT_ALLOWED",
                   "status": 405,
-                  "message": "The request method is not supported by this resource",
+                  "message": "The request method is not supported by this
+                  resource",
                 }
 
     406Unacceptable:
@@ -361,7 +431,8 @@ components:
                 {
                   "code": "NOT_ACCEPTABLE",
                   "status": 406,
-                  "message": "The server cannot produce a response matching the content requested by the client through Accept-* headers",
+                  "message": "The server cannot produce a response matching the
+                  content requested by the client through Accept-* headers",
                 }
 
     429TooManyRequests:
@@ -372,12 +443,12 @@ components:
             $ref: "#/components/schemas/errorResponse"
           examples:
             TooManyRequests:
-              description: Access to the API has been temporarily blocked due to quota or spike arrest limits being reached.
+              description: Access to the API has been temporarily blocked due to
+                quota or spike arrest limits being reached.
               value:
                 {
-                  "code": "TOO_MANY_REQUESTS",
-                  "status": 429,
-                  "message": "Either out of resource quota or reaching rate limiting",
+                  "code": "TOO_MANY_REQUESTS", "status": 429, "message": "Either
+                  out of resource quota or reaching rate limiting",
                 }
 
     500InternalServerError:
