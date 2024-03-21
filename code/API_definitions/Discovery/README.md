@@ -10,19 +10,19 @@ This API allows a developer to:
 
 - discover available MEC platforms, ranked by proximity to a UE.
 - read the state (availability and capabilities) of an operator's various MEC platforms.
-- register a service profile (a description of the developer's edge service) with the MEC operator
-- register the deployed service endpoints with the MEC operator, which allows the closest service endpoint to be discovered at runtime
+- register a service profile (a description of the developer's edge service) with the MEC operator.
+- register the deployed service endpoints with the MEC operator, which allows the closest service endpoint to be discovered at runtime.
 
 The API will also support the following capabilities:
 
-- events(such as change of status of a MEC platform or another event which could affect their service)
+- events(such as change of status of a MEC platform or another event which could affect their service).
 - subscription to notification of events.
 
-# Mapping to the list of intents
+## Mapping to the list of intents
 
 These APIs fulfil the ['discovery' intents](https://github.com/camaraproject/EdgeCloud/blob/main/documentation/SupportingDocuments/Harmonisation%20of%20APIs/describing%20and%20harmonising%20the%20Edge%20APIs.md)
 
-*Simple Edge Discovery* fulfils a single intent,  "4. I can discover the closest MEC platform to a specific terminal (closest in terms of shortest network path)"
+*Simple Edge Discovery* fulfils a single intent, "4. I can discover the closest MEC platform to a specific terminal (closest in terms of shortest network path)"
 
 *MEC Exposure and Experience Management* is a more comprehensive discovery API and fulfils the following intents:
 
@@ -30,12 +30,12 @@ These APIs fulfil the ['discovery' intents](https://github.com/camaraproject/Edg
 
 #### Provisioning intents
 
-1. “I can retrieve a list of the operator’s MECs and their status, ordering the results by location and filtering by status (active/inactive/unknown)”
+1. "I can retrieve a list of the operator’s MECs and their status, ordering the results by location and filtering by status (active/inactive/unknown)"
 2. "I can discover the capabilities/resources available at an operator’s MEC: CPU, Memory, Storage, GPU"
 3. "I can discover the geographical regions covered by the operators MECs"
 4. "I can discover the closest MEC platform to a specific terminal (closest in terms of shortest network path)"
 
-16. “I can ask the operator to provide the details of all the on-boarded applications”
+16. "I can ask the operator to provide the details of all the on-boarded applications"
 17. "I can ask the operator to inform about the application instance details e.g., communication endpoints, resource consumed etc"
 
 #### Runtime intents
@@ -48,12 +48,12 @@ These APIs fulfil the ['discovery' intents](https://github.com/camaraproject/Edg
 
 #### Provisioning intents
 
-23. “I can publish an (ordered, filtered) list of my MECs, their coverage, capabilities and status” *(aligns with 1,2,3 in the developer intents)*
-24. “I can map an application’s requirements to the best MEC for hosting it, based on application demands for CPU, Memory, Storage, GPU, bandwidth, Network forecast, mobility” *(aligns with 4,5,8,9)*
+23. "I can publish an (ordered, filtered) list of my MECs, their coverage, capabilities and status" *(aligns with 1,2,3 in the developer intents)*
+24. "I can map an application’s requirements to the best MEC for hosting it, based on application demands for CPU, Memory, Storage, GPU, bandwidth, Network forecast, mobility" *(aligns with 4,5,8,9)*
 
 #### Runtime intents
 
-25. “I can inform the developer of any event which changes which MEC is optimal for their application and connected terminals” *(aligns with  6)*
+25. "I can inform the developer of any event which changes which MEC is optimal for their application and connected terminals" *(aligns with 6)*
 
 ## Notes
 
