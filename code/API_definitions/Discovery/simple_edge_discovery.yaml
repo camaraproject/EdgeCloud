@@ -7,7 +7,7 @@ info:
     ---
     # Summary
 
-    The Simple Edge Discovery API returns the name of the closest operator MEC platform to a particular user device. 
+    The Simple Edge Discovery API returns the name of the closest operator MEC platform to a particular user device.
 
     # Purpose
     Network operators may host multiple Multi-access Edge Computing (MEC, or 'Edge') platforms in a given territory. Connecting your application to a server on the closest MEC platform means packets travel the shortest distance between endpoints, typically resulting in the lowest round-trip latency. Note, the physical (GPS) location of a user device is not a reliable way to determine the closest MEC platform, due to the way operator networks are routed - so the operator will calculate the MEC platform with the  _shortest network path_ to the network-attached device identified in the API request.
@@ -18,21 +18,20 @@ info:
     * or, if you have no instance on that MEC platform, you may wish to deploy one there.
 
      # Usage
-     
+
      The API may be called either by an application client hosted on a device attached to the operator network (i.e. phone, tablet), or by a server.
-     
+
      There is a single API endpoint: `/mecplatforms?filter=closest`. To call this endpoint, the API consumer must first obtain a valid OAuth2 token from the token endpoint, and pass it as an `Authorization` header in the API request.
 
-     
      The API returns the closest MEC platform to a given device, so that device needs to be identifiable by the network:
     * if you call the API from a server, you must explicitly pass one or more device identifiers in the HTTP request header:
       * `IP-Address`. This is the public IP address of the user device: this can be obtained by an application hosted on that device calling a public IP address API (e.g. GET https://api.ipify.org?format=json)
       * `Phone-Number` . The international E.164 format (starting with country code), e.g. +4407123123456
       * `Network-Access-Identifier` (where available from the API host operator)
-      
+
     * if you call the API from a device attached to the operator network, you _may_ omit the explicit device identifier(s)from the request header. If such a request fails with a `404 Not Found` error then retry the request but this time include a device identifier.
 
-    The provider of the MEC Platform may be an operator, or a cloud provider. The 
+    The provider of the MEC Platform may be an operator, or a cloud provider. The
 
     # Example requests:
 
@@ -47,12 +46,12 @@ info:
         Host: example.com
         Accept: application/json
         IP-Address: 84.125.93.10
-        
+
         GET /mec-platforms?filter=closest HTTP/1.1
         Host: example.com
         Accept: application/json
         Phone-Number: 441234567890
-        
+
     Example where API client is on a network-attached device:
 
         GET /mec-platforms?filter=closest HTTP/1.1
@@ -85,9 +84,9 @@ info:
     Any more general service failures will result in an error in the `5xx`range with an explanation.
 
     # Note for Simple Edge API publishers
-    The API publisher (i.e. the operator implementation) must ensure that the tuple of edgeCloudProvider+edgeResourceName in the success reponse is unique.
+    The API publisher (i.e. the operator implementation) must ensure that the tuple of edgeCloudProvider+edgeResourceName in the success response is unique.
 
-    # Further info and support 
+    # Further info and support
 
     ---
   contact:
@@ -229,7 +228,7 @@ components:
 
     EdgeResource:
       description: |
-        Edge Resource Name - an identifier for an edge reource in the operator domain.
+        Edge Resource Name - an identifier for an edge resource in the operator domain.
       type: string
       additionalProperties: false
 
@@ -263,7 +262,7 @@ components:
                 {
                   "code": "INVALID_ARGUMENT",
                   "status": 400,
-                  "message": "Insufficient parameters: At least one of Network-Access-Identifier, Phone-Number or IP-Address must be specified, or, the API must be called by a client on a netwok-attached device (hence passing the source IP in the request header) ",
+                  "message": "Insufficient parameters: At least one of Network-Access-Identifier, Phone-Number or IP-Address must be specified, or, the API must be called by a client on a network-attached device (hence passing the source IP in the request header) ",
                 }
             InvalidExternalId:
               value:
