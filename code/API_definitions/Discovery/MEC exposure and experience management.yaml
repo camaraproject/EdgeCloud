@@ -4,7 +4,7 @@ openapi: 3.0.0
 ############################################################################
 info:
   title: MEC Exposure & Experience Management API
-  version: 0.8.1
+  version: 0.8.2
   description:  |
     # Introduction
     ---
@@ -489,7 +489,7 @@ paths:
                 title: GetMECPlatformsResponse
                 type: object
                 properties:
-                  MECPlatforms:
+                  mecPlatforms:
                     type: array
                     items:
                       $ref: '#/components/schemas/ResourcesMecPlatform'
@@ -686,7 +686,7 @@ components:
     ResourcesServiceProfile:
       type: object
       properties:
-        serviceProfileId:
+        id:
           $ref: '#/components/schemas/TypesServiceProfileId'
         clientType:
           type: string
@@ -701,7 +701,7 @@ components:
             - Analytics
             - Robotics
           description: The category of application client.
-        ecspFilter:
+        preferredEdgeProvider:
           type: string
           description: identity of the preferred Edge Computing Service Provider
         clientSchedule:
@@ -755,7 +755,7 @@ components:
           type: string
           description: Description of the Service Endpoint
           additionalProperties: false
-        serviceProfileID:
+        serviceProfileId:
               $ref: '#/components/schemas/TypesServiceProfileId'
     ResourcesServiceEndpoint:
       type: object
@@ -783,11 +783,11 @@ components:
     ResourcesMecPlatform:
       type: object
       properties:
-        ern:
+        edgeResourceName:
           $ref: '#/components/schemas/TypesEdgeResource'
-        zone:
+        zoneId:
           $ref: '#/components/schemas/TypesZoneId'
-        region:
+        regionId:
           $ref: '#/components/schemas/TypesRegionId'
         status:
           description: Status of the MEC Platform (default is 'unknown')
@@ -839,7 +839,7 @@ components:
         - $ref: '#/components/schemas/ResourcesZoneMetadata'
         - type: object
           required:
-            - MECPlatforms
+            - mecPlatforms
           properties:
             mecPlatforms:
               type: array
