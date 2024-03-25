@@ -4,10 +4,10 @@
 
 | No | Deliverables/Criteria            | Mandatory | Status (Contributed/Approved/Pending/Validated/Partly-Validated)|
 |----|----------------------------------|-----------|----------------------------                         
-|  1 |API Spec                          |   Y       | Contributed                |
-|  2 |API Implementation                |   Y       | Contributed                |
-|  3 |API Documentation                 |   Y       | Contributed                |
-|  4 |User Stories                      |   Y       | Contributed                |
+|  1 |API Spec                          |   Y       | Contributed              |
+|  2 |API Implementation                |   N       | --                       |
+|  3 |API Documentation                 |   Y       | Contributed              |
+|  4 |User Stories                      |   Y       | Contributed              |
 |  5 |API test cases                    |   Y       | Drafted Gherkin feature	 |
-|  6 |Validated by atleast 2 operators  |   Y       | Under validation by TIM 	 |                                          
-|  7 |Security review    				|   Y       | Contributed      			 |
+|  6 |Validated by atleast 2 operators  |   Y       | Under validation by TIM  |                
+|  7 |Security review    				        |   Y       | Contributed        			 |
