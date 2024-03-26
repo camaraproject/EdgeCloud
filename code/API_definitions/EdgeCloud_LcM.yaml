@@ -1,6 +1,7 @@
 openapi: 3.0.3
 info:
   title: Edge Cloud API
+  version: 0.9.1
   description:  |
  
     Edge Cloud API for Life Cycle Management and discovery of an application.
@@ -225,7 +226,13 @@ paths:
         required: true
       responses:
         '201':
-          description: Application submitted successfully
+          description: Application created successfully
+          headers:
+            Location:
+              description: Contains the URI of the newly created application.
+              required: true
+              schema:
+                type: string
           content: 
             application/json:
               schema:
@@ -404,71 +411,66 @@ components:
       properties:
         name:
           type: string
+          pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
           description: Name of the application. 
         version:
           type: integer
           description: Application version information
-        virtType:
+        packageType:
           type: string
           enum:
-            - VM
+            - QCOW2
+            - OVA
             - CONTAINER
             - HELM 
-        fileName:
-          type: string
-          minLength:  8
-          maxLength: 32
-          description: Name of the file with the extension eg. zip, targz, etc.
-        repository:       
+        operatingSystem:
+          $ref: '#/components/schemas/OperatingSystem'
+        appRepo:
           type: object
           required:
             - type
-            - url
+            - imagePath
           properties:
             type:                 
               type: string
               enum:
                 - PRIVATEREPO
                 - PUBLICREPO
-              description: Artifact repository location. PUBLICREPO is used of public urls like github, helm repo etc, 
-                                  PRIVATEREPO  is used for private repo managed by the application developer.
-            url:
+              description: Application repository and image URI information. PUBLICREPO is used of public urls like github, helm repo etc. PRIVATEREPO  is used for private repo managed by the application developer. Private repo can be accessed by using the app developer provided userName and password. Password is recommended to be the personal access token created by developer e.g. in Github repo. 
+            imagePath:
               $ref: '#/components/schemas/Uri'
             userName:
               type: string
-              description:  Username to acces the artifact repository
-            password:
-              type: string      
-              description:  Password to acces the artifact repository
-            token:
-              type: string          
-              description:  Authorization token acces the artifact repository   
+              description:  Username to acces the Helm chart, docker-compose file or VM image repository
+            credentials:
+              type: string
+              maxLength: 128
+              description:  Password or personal access token created by developer to acces the app repository. API users can generate a personal access token e.g. docker clients to use them as password, 
+            authType:
+              type: string
+              enum:
+                - DOCKER
+                - HTTP_BASIC
+                - HTTP_BEARER
+                - NONE
+              description:  The credentials can also be formatted as a Basic auth or Bearer auth in HTTP "Authorization" header. 
+            checksum:
+              type: string
+              description: MD5 checksum for VM and file-based images, sha256 digest for containers  
         componentSpec:
-          description: Details about compute, networking and storage requirements for each component of the application.  
-                              App provider should  define all information needed to instantiate the component. 
-                              If artifact is being defined at component level  this section should have information just about the component. 
-                              In case the artifact is being defined at application level  the section should provide details about all the components.
+          description: Information defined in "appRepo" point to the application descriptor e.g. Helm chart, docker-compose yaml file etc. The descriptor may contain one or more containers and their associated meta-data. A component refers to additional details about these containers to expose the instances of the containers to external client applications. App provider can define one or more components (via the associated network port) in componentSpec corresponding to the containers in helm charts or docker-compose yaml file as part of app descriptors.
           type: array
           items:
             type: object
             required:
               - componentName
-              - operatingSystem
-              - cpuArchitecture
               - networkInterfaces
-              - numOfInstances
-              - restartPolicy
             properties:
               componentName: 
                 type: string
                 description: Component name must be unique with an application
-              operatingSystem:
-                $ref: '#/components/schemas/OperatingSystem'
-              cpuArchitecture:
-                $ref: '#/components/schemas/CpuArchType'
               networkInterfaces:
-                description: Each application component exposes some ports either for external users or for inter component communication.
-                                    Application provider is required to specify which ports are to be exposed and the type of traffic that will flow through these ports.
+                description: Each application component exposes some ports either for external users or for inter component communication. Application provider is required to specify which ports are to be exposed and the type of traffic that will flow through these ports.The underlying platform may assign a dynamic port against the "extPort" that the application clients will use to connect with edge application instance.
                 type: array
                 items:                          
                   type: object
@@ -476,19 +478,12 @@ components:
                     - interfaceId
                     - protocol
                     - port
-                    - network
-                    - interfaceName
                     - visibilityType
                   properties:
                     interfaceId:
                       type: string
-                      description:  Each Port and corresponding traffic protocol exposed by the component is identified by a name. 
-                                            Application client on user device requires this to uniquley idenify the interface. 
-                    network:
-                      type: string
-                      description: Name of the network.  In case the application has to be assoisated with more then 1 network then app provider
-                                          must define the name of the network on which this interface has to be exposed.  This parameter is required only if 
-                                          the port has to be exposed on a specific network other then default.
+                      pattern: ^[A-Za-z][A-Za-z0-9_]{3,31}$
+                      description:  Each Port and corresponding traffic protocol exposed by the component is identified by a name. Application client on user device requires this to uniquley idenify the interface. 
                     protocol:
                       type: string
                       enum:
@@ -501,43 +496,21 @@ components:
                       format: int32
                       minimum: 1
                       maximum: 65535
-                      description: Port number exposed by the component. OP may generate a dynamic port towards the UCs 
-                                          corresponding to this internal port and forward the client traffic from dynamic port to containerPort.
-                    interfaceName:
-                      type: string
-                      description:  Interface Name. Required only if application has to be attatched to a network other then default.
+                      description: Port number exposed by the component. OP may generate a dynamic port towards the component instance which forwards external traffic to the component port.
                     visibilityType:
-                      description: Defines whether the interface is exposed to outer world or not i.e., external, or internal.
-                                          If this is set to "external", then it is  exposed to external applications otherwise it is exposed 
-                                          internally to edge application components within edge cloud. When exposed to external world, 
-                                          an external dynamic port is assigned for UC traffic and mapped to the internal containerPort
+                      description: Defines whether the interface is exposed to outer world or not i.e., external, or internal.If this is set to "external", then it is  exposed to external applications otherwise it is exposed internally to edge application components within edge cloud. When exposed to external world, an external dynamic port is assigned for UC traffic and mapped to the extPort
                       type: string
                       enum:
                         - VISIBILITY_EXTERNAL
                         - VISIBILITY_INTERNAL
                 minItems: 1                
-              numOfInstances:
-                type: integer
-                format: int32
-                description: Number of component instances to be launched. 
-              restartPolicy:
-                type: string
-                enum:
-                  - RESTART_POLICY_ALWAYS
-                  - RESTART_POLICY_NEVER
-                description: How the platform shall handle component failure                        
+
       required:
         - name
         - virtType
-        - fileName
         - repository
         - componentSpec
-    CpuArchType:
-          type: string
-          enum:
-            - x86_64
-            - arm_64
-          description: CPU Instruction Set Architecture (ISA) E.g., Intel, Arm etc. 
+
     AppInstanceInfo:
       description: Information about the application instance.
       type: object
@@ -546,8 +519,6 @@ components:
           $ref: '#/components/schemas/AppInstanceId'
         edgeCloudNodeName:
           $ref: '#/components/schemas/EdgeCloudNodeName'
-        uri:
-          $ref: '#/components/schemas/Uri'
         status:
           description: Status of the application instance (default is 'unknown')
           type: string
@@ -558,9 +529,68 @@ components:
           - terminating
           - unknown   
           default: unknown 
+        componentEndpointInfo:
+          description: Information about the IP and Port exposed by the OP. Application clients shall use these access points to reach this application instance
+          type: array
+          items:
+            type: object
+            required:
+              - interfaceId
+              - accessPoints
+            properties:
+              interfaceId:
+                type: string
+                pattern: ^[A-Za-z0-9][A-Za-z0-9_]{6,30}[A-Za-z0-9]$
+                description: This is the interface Identifier that app provider defines when application is onboarded.
+              accessPoints:
+                $ref: '#/components/schemas/AccessEndpoint'
+          minItems: 1
     EdgeCloudNodeName:
       description: Edge Cloud Node Name - an identifier for an edge cloud node in the operator domain 
       type: string
+    AccessEndpoint:
+      type: object
+      required:
+        - port
+      anyOf:
+        - required:
+            - fqdn
+        - required:
+            - ipv4Addresses
+        - required:
+            - ipv6Addresses
+      properties:
+        port:
+          $ref: '#/components/schemas/Port'
+        fqdn:
+          $ref: '#/components/schemas/Fqdn'
+        ipv4Addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv4Addr'
+          minItems: 1
+        ipv6Addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6Addr'
+          minItems: 1
+
+    Ipv4Addr:
+      type: string
+      pattern: ^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$
+      example: 198.51.100.1
+    Ipv6Addr:
+      type: string
+      allOf:
+        - pattern: ^((:|(0?|([1-9a-f][0-9a-f]{0,3}))):)((0?|([1-9a-f][0-9a-f]{0,3})):){0,6}(:|(0?|([1-9a-f][0-9a-f]{0,3})))$
+        - pattern: ^((([^:]+:){7}([^:]+))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?))$
+      example: 2001:db8:85a3::8a2e:370:7334
+    Fqdn:
+      type: string
+
+    Port:
+      type: integer
+      minimum: 0
  
     ErrorInfo:
       type: object
@@ -649,6 +679,7 @@ components:
           $ref: '#/components/schemas/AppId'   
     Uri:
       type: string
+      example: https://charts.bitnami.com/bitnami/helm/example-chart:0.1.0
       description: A Uniform Resource Identifier (URI) as per RFC 3986, identifies the endpoint within an Edge Cloud Node where the user equipment may connect to the selected application instance
  
   responses:

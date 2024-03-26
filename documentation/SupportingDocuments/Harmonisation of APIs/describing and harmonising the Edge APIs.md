@@ -80,7 +80,7 @@ Abbreviations used for API names:
 ## Constraints of the APIs
 ### Simple Edge Discovery
 - not application aware (does not take into account the application's requirements for MEC, e.g. compute resources)
-- must be called by the network-attached UE hosting the client application
+- may be called by either: (1) the network-attached UE hosting the client application, or (2) an application developer's server.  
 
 ### MEC Exposure & Experience Management
 - no constraints (to be checked)
