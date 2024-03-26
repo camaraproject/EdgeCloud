@@ -12,14 +12,15 @@ info:
     Cloud Zone to a particular user device.
 
     # Purpose
-    Network operators may host multiple Multi-access Edge Cloud Zones in a given
-    territory. Connecting your application to a server on the closest Edge Cloud
-    Zone means packets travel the shortest distance between endpoints,
-    typically resulting in the lowest round-trip latency. Note, the physical
-    (GPS) location of a user device is not a reliable way to determine the
-    closest Edge Cloud Zone, due to the way operator networks are routed - so the
-    operator will calculate the Edge Cloud Zone with the _shortest network path_
-    to the network-attached device identified in the API request.
+    Network operators may host multiple Multi-access Edge Cloud Zones in a
+    given territory. Connecting your application to a server on the closest
+    Edge Cloud Zone means packets travel the shortest distance between
+    endpoints, typically resulting in the lowest round-trip latency. Note, the
+    physical (GPS) location of a user device is not a reliable way to determine
+    the closest Edge Cloud Zone, due to the way operator networks are routed -
+    so the operator will calculate the Edge Cloud Zone with the 
+    _shortest network path_to the network-attached device identified in the API
+    request.
 
     Once you have the name of the closest Edge Cloud Zone to the user device,
     you may:
@@ -27,8 +28,8 @@ info:
     * connect the application client on the user device to your application
     server instance on that Edge Cloud Zone. Note: the address of that server
     instance is not part of the API response, but should be known in advance.
-    * or, if you have no instance on that Edge Cloud Zone, you may wish to deploy
-    one there.
+    * or, if you have no instance on that Edge Cloud Zone, you may wish to
+    deploy one there.
 
     # Usage
 
@@ -91,8 +92,10 @@ info:
 
     ## Success
 
-    A JSON object is returned containing an array with a single member object. This contains identifiers for the closest Edge Cloud Zone. The HTTP
-     status code will be`200 OK`. An example response:
+    A JSON object is returned containing an array with a single member object. 
+    This contains identifiers for the closest Edge Cloud Zone. The HTTP status
+    code will be`200 OK`. An example response:
+    
     ```
     [
       {
@@ -145,7 +148,9 @@ info:
     # Authorization and authentication
 
     CAMARA guidelines defines a set of authorization flows which can grant API
-    clients access to the API functionality, as outlined in the document [CAMARA-API-access-and-user-consent.md](https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access-and-user-consent.md).
+    clients access to the API functionality, as outlined in the document 
+    [CAMARA-API-access-and-user-consent.md]
+    (https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access-and-user-consent.md).
     Which specific authorization flows are to be used will be determined during
     onboarding process, happening between the API Client and the Telco Operator
     exposing the API, taking into account the declared purpose for accessing
@@ -218,8 +223,10 @@ paths:
             type: string
             format: ipv4/ipv6
             oneOf:
-              - pattern: '^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$'
-              - pattern: '^((:|(0?|([1-9a-f][0-9a-f]{0,3}))):)((0?|([1-9a-f][0-9a-f]{0,3})):){0,6}(:|(0?|([1-9a-f][0-9a-f]{0,3})))$'
+              - pattern: '^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]
+              )\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$'
+              - pattern: '^((:|(0?|([1-9a-f][0-9a-f]{0,3}))):)((0?|([1-9a-f]
+              [0-9a-f]{0,3})):){0,6}(:|(0?|([1-9a-f][0-9a-f]{0,3})))$'
 
         - name: Network-Access-Identifier
           in: header
@@ -237,8 +244,8 @@ paths:
           required: false
           description: |
             MSISDN in E.164 format (starting with country code) of
-            the mobile subscription being used by the device. Optionally prefixed
-            with '+'.
+            the mobile subscription being used by the device. Optionally
+            prefixed with '+'.
           schema:
             type: string
             pattern: '^\+?[0-9]{5,15}$'
@@ -319,22 +326,33 @@ components:
             that egde cloud zone).
           type: object
           properties:
+            edgeCloudZoneId:
+              $ref: "#/components/schemas/EdgeCloudZoneId"
+            edgeCloudZoneName:
+              $ref: "#/components/schemas/EdgeCloudZoneName"
             edgeCloudProvider:
-              $ref: "#/components/schemas/EdgeCloudProvider"
-            edgeResourceName:
-              $ref: "#/components/schemas/EdgeResource"
+              $ref: "#/components/schemas/EdgeCloudProvider"              
+
+    EdgeCloudZoneId:
+      description: |
+        Operator-issued UUID for the Edge Cloud Zone.
+      type: string
+      format: uuid
+      additionalProperties: false
+
+
+    EdgeCloudZoneName:
+      description: |
+        Edge Cloud Zone Name - the common name for the Edge Cloud Zone.
+      type: string
+      additionalProperties: false
 
     EdgeCloudProvider:
       description: |
         The company name of the Edge Cloud Zone provider.
       type: string
 
-    EdgeResource:
-      description: |
-        Edge Resource Name - an identifier for an edge reource in the operator.
-        domain.
-      type: string
-      additionalProperties: false
+
 
     ErrorResponse:
       description: Error code and human-readable description.
