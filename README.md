@@ -22,8 +22,7 @@ Repository to describe, develop, document and test the EdgeCloud API family
 ## Meetings
 * Meetings are held virtually
 * Schedule: Tuesdays 16h-17 CET, every two weeks. 
-* Meeting link: [Link](https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZTk5NjBiZTgtYjc5OS00ODA5LTljMTEtNjZkNjNmYzdmZTE3%40thread.v2/0?context=%7b%22Tid%22%3a%229744600e-3e04-492e-baa1-25ec245c6f10%22%2c%22Oid%22%3a%2259beacec-cc69-4b31-873d-ba429711a3a7%22%7d)
-
+* Meeting link: [LFX Zoom](https://www.google.com/url?q=https://zoom-lfx.platform.linuxfoundation.org/meeting/94237809115?password%3D05fb6d8a-a913-47d8-b003-db75ecdaa5d9&sa=D&source=calendar&ust=1711304713775725&usg=AOvVaw2KsTGn2S2i4Bu5V-nusuUI) 
 ## Results
 * Sub Project is in progress
 
