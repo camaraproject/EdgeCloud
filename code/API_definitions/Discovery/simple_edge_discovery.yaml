@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   title: Simple Edge Discovery API
-  version: 0.9.4-rc.1
+  version: 1.0.0
   description: |
     # Find the closest Edge Cloud Zone
     ---
@@ -149,8 +149,7 @@ info:
 
     CAMARA guidelines defines a set of authorization flows which can grant API
     clients access to the API functionality, as outlined in the document
-    [CAMARA-API-access-and-user-consent.md]
-    (https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access-and-user-consent.md).
+    [CAMARA-API-access-and-user-consent.md](https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access-and-user-consent.md).
     Which specific authorization flows are to be used will be determined during
     onboarding process, happening between the API Client and the Telco Operator
     exposing the API, taking into account the declared purpose for accessing
@@ -183,7 +182,7 @@ servers:
         default: https://localhost:443
         description: API root.
       basePath:
-        default: simple-edge-discovery/v0
+        default: simple-edge-discovery/v1
         description: Base path for the Simple Edge Discovery API.
 
 tags:
