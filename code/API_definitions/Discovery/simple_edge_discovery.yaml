@@ -195,7 +195,7 @@ paths:
     get:
       security:
         - openId:
-            - simple-edge-discovery-read-closest
+            - simple-edge-discovery:edge-cloud-zones:read
       operationId: getEdgeCloudZones
       parameters:
         - name: filter
