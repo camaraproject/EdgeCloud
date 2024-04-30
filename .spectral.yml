@@ -1,6 +1,9 @@
 # CAMARA Project - linting ruleset - documentation avaialable here:
 # https://github.com/camaraproject/Commonalities/blob/main/documentation/Linting-rules.md
-# 31.01.2024 - initial version
+# Changelog:
+# - 31.01.2024: Initial version
+# - 19.03.2024: Corrected camara-http-methods rule
+
 
 extends: "spectral:oas"
 functions:
@@ -108,7 +111,7 @@ rules:
     then:
       function: pattern
       functionOptions:
-        match: "^(get|put|post|delete|patch|options)$"
+        match: "^(get|put|post|delete|patch|options|parameters)$"
     recommended: true  # Set to true/false to enable/disable this rule
 
   camara-get-no-request-body:
