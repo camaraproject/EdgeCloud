@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   title: Simple Edge Discovery API
-  version: 0.9.4-rc.1
+  version: 1.0.0
   description: |
     # Find the closest Edge Cloud Zone
     ---
@@ -149,8 +149,7 @@ info:
 
     CAMARA guidelines defines a set of authorization flows which can grant API
     clients access to the API functionality, as outlined in the document
-    [CAMARA-API-access-and-user-consent.md]
-    (https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access-and-user-consent.md).
+    [CAMARA-API-access-and-user-consent.md](https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access-and-user-consent.md).
     Which specific authorization flows are to be used will be determined during
     onboarding process, happening between the API Client and the Telco Operator
     exposing the API, taking into account the declared purpose for accessing
@@ -183,7 +182,7 @@ servers:
         default: https://localhost:443
         description: API root.
       basePath:
-        default: simple-edge-discovery/v0
+        default: simple-edge-discovery/v1
         description: Base path for the Simple Edge Discovery API.
 
 tags:
@@ -196,7 +195,7 @@ paths:
     get:
       security:
         - openId:
-            - simple-edge-discovery-read-closest
+            - simple-edge-discovery:edge-cloud-zones:read
       operationId: getEdgeCloudZones
       parameters:
         - name: filter
@@ -246,6 +245,19 @@ paths:
             prefixed with '+'.
           schema:
             $ref: "#/components/schemas/PhoneNumber"
+            
+        - name: X-Correlator
+          in: header
+          required: false
+          description: |
+            When the API Consumer includes the "X-Correlator" header in the
+            request, the API provider must include it in the response with
+            the same value that was used in the request. Otherwise, it is
+            optional to include the "X-Correlator" header in the response with
+             any valid value. Recommendation is to use UUID for values.
+          schema:
+            type: string
+            format: uuid
 
       responses:
         "200":
@@ -294,6 +306,19 @@ components:
       description: OpenID Provider Configuration Information.
       type: openIdConnect
       openIdConnectUrl: .well-known/openid-configuration
+      
+  headers:
+    X-Correlator:
+      description: |
+       When the API Consumer includes the "X-Correlator" header in the request,
+        the API provider must include it in the response with the same value t
+        hat was used in the request. Otherwise, it is optional to include the
+        "X-Correlator" header in the response with any valid value.
+        Recommendation is to use UUID for values.
+      required: false
+      schema:
+        type: string
+        format: uuid
 
   schemas:
     EdgeCloudZones:
@@ -388,6 +413,9 @@ components:
   responses:
     400BadRequest:
       description: Bad Request
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -434,6 +462,9 @@ components:
                 }
     401Unauthorized:
       description: Unauthorized
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -450,6 +481,9 @@ components:
 
     403Forbidden:
       description: Forbidden
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -466,6 +500,9 @@ components:
 
     404NotFound:
       description: Subscriber Not Found
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -484,6 +521,9 @@ components:
 
     405MethodNotAllowed:
       description: Method Not Allowed
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -503,6 +543,9 @@ components:
 
     406Unacceptable:
       description: Not Acceptable
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -520,6 +563,9 @@ components:
 
     429TooManyRequests:
       description: Too Many Requests
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -539,6 +585,9 @@ components:
 
     500InternalServerError:
       description: Internal Server Error
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -552,6 +601,9 @@ components:
 
     502BadGateway:
       description: Bad Gateway
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -565,6 +617,9 @@ components:
 
     503ServiceUnavailable:
       description: Service Unavailable
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
@@ -578,6 +633,9 @@ components:
 
     504GatewayTimeout:
       description: Gateway Time-Out
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/X-Correlator"
       content:
         application/json:
           schema:
