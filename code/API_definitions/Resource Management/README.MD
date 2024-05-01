@@ -1,5 +1,0 @@
-# Resource Management
-
-# Description
-
-# Intents
