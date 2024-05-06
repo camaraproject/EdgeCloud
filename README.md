@@ -22,7 +22,7 @@ Repository to describe, develop, document and test the EdgeCloud API family
 ## Meetings
 * Meetings are held virtually
 * Schedule: Tuesdays 16h-17 CET, every two weeks. 
-* Meeting link: [LFX Zoom](https://www.google.com/url?q=https://zoom-lfx.platform.linuxfoundation.org/meeting/94237809115?password%3D05fb6d8a-a913-47d8-b003-db75ecdaa5d9&sa=D&source=calendar&ust=1711304713775725&usg=AOvVaw2KsTGn2S2i4Bu5V-nusuUI) 
+* Meeting link: [LFX Zoom](https://zoom-lfx.platform.linuxfoundation.org/meeting/94237809115?password=05fb6d8a-a913-47d8-b003-db75ecdaa5d9) 
 ## Results
 * Sub Project is in progress
 
