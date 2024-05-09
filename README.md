@@ -1,6 +1,6 @@
 # Edge Cloud
 
-Repository to describe, develop, document, and test the §repo_name§ API family
+Repository to describe, develop, document, and test the EdgeCloud API family
 
 ## Scope
 
@@ -17,7 +17,7 @@ Repository to describe, develop, document, and test the §repo_name§ API family
 # Contributing
 
 * Meetings
-  * Meeting link: [Registration](https://www.google.com/url?q=https://zoom-lfx.platform.linuxfoundation.org/meeting/94237809115?password%3D05fb6d8a-a913-47d8-b003-db75ecdaa5d9&sa=D&source=calendar&ust=1711304713775725&usg=AOvVaw2KsTGn2S2i4Bu5V-nusuUI)
+  * Meeting link: [Registration](https://zoom-lfx.platform.linuxfoundation.org/meeting/94237809115?password=05fb6d8a-a913-47d8-b003-db75ecdaa5d9)
   * Schedule: Tuesdays 1400-1500 UTC, every two weeks.  
   * Minutes:  [Access](https://wiki.camaraproject.org/display/CAM/Edge+Cloud)
 
