@@ -14,17 +14,15 @@ Repository to describe, develop, document, and test the EdgeCloud API family
 * Describe, develop, document and test the APIs (with 1-2 Telcos)  
 * Started: 5th July 2022
 
-# Contributing
-
-* Meetings
-  * Meeting link: [Registration](https://zoom-lfx.platform.linuxfoundation.org/meeting/94237809115?password=05fb6d8a-a913-47d8-b003-db75ecdaa5d9)
-  * Schedule: Tuesdays 1400-1500 UTC, every two weeks.  
-  * Minutes:  [Access](https://wiki.camaraproject.org/display/CAM/Edge+Cloud)
-
 # Release Information
 
 # Contributing
 
 * Meetings
+  * [Registration](https://zoom-lfx.platform.linuxfoundation.org/meeting/94237809115?password=05fb6d8a-a913-47d8-b003-db75ecdaa5d9)
+  * Schedule: Tuesdays 1400-1500 UTC, every two weeks.  
+  * Minutes:  Access [meeting minutes](https://wiki.camaraproject.org/display/CAM/Edge+Cloud)
+
+* Mailing list
   * Subscribe / unsubscribe to the mailing list of this Sub Project [https://lists.camaraproject.org/g/sp-edc](https://lists.camaraproject.org/g/sp-edc).
   * A message to the community of this Sub Project can be sent using [sp-edc@lists.camaraproject.org](sp-edc@lists.camaraproject.org).
