@@ -10,4 +10,4 @@
 |  4 |User Stories                      |   Y       | Contributed              |
 |  5 |API test cases                    |   Y       | Drafted Gherkin feature	 |
 |  6 |Validated by atleast 2 operators  |   Y       | Under validation by TIM  |                
-|  7 |Security review    				        |   Y       | Contributed        			 |
+|  7 |Security review    				        |   Y       | Approved          			 |
