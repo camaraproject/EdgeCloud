@@ -5,7 +5,7 @@ openapi: 3.0.3
 ############################################################################
 info:
   title: OPAG-CAMARA Traffic Influence API
-  version: 0.9.3
+  version: 0.9.4
   description: |
     ## Overview
     The reference scenario foresees a Service, composed by one or more Service
