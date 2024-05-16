@@ -5,7 +5,7 @@ openapi: 3.0.3
 ############################################################################
 info:
   title: OPAG-CAMARA Traffic Influence API
-  version: 0.9.3
+  version: 0.9.4-wip
   description: |
     ## Overview
     The reference scenario foresees a Service, composed by one or more Service
@@ -33,7 +33,7 @@ info:
     geographical location and the Device moves to another geographical location,
     the TI API can be invoked to get the optimal routing in the new geographical
     location for that Device.
-    ## 1. Introduction
+    ## Introduction
     The TI API provides the capability to establish the best routing, in terms
     of latency, in a specific geographical area, between the user Device, e.g.
     the user’s smartphone, and the optimal EAS instance nearby. If the Device
@@ -74,7 +74,7 @@ info:
         instance. In the case the Application detects a location change, it can
         invoke the TI API again to request a new routing optimization toward
         the new EAS instance.
-    ## 2. Quick Start
+    ## Quick Start
     The usage of the TI API is based on the management of a "TrafficInfluence"
     resource, an object containing the intent requested invoking the TI API and
     that is implemented by the platform configuring the Mobile Network for the
@@ -164,7 +164,7 @@ info:
     Developers have a chance to specify call back URL on which notifications
     (e.g. session termination) regarding the session can be received from the
     service provider. This is also an optional parameter.
-    ## 3. Authentication and Authorization
+    ## Authentication and Authorization
     CAMARA guidelines defines a set of authorization flows which can grant API
     clients access to the API functionality, as outlined in the document
     [CAMARA-API-access-and-user-consent.md](https://github.com/camaraproject\
@@ -181,8 +181,7 @@ info:
     mandatory. This measure ensures that the API remains in strict compliance
     with user privacy preferences and regulatory obligations, upholding the
     principles of transparency and user-centric data control.
-    ## 4. API Documentation
-    ## 4.1 Details
+    ## API Documentation
     The TI API is consumed by an Application Function (AF) requesting for the
     optimal routing, in term of latency, for the traffic flow from a Device
     toward EAS instances in Edge Cloud Zones.\
@@ -210,6 +209,67 @@ info:
     3) activate the optimal routing for a user devices: the TI API can  be
     invoked with a user Device identifier (“Device”). For each user Device,
     a TI API invocation is required.
+    ## Release Notes
+    The Traffic Influence API reduces the complexity of the 3GPP Traffic
+    Influence API exposed by the 3GPP Network Exposure Function (NEF) [1]. While
+    the 3GPP TI API offers fastest routing activation and user mobility among
+    different edge sites, this version of the CAMARA Traffic Influence API
+    covers only the fastest routing activation, also for selected users.
+    User mobility will be introduced in a future version.\
+    \
+    **Enhancements with respect to the previous release V0.8.1:**
+    - These release also effects existing data sessions
+    - These release can be also used to optimize  existing data sessions when a
+        Device moves among geographical areas.
+    - The ueId parameter is renamed into Device
+    - The parameter Device, that identifies the User, is now simplified to
+        guarantee the identification of an existing data session
+    - InstanceId added
+    - TrafficFilters description updated
+    - CAMEL type adopted
+    - FlowInfo deleted
+    - OpenAPI version updated to 3.0.3
+    - To let the Developer to just work on parameters actually editable, the PUT
+        method is changed into a PATCH method with a limitation on the
+        parameters usable and modifiable. A new resource is created,
+        PatchTrafficInfluence that contains only the editable parameters
+        The same approach is also adopted for the PUT method and a new resource
+        PostTrafficInfluence was created with just the editable parameters
+    - DELETE response code modified as 202. The Deletion request is accepted
+        (not yet completed, it must be carried on by the system)
+    - Added response code 400 (bad request) to POST
+    - General improvement in documentation
+    - applicationId changed into appId and instanceId changed into appInstanceId
+    - Alignement of parameters with EdgeCloud_LCM: applicationId changed into
+        appId and instanceId changed into appInstanceId
+    - Modified reference to CAMARA Authorization guidelines link
+    - Telco Edge Site changed in Edge Cloud Zone
+    - Added: info-contact
+    - Device: IPV4 and IPV6 changed to represent just one IP. Netmask is no more
+        valid
+    - Global tags definition
+    - Adopted lowerCamelCase for OperationId
+    - Added descriptions for Delete and Get (for specific resource) methods
+    - Added missing operationid
+    - Improvement of callback definition
+    - Added "description" to the TrafficInfluence resource
+    - Added "description" to the PatchTrafficInfluence resource
+    - Added "description" to TrafficInfluenceNotification
+    - Added "description" to NetworkAccessIdentifier
+    - Added "description" to ErrResponse
+    - Added "description" to message
+    - Added "description" to status
+    - Added "description" to ErrorInfo
+    - Removed unused error code SessionNotFound404
+    - Alignement of parameters with EdgeCloud_LCM: applicationId changed into
+        appId and instanceId changed into appInstanceId
+    - Adoption of OpenId authentication for Consent Management. Client
+        Credential is removed
+    - Intruduced xcorrelator
+    - General alignment with CAMARA on returned Errors
+    - Modified CAMARA URL to refer to the Edge Cloud Repository
+    - OAS version now includes "-wip" extension
+    - simplified "Servers" section and included "vwip" as version
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -218,19 +278,16 @@ info:
 
 externalDocs:
   description: Product documentation at Camara
-  url: https://github.com/camaraproject/
+  url: https://github.com/camaraproject/EdgeCloud
 ############################################################################
 #                                     Servers                              #
 ############################################################################
 servers:
-  - url: "{apiRoot}/{basePath}"
+  - url: "{apiRoot}/traffic-influence/vwip"
     variables:
       apiRoot:
         default: http://localhost:9091
-        description: API root
-      basePath:
-        default: traffic-influence/v0
-        description: Base path for the Traffic Influence API
+        description: API root for the Traffic Influence API
 ############################################################################
 #                                     Tags                                #
 ############################################################################
