@@ -1,11 +1,11 @@
 ---
 openapi: 3.0.3
 info:
-  title: Edge Operations Management API
+  title: Edge Application Management API
   version: 0.9.3-wip
   description: |
-    Edge Operations Management API allows API consumers to manage the Life Cycle
-    of an Application and to Discover Edge Cloud Resources.
+    Edge Application Management API allows API consumers to manage the
+    Life Cycle of an Application and to Discover Edge Cloud Zones.
     # Overview
     The reference scenario foresees a distributed Telco Edge Cloud where any
     Application Delevoper, known as an Application Provider, can host and
@@ -18,21 +18,22 @@ info:
     experience for XR, V2X, Holographic and other new services.
 
     # Introduction
-    The Edge Operations Management API provides capabilities for lifecycle
-    management of application instances and edge discovery.
+    The Edge Application Management API provides capabilities for lifecycle
+    management of application, instances and edge discovery.
     Lifecycle Management allows Application Provider to onboard
-    their application details to the Operator Platform which do bookkeeping,
+    their application details to the Edge Platform which do bookkeeping,
     resource validation and other pre-deployment operations.
     Application details can contain components network specification,
     package type (QCOW2, OVA, CONTAINER, HELM), operating system details and
     respository to download the image of the desired application.
-    Once the application is available on the Operator
+    Once the application is available on the Edge
     Platform, the Application Provider can instantiate the application.
-    OP helps AP to decide where to instantiate the applications allowing
-    them to retrieve a list of Edge Zones that meets the provided criteria.
+    Edge Cloud Provider helps AP to decide where to instantiate the
+    applications allowing them to retrieve a list of Edge Zones that
+    meets the provided criteria.
     This discovery can be filtered by an specific geographical region
     (e.g when data residency is need) and by status (active, inactive, unknown)
-    Application Provider can ask the operator to instantiate the application to
+    Application Provider can ask the Edge to instantiate the application to
     one or several Edge Zones that meet the criteria. Typically when more than
     one Edge Zone is required in the same geographic boundary, AP can define
     instead the entire Region. AP can retrieve the information of the instances
@@ -44,23 +45,25 @@ info:
 
     # Quick Start
     The usage of this API is based on several resources including GSMA
-    Operator Platform, Public Cloud and SDOs, to define a first approach on the
+    Edge Platform, Public Cloud and SDOs, to define a first approach on the
     lifecycle management of application instances and edge discovery.
     Before starting to use the API, the developer needs to know about
     the below specified details.
 
     __Application Management__
-    * __submitApp__ - Submits an application details to an OP. Based on the
-    details provided,  OP shall do bookkeeping, resource validation and other
-    pre-deployment operations.
-    * __deleteApp__ - Removes an application from an OP, if there is a running
-    instance of the given application, the request cannot be done.
+    * __submitApp__ - Submits application details to an Edge Cloud Provider.
+    Based on the details provided, Edge Cloud Provider shall do bookkeeping,
+    resource validation and other pre-deployment operations.
+    * __deleteApp__ - Removes an application from an Edge Cloud Provider,
+    if there is a running instance of the given application,
+    the request cannot be done.
     * __getApp__ - Retrieves the information of a given application.
 
     __Application Instance Management__
-    * __createAppInstance__  Request the OP to instatiate an instance of an
-    application in a given Edge Cloud Zone, if this parameter is not set,
-    the OP will instantiate the applications in all the Edge Cloud Zones.
+    * __createAppInstance__  Request the Edge Cloud Provider to instatiate
+    an instance of an application in a given Edge Cloud Zone,
+    if this parameter is not set, the Edge Cloud Provider will instantiate
+    the applications in all the Edge Cloud Zones.
     * __getAppInstance__  Retrieves the list with information of the instances
     related to a given application.
     * __deleteAppInstance__ - Removes a given application instance from an Edge
@@ -78,7 +81,7 @@ info:
     /IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access\
     -and-user-consent.md).
     Which specific authorization flows are to be used will be determined during
-    onboarding process, happening between the API Client and the Telco Operator
+    onboarding process, happening between the API Client and the Telco Edge
     exposing the API, taking into account the declared purpose for accessing the
     API, while also being subject to the prevailing legal framework dictated by
     local legislation.
@@ -90,11 +93,12 @@ info:
     with user privacy preferences and regulatory obligations, upholding the
     principles of transparency and user-centric data control.
     # API documentation
-    Two operations have been defined in Edge Operations Management API.
+    Two operations have been defined in Edge Application Management API.
 
     *__Application__* - The Application Provider submit application metadata to
-    the Operator Platform. The OP generate an appId for that metadata that
-    will be used to instantiate the application within the Edge Cloud Zone.
+    the Edge Platform. The Edge Cloud Provider generate an appId for that
+    metadata that will be used to instantiate the application within
+    the Edge Cloud Zone.
 
     *__Edge Cloud__* - Retrieves all the Edge Cloud Zones available according to
     some defined parameters where an application can be instantiated.
@@ -102,9 +106,10 @@ info:
     Definitions of terminologies commonly referred
     to throughout the API descriptions.
     * __Application Provider__ - The provider of the application that accesses
-    an OP to deploy its application on the Edge Cloud. An Application Provider
-    may be part of a larger organisation, like an enterprise, enterprise
-    customer of an OP, or be an independent entity.
+    an Edge Cloud Provider to deploy its application on the Edge Cloud.
+    An Application Provider may be part of a larger organisation,
+    like an enterprise, enterprise customer of an Edge Cloud Provider,
+    or be an independent entity.
     * __Application__ - Contains the information about the application to be
     instantiated. Descriptor, binary image, charts or any other package
     assosiated with the application. The Application Provider request contains
@@ -113,16 +118,17 @@ info:
     * __Edge Cloud__ - Cloud-like capabilities located at the network edge
     including, from the Application Provider's perspective, access to
     elastically allocated compute, data storage and network resources.
-    * __Edge Cloud Region__ - An OP Region is equivalent to a Region on a public
-    cloud. The higher construct in the hierarchy exposed to an Application
+    * __Edge Cloud Region__ - An Edge Cloud Provider Region is equivalent
+    to a Region on a Public Cloud.
+    The higher construct in the hierarchy exposed to an Application
     Provider who wishes to deploy an Application on the Edge Cloud and broadly
     represents a geography. A Region typically contains one or multiple Zones.
     A Region exists within an Edge Cloud.
     * __Edge Cloud Zone__ - An Edge Cloud Zone is the lowest level of
     abstraction exposed to an Application Provider who wants to deploy
     an Application on Edge Cloud. Zones exists within a Region
-    * __OP__ - Operator Platform. An Operator Platform (facilitates access to
-    the Edge Cloud and other capabilities of an Operator or federation
+    * __OP__ - Edge Platform. An Edge Platform (facilitates access to
+    the Edge Cloud and other capabilities of an Edge or federation
     of Operators and Partners.
     ---
   contact:
@@ -141,24 +147,24 @@ servers:
         default: http://localhost:443
         description: API root
       basePath:
-        default: edge-operations-management/vwip
-        description: Base path for the Edge Operations Management API
+        default: edge-application-management/vwip
+        description: Base path for the Edge Application Management API
 
 tags:
   - name: Application
     description: Application and Application Instance Lice Cycle Management
   - name: Edge Cloud
-    description: Edge Cloud Zones Available
+    description: Edge Cloud Zones Availability
 
 paths:
   /apps:
     post:
       security:
         - openId:
-            - edge-operations-management:apps:write
+            - edge-application-management:apps:write
       tags:
         - Application
-      summary: Submit application metadata to the Operator Platform.
+      summary: Submit application metadata to the Edge Cloud Provider.
       description: |
         Contains the information about the application to be
         instantiated in the Edge Cloud
@@ -212,19 +218,21 @@ paths:
     get:
       security:
         - openId:
-            - edge-operations-management:apps:read
+            - edge-application-management:apps:read
       tags:
         - Application
       summary: Retrieve the information of an Application
-      description: Ask the OP the information for a given application
+      description: |
+        Ask the Edge Cloud Provider the information for a given application
       operationId: getApp
       parameters:
         - $ref: '#/components/parameters/x-correlator'
         - name: appId
           description: |
             A globally unique identifier associated with the
-            application. OP generates this identifier when the application
-            is submitted over NBI.
+            application.
+            Edge Cloud Provider generates this identifier when the application
+            is submitted.
           in: path
           required: true
           schema:
@@ -255,10 +263,11 @@ paths:
     delete:
       security:
         - openId:
-            - edge-operations-management:apps:delete
+            - edge-application-management:apps:delete
       tags:
         - Application
-      summary: Delete an Application from an OP
+      summary: |
+        Delete an Application from an Edge Cloud Provider
       description: Delete all the information and content
         related to an Application
       operationId: deleteApp
@@ -268,7 +277,8 @@ paths:
           in: path
           description: |
             Identificator of the application to be
-            deleted provided by the OP NBI once the submission was successful
+            deleted provided by the Edge Cloud Provider
+            once the submission was successful
           required: true
           schema:
             $ref: "#/components/schemas/AppId"
@@ -308,7 +318,7 @@ paths:
     post:
       security:
         - openId:
-            - edge-operations-management:instances:write
+            - edge-application-management:instances:write
       tags:
         - Application
       summary: Instantiation of an Application
@@ -322,8 +332,8 @@ paths:
         - name: appId
           description: |
             A globally unique identifier associated with the
-            application. Edge Platform generates this identifier when
-            the application is submitted over NBI.
+            application. Edge Cloud Provider generates this identifier when
+            the application is submitted.
           in: path
           required: true
           schema:
@@ -382,12 +392,12 @@ paths:
     get:
       security:
         - openId:
-            - edge-operations-management:instances:read
+            - edge-application-management:instances:read
       tags:
         - Application
       summary: Retrieve the information of Application Instances for a given App
       description: |
-        Ask the OP the information of the instances for a
+        Ask the Edge Cloud Provider the information of the instances for a
         given application
       operationId: getAppInstance
       parameters:
@@ -395,8 +405,9 @@ paths:
         - name: appId
           description: |
             A globally unique identifier associated with
-            the application. OP generates this identifier when the
-            application is submitted over NBI.
+            the application.
+            Edge Cloud Provider generates this identifier when the
+            application is submitted.
           in: path
           required: true
           schema:
@@ -405,7 +416,7 @@ paths:
           description: |
             A globally unique identifier associated with a running
             instance of an application within an specific Edge Cloud Zone.
-            OP generates this identifier.
+            Edge Cloud Provider generates this identifier.
           in: query
           required: false
           schema:
@@ -413,7 +424,7 @@ paths:
         - name: region
           description: |
             Human readable name of the geographical region of
-            the Edge Cloud. Defined by the OP.
+            the Edge Cloud. Defined by the Edge Cloud Provider.
           in: query
           required: false
           schema:
@@ -448,7 +459,7 @@ paths:
     delete:
       security:
         - openId:
-            - edge-operations-management:instances:delete
+            - edge-application-management:instances:delete
       tags:
         - Application
       summary: Terminate an Application Instance
@@ -461,8 +472,8 @@ paths:
         - name: appId
           description: |
             A globally unique identifier associated with the
-            application. OP generates this identifier when the application
-            is submitted over NBI.
+            application. Edge Cloud Provider generates this identifier
+            when the application is submitted.
           in: path
           required: true
           schema:
@@ -501,7 +512,7 @@ paths:
     get:
       security:
         - openId:
-            - edge-operations-management:edge-cloud-zones:read
+            - edge-application-management:edge-cloud-zones:read
       tags:
         - Edge Cloud
       summary: Retrieve a list of the operators Edge Cloud Zones and
@@ -516,7 +527,7 @@ paths:
         - name: region
           description: |
             Human readable name of the geographical region of
-            the Edge Cloud. Defined by the OP.
+            the Edge Cloud. Defined by the Edge Cloud Provider.
           in: query
           required: false
           schema:
@@ -610,14 +621,16 @@ components:
       format: uuid
       description: |
         A globally unique identifier associated with the application.
-        OP generates this identifier when the application is submitted over NBI.
+        Edge Cloud Provider generates this identifier when the
+        application is submitted.
 
     AppInstanceId:
       type: string
       format: uuid
       description: |
         A globally unique identifier associated with a running
-        instance of an application. OP generates this identifier.
+        instance of an application.
+        Edge Cloud Provider generates this identifier.
 
     AppInstanceInfo:
       description: Information about the application instance.
@@ -637,7 +650,8 @@ components:
           default: unknown
         componentEndpointInfo:
           description: |
-            Information about the IP and Port exposed by the OP.
+            Information about the IP and Port exposed by the
+            Edge Cloud Provider.
             Application clients shall use these access points to reach this
             application instance
           type: array
@@ -806,9 +820,9 @@ components:
                       maximum: 65535
                       description: |
                         Port number exposed by the component.
-                        OP may generate a dynamic port towards the
-                        component instance which forwards external traffic
-                        to the component port.
+                        Edge Cloud Provider may generate a dynamic port
+                        towards the component instance which forwards
+                        external traffic to the component port.
                     visibilityType:
                       description: |
                         Defines whether the interface is exposed
