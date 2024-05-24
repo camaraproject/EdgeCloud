@@ -19,34 +19,39 @@ info:
 
     # Introduction
     The Edge Application Management API provides capabilities for lifecycle
-    management of application, instances and edge discovery.
+    management of application, instances and edge cloud zone discovery.
     Lifecycle Management allows Application Provider to onboard
-    their application details to the Edge Platform which do bookkeeping,
+    their application to the Edge Cloud Platform which do bookkeeping,
     resource validation and other pre-deployment operations.
     Application details can contain components network specification,
     package type (QCOW2, OVA, CONTAINER, HELM), operating system details and
     respository to download the image of the desired application.
-    Once the application is available on the Edge
+    Once the application is available on the Edge Cloud
     Platform, the Application Provider can instantiate the application.
-    Edge Cloud Provider helps AP to decide where to instantiate the
-    applications allowing them to retrieve a list of Edge Zones that
-    meets the provided criteria.
+    Edge Cloud Provider helps Application Provider to decide where to
+    instantiate the applications allowing them to retrieve a list of
+    Edge Cloud Zones that meets the provided criteria.
+
     This discovery can be filtered by an specific geographical region
     (e.g when data residency is need) and by status (active, inactive, unknown)
-    Application Provider can ask the Edge to instantiate the application to
-    one or several Edge Zones that meet the criteria. Typically when more than
-    one Edge Zone is required in the same geographic boundary, AP can define
-    instead the entire Region. AP can retrieve the information of the instances
-    for a given application, the information could be the Edge Zone where the
-    instance is, status (ready, instantiating, failed, terminating, unknown)
-    and endpoint (ip, port, fqdn).
+    Application Provider can ask the Edge Cloud Platform to instantiate the
+    application to one or several Edge Cloud Zones that meet the criteria.
+    Typically when more than one Edge Cloud Zone is required in the same
+    geographic boundary, Application Provider can define instead
+    the entire Edge Cloud Region.
+
+    Application Provider can retrieve the information of the instances
+    for a given application, the information could be the Edge Cloud Zone
+    where the instance is, status (ready, instantiating, failed,
+    terminating, unknown) and endpoint (ip, port, fqdn).
     Application Provider can terminate an instance of an application
     (appInstanceId) or all the instances for a given appId.
 
     # Quick Start
     The usage of this API is based on several resources including GSMA
     Edge Platform, Public Cloud and SDOs, to define a first approach on the
-    lifecycle management of application instances and edge discovery.
+    lifecycle management of application instances and edge cloud zones discovery
+
     Before starting to use the API, the developer needs to know about
     the below specified details.
 
@@ -96,7 +101,7 @@ info:
     Two operations have been defined in Edge Application Management API.
 
     *__Application__* - The Application Provider submit application metadata to
-    the Edge Platform. The Edge Cloud Provider generate an appId for that
+    the Edge Cloud Platform. The Edge Cloud Platform generates an appId for that
     metadata that will be used to instantiate the application within
     the Edge Cloud Zone.
 
@@ -114,19 +119,29 @@ info:
     instantiated. Descriptor, binary image, charts or any other package
     assosiated with the application. The Application Provider request contains
     mandatory criteria (e.g. required CPU, memory, storage, bandwidth) defined
-    in an Application.
+    in an Application. The Edge Cloud Platform generates a unique ID
+    for an Application that is ready to be instantiated.
+    * __Application Instance__ - Is an instance (VM or Container based) running
+    in an Edge Cloud Zone. The Edge Cloud Platform generates a unique ID
+    for each instance.
     * __Edge Cloud__ - Cloud-like capabilities located at the network edge
     including, from the Application Provider's perspective, access to
-    elastically allocated compute, data storage and network resources.
-    * __Edge Cloud Region__ - An Edge Cloud Provider Region is equivalent
+    elastically allocated compute, data storage and network resources,
+    this access is provided through the Edge Cloud Platform.
+    * __Edge Cloud Provider__ - Company name of the provider offering the
+    Edge Services through the Edge Cloud Platform.
+    Could be an Operator or a Cloud Provider.
+    * __Edge Cloud Region__ - An Edge Cloud Region is equivalent
     to a Region on a Public Cloud.
     The higher construct in the hierarchy exposed to an Application
     Provider who wishes to deploy an Application on the Edge Cloud and broadly
-    represents a geography. A Region typically contains one or multiple Zones.
-    A Region exists within an Edge Cloud.
+    represents a geography. An Edge CloudRegion typically contains one or
+    multiple Edge Cloud Zones.
+    An Edge Cloud Region exists within an Edge Cloud.
     * __Edge Cloud Zone__ - An Edge Cloud Zone is the lowest level of
     abstraction exposed to an Application Provider who wants to deploy
-    an Application on Edge Cloud. Zones exists within a Region
+    an Application on Edge Cloud.
+    Edge Cloud Zones exists within a Edge Cloud Region.
     ---
   contact:
     email: sp-edc@lists.camaraproject.org
@@ -320,7 +335,7 @@ paths:
         - Application
       summary: Instantiation of an Application
       description: |
-        Ask the Edge Platform to instantiate an application to one
+        Ask the Edge Cloud Platform to instantiate an application to one
         or several Edge Cloud Zones with an Application as an input and an
         Application Instance as the output.
       operationId: createAppInstance
@@ -379,7 +394,7 @@ paths:
                 status: 409
                 code: CONFLICT
                 message: "Application already instantiated in the given
-                  Edge Zone or Region"
+                  Edge Cloud Zone or Edge Cloud Region"
         '500':
           $ref: '#/components/responses/500'
         '501':
@@ -420,7 +435,7 @@ paths:
             $ref: '#/components/schemas/AppInstanceId'
         - name: region
           description: |
-            Human readable name of the geographical region of
+            Human readable name of the geographical Edge Cloud Region of
             the Edge Cloud. Defined by the Edge Cloud Provider.
           in: query
           required: false
@@ -523,7 +538,7 @@ paths:
         - $ref: '#/components/parameters/x-correlator'
         - name: region
           description: |
-            Human readable name of the geographical region of
+            Human readable name of the geographical Edge Cloud Region of
             the Edge Cloud. Defined by the Edge Cloud Provider.
           in: query
           required: false
@@ -618,8 +633,8 @@ components:
       format: uuid
       description: |
         A globally unique identifier associated with the application.
-        Edge Cloud Provider generates this identifier when the
-        application is submitted.
+        Edge Cloud Platform generates this identifier when the
+        Application is submitted.
 
     AppInstanceId:
       type: string
@@ -627,7 +642,8 @@ components:
       description: |
         A globally unique identifier associated with a running
         instance of an application.
-        Edge Cloud Provider generates this identifier.
+        Edge Cloud Platform generates this identifier when the
+        instantiation in the Edge Cloud Zone is successful.
 
     AppInstanceInfo:
       description: Information about the application instance.
@@ -648,8 +664,8 @@ components:
         componentEndpointInfo:
           description: |
             Information about the IP and Port exposed by the
-            Edge Cloud Provider.
-            Application clients shall use these access points to reach this
+            Edge Cloud Platform.
+            Application Client shall use these access points to reach this
             application instance
           type: array
           items:
@@ -662,8 +678,8 @@ components:
                 type: string
                 pattern: ^[A-Za-z0-9][A-Za-z0-9_]{6,30}[A-Za-z0-9]$
                 description: |
-                  This is the interface Identifier that app provider
-                  defines when application is onboarded.
+                  This is the interface Identifier that Application Provider
+                  defines when application is being submitted.
               accessPoints:
                 $ref: '#/components/schemas/AccessEndpoint'
           minItems: 1
@@ -672,7 +688,7 @@ components:
 
     AppZones:
       description: |
-        Collection of Edge Cloud Zones where the AP wants to
+        Collection of Edge Cloud Zones where the Application Provider wants to
         instantiate the application.
       type: array
       items:
@@ -681,7 +697,9 @@ components:
       additionalProperties: false
 
     AppManifest:
-      description: Application information and requirements provided by the AP
+      description: |
+        Application information and requirements provided by the
+        Application Provider
       properties:
         name:
           type: string
@@ -701,7 +719,8 @@ components:
         operatingSystem:
           $ref: '#/components/schemas/OperatingSystem'
         appRepo:
-          description: Repository where AP stores the application image
+          description: |
+            Repository where Application Provider stores the application image
           type: object
           required:
             - type
@@ -845,13 +864,13 @@ components:
 
     EdgeCloudProvider:
       type: string
-      description: Human readable name of the Edge Service Provider.
+      description: Human readable name of the Edge Cloud Provider.
 
     EdgeCloudRegion:
       type: string
       description: |
-        Human readable name of the geographical region of
-        the Edge Cloud. Defined by the Edge Provider.
+        Human readable name of the geographical Edge Cloud Region of
+        the Edge Cloud. Defined by the Edge Cloud Provider.
 
     EdgeCloudZones:
       type: array
@@ -859,14 +878,16 @@ components:
         $ref: '#/components/schemas/EdgeCloudZone'
       minItems: 1
       description: |
-        A collection of Edge Cloud Zones where the AP can
+        A collection of Edge Cloud Zones where the Application Provider can
         instantiate an Application Instance.
       additionalProperties: false
 
     EdgeCloudZoneId:
       type: string
       format: uuid
-      description: Identificator created by the Edge Platform.
+      description: |
+        Unique identifier created by the Edge Cloud Platform to identify an
+        Edge Cloud Zone within an Edge Cloud.
 
     EdgeCloudZone:
       type: object
@@ -874,7 +895,8 @@ components:
         An Edge Cloud Zone, uniquely identified by a
         combination of the value of the Edge Cloud Zone Id object
         and the value of the Edge Cloud Provider
-        object.
+        object. This value is used to identify an Edge Cloud zone
+        between Edge Clouds from different Edge Cloud Providers.
       properties:
         edgeCloudZoneId:
           $ref: '#/components/schemas/EdgeCloudZoneId'
@@ -892,7 +914,7 @@ components:
       type: string
       description: |
         Human readable name of the geographical zone of
-        the Edge Cloud. Defined by the Edge Provider.
+        the Edge Cloud. Defined by the Edge Cloud Provider.
 
     EdgeCloudZoneStatus:
       description: Status of the Edge Cloud Zone (default is 'unknown')
