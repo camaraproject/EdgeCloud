@@ -673,7 +673,7 @@ components:
               allOf:
                 - $ref: "#/components/schemas/PortsSpec"
             destinationProtocol:
-              allOf:   
+              allOf:
                 - $ref: "#/components/schemas/Protocol"
         notificationUri:
           type: string
