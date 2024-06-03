@@ -673,7 +673,7 @@ components:
               allOf:
                 - $ref: "#/components/schemas/PortsSpec"
             destinationProtocol:
-              allOf:        
+              allOf:   
                 - $ref: "#/components/schemas/Protocol"
         notificationUri:
           type: string
@@ -782,7 +782,7 @@ components:
           (this information can be obtained by various means, for example from
           some DNS servers).
         If the allocated and observed IP addresses are the same (i.e. NAT is not
-          in use) then  the same address should be specified for both 
+          in use) then  the same address should be specified for both
           publicAddress and privateAddress.
         If NAT64 is in use, the device should be identified by its publicAddress
           and publicPort, or separately by its allocated IPv6 address (field
