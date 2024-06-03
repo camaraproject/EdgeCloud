@@ -673,7 +673,7 @@ components:
               allOf:
                 - $ref: "#/components/schemas/PortsSpec"
             destinationProtocol:
-              allOf:            
+              allOf:        
                 - $ref: "#/components/schemas/Protocol"
         notificationUri:
           type: string
@@ -776,14 +776,14 @@ components:
     DeviceIpv4Addr:
       type: object
       description: |
-        The device should be identified by either the public (observed) IP address
-          and port as seen by the application server, or the private (local) and
-          any public (observed) IP addresses in use by the device (this
-          information can be obtained by various means, for example from some DNS
-          servers).
+        The device should be identified by either the public (observed) IP
+          address and port as seen by the application server, or the private
+          (local) and any public (observed) IP addresses in use by the device
+          (this information can be obtained by various means, for example from
+          some DNS servers).
         If the allocated and observed IP addresses are the same (i.e. NAT is not
-          in use) then  the same address should be specified for both publicAddress
-          and privateAddress.
+          in use) then  the same address should be specified for both 
+          publicAddress and privateAddress.
         If NAT64 is in use, the device should be identified by its publicAddress
           and publicPort, or separately by its allocated IPv6 address (field
           ipv6Address of the Device object)
@@ -838,13 +838,13 @@ components:
        it is identified by a string according to the column “Keyword” as defined
        by IANA (https://www.iana.org/assignments/protocol-numbers/\
        protocol-numbers.xhtml), e.g. UDP or TCP.
-      type: string 
+      type: string
       example: "TCP"
     DeviceIpv6Address:
       description: |
        The device should be identified by the observed IPv6 address, or by any
-         single IPv6 address from within the subnet allocated to the device (e.g.
-         adding ::0 to the /64 prefix).
+         single IPv6 address from within the subnet allocated to the device
+         (e.g. adding ::0 to the /64 prefix).
       type: string
       format: ipv6
       example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
