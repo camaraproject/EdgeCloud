@@ -90,12 +90,12 @@ info:
     Before starting to use the TI API, the developer needs to know about the
     below specified details:\
     \
-    **Base-Url**
+    **Base-Url:**
     The RESTful TI API endpoint, for example
     [**https://tim-api.developer.tim.it/trafficinfluence**](https://tim-api.\
     developer.tim.it/trafficinfluence)\
     \
-    **TrafficInfluence**
+    **TrafficInfluence:**
     This object represents the resource that carries the requirements from the
     user to be implemented. The TI API is invoked for the life cycle management
     of this resource (CRUD). The resource contains the intents from the TI API
@@ -103,17 +103,17 @@ info:
     geographical location the routing must be applied, toward which application,
     maybe for a specific set of users or for a limited period of time.\
     \
-    **trafficInfluenceID**
+    **trafficInfluenceID:**
     Identifier for the Traffic Influence resource. This parameter is returned
     by the TI API and must be used to update it (e.g., adding a Device or
     deleting it). A different Traffic Influence resource must be created for
     any Device or Zone or Region. All these resources are related to an
     Application identified by "appId".\
     \
-    **apiConsumerId**
+    **apiConsumerId:**
     Unique identifier for the TI API Consumer.\
     \
-    **region**
+    **region:**
     The developer can specify in which geographical area he requires the fastest
     routing toward the nearest application instance. A "region" is a wide
     geographical area and it contains one or more "zones". A "zone" is where the
@@ -125,7 +125,7 @@ info:
     "trafficInfluenceID"). All the created resources are aggregated by the
     Application (identified by "appId").\
     \
-    **zone**
+    **zone:**
     The developer can specify in which geographical area he requires the fastest
     routing toward the nearest Application instance. A "zone" is a smaller
     geographical area inside a "region". A "zone" is where the Edge Cloud Zone
@@ -281,6 +281,7 @@ info:
     - Updated documentation to better specify how to identify a Device
     - Updated the Device parameter according to CAMARA_common.yaml
     - change API name in YAML
+    - introduced sourceTrafficFilters and modified trafficFilters into destinationTrafficFilters
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
