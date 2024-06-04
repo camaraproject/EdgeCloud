@@ -281,7 +281,7 @@ info:
     - Updated documentation to better specify how to identify a Device
     - Updated the Device parameter according to CAMARA_common.yaml
     - change API name in YAML
-    - introduced sourceTrafficFilters and modified trafficFilters into 
+    - introduced sourceTrafficFilters and modified trafficFilters into
     destinationTrafficFilters
   license:
     name: Apache 2.0
