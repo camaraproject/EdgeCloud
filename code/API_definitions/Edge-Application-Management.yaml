@@ -1035,9 +1035,7 @@ components:
         - storage
       properties:
         numCPU:
-          type: integer
-          description: Number of virtual CPUs
-          example: 1
+          $ref: '#/components/schemas/Vcpu'
         memory:
           type: integer
           example: 10
@@ -1066,6 +1064,18 @@ components:
         A Uniform Resource Identifier (URI) as per RFC 3986,
         identifies the endpoint within an Edge Cloud Zone where the user
         equipment may connect to the selected application instance
+
+    Vcpu:
+      type: string
+      pattern: ^\d+((\.\d{1,3})|(m))?$
+      description: Number of vcpus in whole, decimal up to millivcpu, or millivcpu format.
+      example:
+        whole:
+          value: 2
+        decimal:
+          value: 0.500
+        millivcpu:
+          value: 500m
 
   responses:
     '400':
