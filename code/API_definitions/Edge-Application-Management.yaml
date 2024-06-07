@@ -1068,7 +1068,9 @@ components:
     Vcpu:
       type: string
       pattern: ^\d+((\.\d{1,3})|(m))?$
-      description: Number of vcpus in whole, decimal up to millivcpu, or millivcpu format.
+      description: |
+        Number of vcpus in whole, decimal up to millivcpu,
+        or millivcpu format.
       example:
         whole:
           value: 2
