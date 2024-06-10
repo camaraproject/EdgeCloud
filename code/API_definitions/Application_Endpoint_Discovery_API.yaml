@@ -4,38 +4,38 @@ info:
   title: Application Endpoint Discovery API
   version: 0.1.0-wip
   description: |
-    # Connect to the Nearest Application Endpoint
+    # Connect to the Optimal Application Endpoint
     ---
     # Overview
     The Application Discovery API extends beyond the capabilities of the
     Simple Edge Discovery API by not only locating the nearest Edge Cloud Zone
-    but also directly linking to the application endpoints within those zones.
-    This crucial enhancement enables immediate connection to the most relevant
+    but also directly linking to the application endpoints within those
+    Edge Cloud Zones.
+    This API intent enables immediate connection to the most relevant
     service endpoint, optimizing the application's interaction with
     edge computing resources.
     # Introduction
     Operators often host multiple Edge Cloud Zones across various territories.
-    Connecting an application directly to the nearest operational service
-    endpoint minimizes latency because data travels the shortest possible route.
+    Connecting an application directly to the optimal Edge Cloud Zone
+    endpoint may minimize latency.
     Unlike the Simple Edge Discovery API, which only provides the zone location,
-    this API calculates and provides the actual endpoints within the nearest
+    this API provides the actual endpoints within the nearest
     zone. This approach ensures that developers can instantly integrate these
-    endpoints into their applications, improving performance and user
+    endpoints into their applications, improving the user
     experience.
     After identifying the nearest application endpoint through the API,
     developers can:
     * Connect their application client directly to the chosen application
-    endpoint, enhancing the responsiveness and reliability of the service.
-    * Deploy new instances if no suitable endpoints are within the identified
+    endpoint, enhancing the responsiveness of the service.
+    * If no suitable endpoints are available, the
+    developer can use the API EdgeApplicationManagement in order to
+    instantiate a new instance.
     Edge Cloud Zone, optimizing their service distribution based on real-time
     network geography.
     # Quick Start
     This API can be utilized by both client applications on user devices and
     by servers. It uses a straightforward endpoint:
     `/apps-endpoints?filter=closest`.
-    API consumers are required to authenticate via OAuth2 to obtain access
-    tokens,
-    which must be included in the `Authorization` header of API requests.
     For accurate service localization, the API requires device-specific
     identifiers such as:
     * `IP-Address`: Public IP address of the user device, which can be fetched
@@ -127,15 +127,15 @@ servers:
         default: application-endpoint-discovery/vwip
         description: Base path for the Application Endpoint Discovery.
 tags:
-  - name: Discovery
+  - name: Application Endpoint Discovery
     description: |
       Find the closest App Instance Endpoint to the user device.
 paths:
-  /apps-endpoints:
+  /app-endpoints:
     get:
       security:
         - openId:
-            - application-endpoint-discovery:apps-endpoints:read
+            - application-endpoint-discovery:app-endpoints:read
       operationId: getAppEndpoints
       parameters:
         - name: filter
@@ -210,7 +210,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccessEndpoint"
+                $ref: "#/components/schemas/AccessEndpoints"
         "400":
           $ref: "#/components/responses/400BadRequest"
         "401":
@@ -264,9 +264,11 @@ components:
     AppId:
       type: string
       format: uuid
-      description: A globally unique identifier associated with the application.
-        OP generates this identifier when the application is submitted over NBI.
-    AccessEndpoint:
+      description: A globally unique identifier associated
+        with the application.
+        This GUID will have been previously provided by the
+        Edge Cloud Zone provider.
+    AccessEndpoints:
       type: object
       description: |
         Application Endpoint for an especific instance that is
@@ -454,7 +456,7 @@ components:
                   to perform this action"
                 }
     404NotFound:
-      description: Subscriber Not Found
+      description: Not Found
       headers:
         X-Correlator:
           $ref: "#/components/headers/X-Correlator"
@@ -472,6 +474,17 @@ components:
                   "code": "NOT_FOUND",
                   "status": 404,
                   "message": "No device found for the specified parameters"
+                }
+            EndpointNotFound:
+              description: |
+                No endpoint instance found for the specified parameters,
+                meaning the closest Edge Cloud Zone cannot be determined.
+              value:
+                {
+                  "code": "NOT_FOUND",
+                  "status": 404,
+                  "message": "No endpoint instance found for the
+                    specified parameters"
                 }
     405MethodNotAllowed:
       description: Method Not Allowed
