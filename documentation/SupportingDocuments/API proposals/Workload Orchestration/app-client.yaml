@@ -1,0 +1,539 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: MatchEngineApi API
+    description: APIs for application clients on devices to interact with Edge Cloud application services.
+    version: v1.2.4.1-hf8
+paths:
+    /v1/findcloudlet:
+        post:
+            tags:
+                - MatchEngineApi
+            description: |-
+                FindCloudlet
+
+                 Find the best application service running on a cloudlet in the
+                 Edge Cloud for the client to use, based on proximity and other policies.
+            operationId: MatchEngineApi_FindCloudlet
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FindCloudletRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/FindCloudletReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/getappinstlist:
+        post:
+            tags:
+                - MatchEngineApi
+            description: |-
+                GetAppInstList
+
+                 Like FindCloudlet, but returns a short list of the best instances
+                 instead of a single result, allowing the client to choose based on
+                 its own criteria, or maintain several parallel connections to
+                 different sites.
+            operationId: MatchEngineApi_GetAppInstList
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AppInstListRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AppInstListReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/streamedgeevent:
+        post:
+            tags:
+                - MatchEngineApi
+            description: |-
+                StreamEdgeEvent
+
+                 Streams events bidirectionally between device client and the
+                 Edge Cloud platform for notifications.
+            operationId: MatchEngineApi_StreamEdgeEvent
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ClientEdgeEvent'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerEdgeEvent'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+components:
+    schemas:
+        AppInstListReply:
+            type: object
+            properties:
+                ver:
+                    type: integer
+                    description: API version _(hidden)_ Reserved for future use
+                    format: uint32
+                status:
+                    enum:
+                        - AI_UNDEFINED
+                        - AI_SUCCESS
+                        - AI_FAIL
+                    type: string
+                    format: enum
+                cloudlets:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CloudletLocation'
+                tags:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: _(optional)_ Vendor specific data
+        AppInstListRequest:
+            type: object
+            properties:
+                ver:
+                    type: integer
+                    description: API version _(hidden)_ Reserved for future use
+                    format: uint32
+                session_cookie:
+                    type: string
+                    description: Session Cookie from RegisterClientRequest
+                carrier_name:
+                    type: string
+                    description: Carrier Name _(optional)_ By default, all SDKs will automatically fill in this parameter with the MCC+MNC of your current provider. Only override this parameter if you need to filter for a specific carrier on the DME. The DME will filter for App instances that are associated with the specified carrier. If you wish to search for any App Instance on the DME regardless of carrier name, you can input “” to consider all carriers as “Any”.
+                gps_location:
+                    $ref: '#/components/schemas/Loc'
+                limit:
+                    type: integer
+                    description: _(optional)_ Limit the number of results, defaults to 3
+                    format: uint32
+                tags:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: _(optional)_ Vendor specific data
+        AppPort:
+            type: object
+            properties:
+                proto:
+                    enum:
+                        - L_PROTO_UNKNOWN
+                        - L_PROTO_TCP
+                        - L_PROTO_UDP
+                    type: string
+                    description: TCP (L4) or UDP (L4) protocol
+                    format: enum
+                internal_port:
+                    type: integer
+                    description: Container port
+                    format: int32
+                public_port:
+                    type: integer
+                    description: Public facing port for TCP/UDP (may be mapped on shared LB reverse proxy)
+                    format: int32
+                fqdn_prefix:
+                    type: string
+                    description: FQDN prefix to append to base FQDN in FindCloudlet response. May be empty.
+                end_port:
+                    type: integer
+                    description: A non-zero end port indicates a port range from internal port to end port, inclusive.
+                    format: int32
+                tls:
+                    type: boolean
+                    description: TLS termination for this port
+                nginx:
+                    type: boolean
+                    description: Use nginx proxy for this port if you really need a transparent proxy (udp only)
+                max_pkt_size:
+                    type: integer
+                    description: Maximum datagram size (udp only)
+                    format: int64
+            description: Application Port AppPort describes an L4 public access port/path mapping. This is used to track external to internal mappings for access via a shared load balancer or reverse proxy.
+        Appinstance:
+            type: object
+            properties:
+                app_name:
+                    type: string
+                    description: App Instance Name
+                app_vers:
+                    type: string
+                    description: App Instance Version
+                fqdn:
+                    type: string
+                    description: App Instance FQDN
+                ports:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AppPort'
+                    description: ports to access app
+                org_name:
+                    type: string
+                    description: App Organization Name
+                edge_events_cookie:
+                    type: string
+                    description: Session Cookie for specific EdgeEvents for specific AppInst
+        ClientEdgeEvent:
+            type: object
+            properties:
+                session_cookie:
+                    type: string
+                    description: Session Cookie from RegisterClientReply
+                edge_events_cookie:
+                    type: string
+                    description: Session Cookie from FindCloudletReply
+                event_type:
+                    enum:
+                        - EVENT_UNKNOWN
+                        - EVENT_INIT_CONNECTION
+                        - EVENT_TERMINATE_CONNECTION
+                        - EVENT_LATENCY_SAMPLES
+                        - EVENT_LOCATION_UPDATE
+                        - EVENT_CUSTOM_EVENT
+                    type: string
+                    format: enum
+                gps_location:
+                    $ref: '#/components/schemas/Loc'
+                samples:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Sample'
+                    description: Latency Samples if event_type is EVENT_LATENCY_SAMPLES or EVENT_CUSTOM_EVENT
+                device_info_static:
+                    $ref: '#/components/schemas/DeviceInfoStatic'
+                device_info_dynamic:
+                    $ref: '#/components/schemas/DeviceInfoDynamic'
+                custom_event:
+                    type: string
+                    description: Custom event specified by the application
+                tags:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: _(optional)_ Vendor specific data
+            description: Messages from SDK to DME
+        CloudletLocation:
+            type: object
+            properties:
+                carrier_name:
+                    type: string
+                    description: Cloudlet Organization Name
+                cloudlet_name:
+                    type: string
+                    description: Cloudlet Name
+                gps_location:
+                    $ref: '#/components/schemas/Loc'
+                distance:
+                    type: number
+                    description: Distance of cloudlet vs loc in request
+                    format: double
+                appinstances:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Appinstance'
+                    description: App instances
+        DeviceInfoDynamic:
+            type: object
+            properties:
+                data_network_type:
+                    type: string
+                    description: LTE, 5G, etc.
+                signal_strength:
+                    type: integer
+                    description: Device signal strength
+                    format: uint64
+                carrier_name:
+                    type: string
+                    description: Carrier name (can be different from cloudlet org if using "")
+            description: DeviceInfoDynamic
+        DeviceInfoStatic:
+            type: object
+            properties:
+                device_os:
+                    type: string
+                    description: Android or iOS
+                device_model:
+                    type: string
+                    description: Device model
+            description: DeviceInfoStatic
+        FindCloudletReply:
+            type: object
+            properties:
+                ver:
+                    type: integer
+                    description: API version _(hidden)_ Reserved for future use
+                    format: uint32
+                status:
+                    enum:
+                        - FIND_UNKNOWN
+                        - FIND_FOUND
+                        - FIND_NOTFOUND
+                    type: string
+                    description: Status return
+                    format: enum
+                fqdn:
+                    type: string
+                    description: Fully Qualified Domain Name of the Closest App instance
+                ports:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AppPort'
+                    description: List of Service Endpoints for AppInst
+                cloudlet_location:
+                    $ref: '#/components/schemas/Loc'
+                edge_events_cookie:
+                    type: string
+                    description: Session Cookie for specific EdgeEvents for specific AppInst
+                qos_result:
+                    enum:
+                        - QOS_NOT_ATTEMPTED
+                        - QOS_SESSION_CREATED
+                        - QOS_SESSION_FAILED
+                    type: string
+                    description: Result of QOS priority session creation attempt
+                    format: enum
+                qos_error_msg:
+                    type: string
+                    description: Error message in case of QOS_SESSION_FAILED
+                tags:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: _(optional)_ Vendor specific data
+        FindCloudletRequest:
+            type: object
+            properties:
+                ver:
+                    type: integer
+                    description: API version _(hidden)_ Reserved for future use
+                    format: uint32
+                session_cookie:
+                    type: string
+                    description: Session Cookie Session Cookie from RegisterClientRequest
+                carrier_name:
+                    type: string
+                    description: Carrier Name _(optional)_ By default, all SDKs will automatically fill in this parameter with the MCC+MNC of your current provider. Only override this parameter if you need to filter for a specific carrier on the DME. The DME will filter for App instances that are associated with the specified carrier. If you wish to search for any App Instance on the DME regardless of carrier name, you can input “” to consider all carriers as “Any”.
+                gps_location:
+                    $ref: '#/components/schemas/Loc'
+                tags:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: Tags _(optional)_ Vendor specific data
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        Loc:
+            type: object
+            properties:
+                latitude:
+                    type: number
+                    description: Latitude in WGS 84 coordinates
+                    format: double
+                longitude:
+                    type: number
+                    description: Longitude in WGS 84 coordinates
+                    format: double
+                horizontal_accuracy:
+                    type: number
+                    description: Horizontal accuracy (radius in meters)
+                    format: double
+                vertical_accuracy:
+                    type: number
+                    description: Vertical accuracy (meters)
+                    format: double
+                altitude:
+                    type: number
+                    description: On android only lat and long are guaranteed to be supplied Altitude in meters
+                    format: double
+                course:
+                    type: number
+                    description: Course (IOS) / bearing (Android) (degrees east relative to true north)
+                    format: double
+                speed:
+                    type: number
+                    description: Speed (IOS) / velocity (Android) (meters/sec)
+                    format: double
+                timestamp:
+                    $ref: '#/components/schemas/Timestamp'
+            description: GPS Location
+        Sample:
+            type: object
+            properties:
+                value:
+                    type: number
+                    description: Latency value
+                    format: double
+                timestamp:
+                    $ref: '#/components/schemas/Timestamp'
+                tags:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: _(optional)_ Vendor specific data
+            description: Sample
+        ServerEdgeEvent:
+            type: object
+            properties:
+                event_type:
+                    enum:
+                        - EVENT_UNKNOWN
+                        - EVENT_INIT_CONNECTION
+                        - EVENT_LATENCY_REQUEST
+                        - EVENT_LATENCY_PROCESSED
+                        - EVENT_CLOUDLET_STATE
+                        - EVENT_CLOUDLET_MAINTENANCE
+                        - EVENT_APPINST_HEALTH
+                        - EVENT_CLOUDLET_UPDATE
+                        - EVENT_ERROR
+                    type: string
+                    format: enum
+                cloudlet_state:
+                    enum:
+                        - CLOUDLET_STATE_UNKNOWN
+                        - CLOUDLET_STATE_ERRORS
+                        - CLOUDLET_STATE_READY
+                        - CLOUDLET_STATE_OFFLINE
+                        - CLOUDLET_STATE_NOT_PRESENT
+                        - CLOUDLET_STATE_INIT
+                        - CLOUDLET_STATE_UPGRADE
+                        - CLOUDLET_STATE_NEED_SYNC
+                    type: string
+                    description: Cloudlet state information if cloudlet state is not CLOUDLET_STATE_READY
+                    format: enum
+                maintenance_state:
+                    enum:
+                        - NORMAL_OPERATION
+                        - MAINTENANCE_START
+                        - FAILOVER_REQUESTED
+                        - FAILOVER_DONE
+                        - FAILOVER_ERROR
+                        - MAINTENANCE_START_NO_FAILOVER
+                        - CRM_REQUESTED
+                        - CRM_UNDER_MAINTENANCE
+                        - CRM_ERROR
+                        - NORMAL_OPERATION_INIT
+                        - UNDER_MAINTENANCE
+                    type: string
+                    description: Cloudlet maintenance state information if maintenance state is not NORMAL_OPERATION
+                    format: enum
+                health_check:
+                    enum:
+                        - HEALTH_CHECK_UNKNOWN
+                        - HEALTH_CHECK_ROOTLB_OFFLINE
+                        - HEALTH_CHECK_SERVER_FAIL
+                        - HEALTH_CHECK_OK
+                        - HEALTH_CHECK_CLOUDLET_OFFLINE
+                    type: string
+                    description: AppInst health state information if health check is not HEALTH_CHECK_OK
+                    format: enum
+                statistics:
+                    $ref: '#/components/schemas/Statistics'
+                new_cloudlet:
+                    $ref: '#/components/schemas/FindCloudletReply'
+                error_msg:
+                    type: string
+                    description: Error message if event_type is EVENT_ERROR
+                tags:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: _(optional)_ Vendor specific data
+            description: Message from DME to SDK
+        Statistics:
+            type: object
+            properties:
+                avg:
+                    type: number
+                    description: Average
+                    format: double
+                min:
+                    type: number
+                    description: Minimum
+                    format: double
+                max:
+                    type: number
+                    description: Maximum
+                    format: double
+                std_dev:
+                    type: number
+                    description: Square root of unbiased variance
+                    format: double
+                variance:
+                    type: number
+                    description: Unbiased variance
+                    format: double
+                num_samples:
+                    type: integer
+                    description: Number of samples to create stats
+                    format: uint64
+                timestamp:
+                    $ref: '#/components/schemas/Timestamp'
+            description: Statistics
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        Timestamp:
+            type: object
+            properties:
+                seconds:
+                    type: integer
+                    description: Time in seconds since epoch
+                    format: int64
+                nanos:
+                    type: integer
+                    description: Added non-negative sub-second time in nanoseconds
+                    format: int32
+            description: This is a simple Timestamp message type grpc-gateway converts google.protobuf.Timestamp into an RFC3339-type string which is a waste of a conversion, so we define our own
+tags:
+    - name: MatchEngineApi
