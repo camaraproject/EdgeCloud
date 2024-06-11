@@ -3,7 +3,7 @@ The Edge Cloud suite of APIs is split into 4 categories, based on the intents li
 # Discovery
 Discover the Edge site with the shortest network path to an end user terminal,find out which is the optimal Edge site for your specifc application, register your Edge-hosted application endpoints for rapid connectivity to the optimal Edge site.
 
-Workload Orchestration
+# Workload Orchestration
 Lifecycle management of the Edge resources and servers for your applications
 
 # Resource Management
