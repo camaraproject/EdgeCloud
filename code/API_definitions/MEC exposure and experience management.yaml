@@ -7,17 +7,17 @@ info:
     email: sp-edc@lists.camaraproject.org
   title: MEC Exposure & Experience Management API
   version: 0.9.0
-  description:  |
+  description: |
     # Introduction
     ---
 
-    Use the MEC Exposure & Experience Management API for discovery and utilisation of Multi-Access Edge Compute (MEC) 
-    resources and services. 
-   
-    
+    Use the MEC Exposure & Experience Management API for discovery and utilisation of Multi-Access Edge Compute (MEC)
+    resources and services.
+
+
     ---
     # API Scope
-    
+
     ---
 
     APIs defined in this version of the specification can be categorized into the following areas:
@@ -27,30 +27,30 @@ info:
     * __MEC Service Profile management__ - register, retrieve, update, and delete MEC Service Profiles
     * __MEC Service Endpoint management__ - register one or more Service Endpoints, and retrieve, update, and delete those registrations
     * __MEC Edge Event notification__ - subscription management for MEC and Service discovery Event notifications
-    
+
     ---
     # Definitions
     ---
     This section provides definitions of terminologies commonly referred to throughout the API descriptions.
 
-    * __API Consumer__ - A user or an application consuming the MEC Exposure and Experience Management APIs. 
+    * __API Consumer__ - A user or an application consuming the MEC Exposure and Experience Management APIs.
     * __Application Service Provider__ - the developer/publisher who deploys applications on MEC platforms.
     * __Density__ - Minimum 4G/5G subscriber density in a geographical area, represented as the number of subscribers per square kilometer.
     * __Edge Application__ - A cloud application that has some services deployed to MEC Platforms to take advantage of low latency and high bandwidth when interacting with devices.
     * __Edge Discovery Service (EDS)__ - MEC Exposure and Experience Management APIs exposed as a service by a TSP.
     * __Edge Resource__ - An object defined by the sevice provider representing an edge resource within its network domain, such as a MEC Platform.
-    * __Event__ - A MEC event is triggered if the previously-discovered MEC platform is no longer the optimal choice of all available MEC platforms, due to a change in the underlying network or MEC infrastructure. The TSP will send out change notifications to API Consumers who have active subscription to the event notification. 
-    * __MEC  Platform__ - A collection of cloud computing resources housed in a TSP's network facility that provide Multi-access Edge Computing (MEC) capabilities.    
-    * __Optimal MEC  Platforms__ - A list of one or more optimal MEC Platforms to register a Service Endpoint, based on the latency and availability of each MEC platform, and optionally also based on various query criteria (Service Profile, Region, subscriber density or UE identity) defined by the API Consumer.      
-    * __Optimal MEC Service Endpoints__ – A list of one or more MEC Service Endpoints that provide optimal user experience to the client device, based on internal network conditions known to the MEC Platform, and also optionally based on various query criteria (Service Profile, Region, subscriber density or UE identity) defined by the API Consumer. 
+    * __Event__ - A MEC event is triggered if the previously-discovered MEC platform is no longer the optimal choice of all available MEC platforms, due to a change in the underlying network or MEC infrastructure. The TSP will send out change notifications to API Consumers who have active subscription to the event notification.
+    * __MEC  Platform__ - A collection of cloud computing resources housed in a TSP's network facility that provide Multi-access Edge Computing (MEC) capabilities.
+    * __Optimal MEC  Platforms__ - A list of one or more optimal MEC Platforms to register a Service Endpoint, based on the latency and availability of each MEC platform, and optionally also based on various query criteria (Service Profile, Region, subscriber density or UE identity) defined by the API Consumer.
+    * __Optimal MEC Service Endpoints__ – A list of one or more MEC Service Endpoints that provide optimal user experience to the client device, based on internal network conditions known to the MEC Platform, and also optionally based on various query criteria (Service Profile, Region, subscriber density or UE identity) defined by the API Consumer.
     * __Region__ - A TSP-defined string identifier representing a certain geographical or logical area where MEC resources and services are provided.
     * __Registered MEC Hosted Services__ - Applications running on MEC platforms which are registered with Edge Discovery Service using the service registry APIs.
-    * __Service Endpoint__ - The routable endpoint of the service(s) within a deployed application that clients connect to, where a service is a subcomponent of application    
+    * __Service Endpoint__ - The routable endpoint of the service(s) within a deployed application that clients connect to, where a service is a subcomponent of application
     * __Service Profile__ - Information about the MEC application and the associated service characteristics.
-    * __TSP__ - Telecommunications Service Provider.      
+    * __TSP__ - Telecommunications Service Provider.
     * __UEIdentity__ - User Equipment identity, which can be a device's IP address, MSISDN, IMEI, MDN, or GPSI.
     * __Zone__ - A logical collection of MEC Platforms in a telecommunication provider's network. A Zone is part of a Region.
-      
+
     ---
     # Link relationships
     ---
@@ -71,7 +71,7 @@ info:
 
     __Service Endpoints__
     * __All-service-endpoints__ list all Service Endpoints
-    * __Register-service-endpoint__ Register a Service Endpoint     
+    * __Register-service-endpoint__ Register a Service Endpoint
     * __Update-service-endpoint__ Update a Service Endpoint
     * __Delete-service-endpoint__ Delete a Service Endpoint
     * __Optimal-service-endpoints-by-zone__ return the optimal Service Endpoints associated with the specified Zone
@@ -82,7 +82,7 @@ info:
     * __All-service-profiles__ list all Service Profiles
     * __Create-service-profile__ create a new Service Profile
     * __Update-service-profiles__ Update a Service Profiles
-    * __Delete-service-profile__ Delete a Service Profile based on ID  
+    * __Delete-service-profile__ Delete a Service Profile based on ID
 
     __COMMON__
     * __Self__ the self-referring URI for the response
@@ -98,53 +98,50 @@ info:
     * __Consent to access resources__ is brokered via OAuth2.0 with implicit, password and client credentials grant flows
     * __Replay errors__ are mitigated through use of request correlator IDs.
 
-
   license:
     name: Apache-2.0
-    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-
-
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
 
 ############################################################################
 #                                     Security                             #
 ############################################################################
 security:
   - oAuth2:
-      - 'edge:discovery:read'
-      - 'edge:serviceprofile:read'
-      - 'edge:serviceprofile:write'
-      - 'edge:serviceregistry:read'
-      - 'edge:serviceregistry:write'
+      - "edge:discovery:read"
+      - "edge:serviceprofile:read"
+      - "edge:serviceprofile:write"
+      - "edge:serviceregistry:read"
+      - "edge:serviceregistry:write"
 
 ############################################################################
 #                                     Servers                              #
 ############################################################################
 servers:
-  - url: 'http://localhost:{port}/v1'
+  - url: "http://localhost:{port}/v1"
     description: Local host API
     variables:
       port:
         enum:
-          - '3333'
-        default: '3333'
-  - url: 'https://edge.example.com:{port}/v1'
+          - "3333"
+        default: "3333"
+  - url: "https://edge.example.com:{port}/v1"
     description: Production API
     variables:
       port:
         enum:
-          - '443'
-          - '8443'
-        default: '443'
-  - url: 'https://{region}.edge.example.com:{port}/v1'
+          - "443"
+          - "8443"
+        default: "443"
+  - url: "https://{region}.edge.example.com:{port}/v1"
     description: Production API for Regions
     variables:
       region:
         default: east
       port:
         enum:
-          - '443'
-          - '8443'
-        default: '443'
+          - "443"
+          - "8443"
+        default: "443"
 
 ############################################################################
 #                                     Tags                                 #
@@ -158,11 +155,10 @@ tags:
       Register and manage the routable Service Endpoints of your deployed applications.
   - name: Service Profiles
     description: |
-      Create and manage profiles that describe the service requirements of your MEC applications, such as the required connection bandwidth and maximum latency. 
+      Create and manage profiles that describe the service requirements of your MEC applications, such as the required connection bandwidth and maximum latency.
 # - name: Events and Subscriptions
 #    description: |
 #      Subscribe to event notification callbacks to monitor platform and workload events and retrieve event details.
-
 
 ############################################################################
 #                                     Paths                                #
@@ -171,7 +167,7 @@ paths:
   /:
     get:
       responses:
-        '200':
+        "200":
           description: List of top-level resources and their links
           content:
             application/json:
@@ -180,13 +176,13 @@ paths:
                 type: object
                 properties:
                   resources:
-                    $ref: '#/components/schemas/Resources'
+                    $ref: "#/components/schemas/Resources"
                   links:
-                    $ref: '#/components/schemas/LinksCommon'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                    $ref: "#/components/schemas/LinksCommon"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Discovery
       operationId: bookmark
@@ -200,10 +196,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResourcesServiceProfile'
+              $ref: "#/components/schemas/ResourcesServiceProfile"
         description: service profile
       responses:
-        '201':
+        "201":
           description: service profile ID
           content:
             application/json:
@@ -211,19 +207,19 @@ paths:
                 title: PostServiceProfileResponse
                 type: object
                 properties:
-                  serviceProfileId: 
-                    $ref: '#/components/schemas/TypesServiceProfileId'
+                  serviceProfileId:
+                    $ref: "#/components/schemas/TypesServiceProfileId"
                   links:
                     type: array
                     items:
                       oneOf:
-                        - $ref: '#/components/schemas/LinksUpdateServiceProfile'
-                        - $ref: '#/components/schemas/LinksDeleteServiceProfile'
-                        - $ref: '#/components/schemas/LinksCommon'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                        - $ref: "#/components/schemas/LinksUpdateServiceProfile"
+                        - $ref: "#/components/schemas/LinksDeleteServiceProfile"
+                        - $ref: "#/components/schemas/LinksCommon"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Service Profiles
       summary: Create a service profile
@@ -231,7 +227,7 @@ paths:
     get:
       operationId: get-service-profiles
       responses:
-        '200':
+        "200":
           description: List all service profiles registered under your API key
           content:
             application/json:
@@ -242,23 +238,23 @@ paths:
                   serviceProfiles:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ResourcesServiceProfile'
+                      $ref: "#/components/schemas/ResourcesServiceProfile"
                   links:
                     type: array
                     items:
                       oneOf:
-                        - $ref: '#/components/schemas/LinksCreateServiceProfile'
-                        - $ref: '#/components/schemas/LinksCommon'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                        - $ref: "#/components/schemas/LinksCreateServiceProfile"
+                        - $ref: "#/components/schemas/LinksCommon"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Service Profiles
       summary: List all service profiles registered under your API key
       description: List all service profiles registered under your API key
 
-  '/serviceprofiles/{serviceProfileId}':
+  "/serviceprofiles/{serviceProfileId}":
     parameters:
       - name: serviceProfileId
         in: path
@@ -271,20 +267,20 @@ paths:
       summary: Fetch a service profile
       description: Returns a specified service profile.
       responses:
-        '200':
+        "200":
           description: Requested service profile
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResourcesServiceProfile'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/ResourcesServiceProfile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Service Profiles
     put:
@@ -296,32 +292,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResourcesServiceProfile'
+              $ref: "#/components/schemas/ResourcesServiceProfile"
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'  
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Service Profiles
     delete:
       summary: Delete a Service Profile
       operationId: delete-service-profile
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       description: Delete Service Profile based on unique service profile ID
       tags:
         - Service Profiles
@@ -330,14 +326,14 @@ paths:
     get:
       operationId: get-service-endpoints
       parameters:
-        - $ref: '#/components/parameters/region'
-        - $ref: '#/components/parameters/zone'        
-        - $ref: '#/components/parameters/serviceEndpointsIds'
-        - $ref: '#/components/parameters/subscriberDensity'
-        - $ref: '#/components/parameters/UEIdentityType'
-        - $ref: '#/components/parameters/UEIdentity'
+        - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/zone"
+        - $ref: "#/components/parameters/serviceEndpointsIds"
+        - $ref: "#/components/parameters/subscriberDensity"
+        - $ref: "#/components/parameters/UEIdentityType"
+        - $ref: "#/components/parameters/UEIdentity"
       responses:
-        '200':
+        "200":
           description: Find optimal Service Endpoints for clients to connect to
           content:
             application/json:
@@ -348,17 +344,17 @@ paths:
                   serviceEndpoints:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ResourcesEdgeHostedService'
+                      $ref: "#/components/schemas/ResourcesEdgeHostedService"
                   links:
                     type: array
                     items:
                       oneOf:
-                        - $ref: '#/components/schemas/LinksRegisterServiceEndpoint'
-                        - $ref: '#/components/schemas/LinksCommon'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                        - $ref: "#/components/schemas/LinksRegisterServiceEndpoint"
+                        - $ref: "#/components/schemas/LinksCommon"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Discovery
       summary: Find optimal Service Endpoints for clients to connect to
@@ -372,10 +368,10 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/ResourcesEdgeHostedService'
+                $ref: "#/components/schemas/ResourcesEdgeHostedService"
       responses:
-        '201':
-        # Action: discuss with team on diff with implementation and no 200 response
+        "201":
+          # Action: discuss with team on diff with implementation and no 200 response
           description: Returns a serviceEndpointsId
           content:
             application/json:
@@ -384,51 +380,51 @@ paths:
                 type: object
                 properties:
                   serviceEndpointsId:
-                    $ref: '#/components/schemas/TypesServiceEndpointsId'
+                    $ref: "#/components/schemas/TypesServiceEndpointsId"
                   links:
                     type: array
                     items:
                       oneOf:
-                        - $ref: '#/components/schemas/LinksUpdateServiceEndpoint'
-                        - $ref: '#/components/schemas/LinksDeleteServiceEndpoint'
-                        - $ref: '#/components/schemas/LinksOptimalServiceEndpointsByServiceProfile'
-                        - $ref: '#/components/schemas/LinksCommon'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                        - $ref: "#/components/schemas/LinksUpdateServiceEndpoint"
+                        - $ref: "#/components/schemas/LinksDeleteServiceEndpoint"
+                        - $ref: "#/components/schemas/LinksOptimalServiceEndpointsByServiceProfile"
+                        - $ref: "#/components/schemas/LinksCommon"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Service Endpoints
       summary: Register Service Endpoints
       description: Register Service Endpoints of a deployed application to specified MEC Platforms.
 
-  '/serviceendpoints/{serviceEndpointsId}':
+  "/serviceendpoints/{serviceEndpointsId}":
     parameters:
       - name: serviceEndpointsId
         in: path
         required: true
         description: serviceEndpointsId param //added desc
         schema:
-          $ref: '#/components/schemas/TypesServiceEndpointsId'
+          $ref: "#/components/schemas/TypesServiceEndpointsId"
     get:
       operationId: get-service-endpoints-by-serviceEndpointsId
       responses:
-        '200':
+        "200":
           description: Arry of registered service endpoints
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ResourcesEdgeHostedService'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                  $ref: "#/components/schemas/ResourcesEdgeHostedService"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Service Endpoints
       summary: Get registered edge service endpoint information
@@ -442,16 +438,16 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/ResourcesEdgeHostedService'
+                $ref: "#/components/schemas/ResourcesEdgeHostedService"
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Service Endpoints
       summary: Update a Service Endpoint
@@ -459,16 +455,16 @@ paths:
     delete:
       operationId: deregister-service-endpoint
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Service Endpoints
       summary: Deregister an application's Service Endpoint
@@ -478,14 +474,14 @@ paths:
     get:
       operationId: get-mecplatforms
       parameters:
-        - $ref: '#/components/parameters/region'
-        - $ref: '#/components/parameters/zone'        
-        - $ref: '#/components/parameters/serviceProfileId'
-        - $ref: '#/components/parameters/subscriberDensity'
-        - $ref: '#/components/parameters/UEIdentityType'
-        - $ref: '#/components/parameters/UEIdentity'
+        - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/zone"
+        - $ref: "#/components/parameters/serviceProfileId"
+        - $ref: "#/components/parameters/subscriberDensity"
+        - $ref: "#/components/parameters/UEIdentityType"
+        - $ref: "#/components/parameters/UEIdentity"
       responses:
-        '200':
+        "200":
           description: MEC platforms matching query parameters
           content:
             application/json:
@@ -496,31 +492,31 @@ paths:
                   mecPlatforms:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ResourcesMecPlatform'
+                      $ref: "#/components/schemas/ResourcesMecPlatform"
                   links:
                     type: array
                     items:
                       oneOf:
-                        - $ref: '#/components/schemas/LinksOptimalMecPlatformsByRegion'
-                        - $ref: '#/components/schemas/LinksOptimalMecPlatformsByDensity'
-                        - $ref: '#/components/schemas/LinksOptimalMecPlatformsByServiceProfile'
-                        - $ref: '#/components/schemas/LinksOptimalMecPlatformsByUe'
-                        - $ref: '#/components/schemas/LinksRegisterServiceEndpoint'
-                        - $ref: '#/components/schemas/LinksCommon'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByRegion"
+                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByDensity"
+                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByServiceProfile"
+                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByUe"
+                        - $ref: "#/components/schemas/LinksRegisterServiceEndpoint"
+                        - $ref: "#/components/schemas/LinksCommon"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Discovery
       summary: Discover optimal MEC Platforms for deployed applications
       description: Returns a list of optimal MEC Platforms where you can register your deployed application. You can choose to search without passing any of the inputs paramaters or a combination of Service Profile, Region, subscriber density or UEIdentity.
-  
+
   /regions:
     get:
       operationId: get-regions
       responses:
-        '200':
+        "200":
           description: List of the supported geographical regions
           content:
             application/json:
@@ -531,58 +527,58 @@ paths:
                   regions:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ResourcesRegionMetadata'
+                      $ref: "#/components/schemas/ResourcesRegionMetadata"
                   links:
                     type: array
                     items:
                       oneOf:
-                        - $ref: '#/components/schemas/LinksOptimalMecPlatformsByRegion'
-                        - $ref: '#/components/schemas/LinksOptimalServiceEndpointsByRegion'
-                        - $ref: '#/components/schemas/LinksCommon'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByRegion"
+                        - $ref: "#/components/schemas/LinksOptimalServiceEndpointsByRegion"
+                        - $ref: "#/components/schemas/LinksCommon"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Discovery
       summary: List the geographical regions supported, and the associated zones
       description: List the geographical regions supported and the zones within each
-      
+
   /regions/{regionId}:
     parameters:
-    - in: path
-      name: regionId
-      required: true
-      description: regionId param //added desc
-      schema:
-        $ref: '#/components/schemas/TypesRegionId'
+      - in: path
+        name: regionId
+        required: true
+        description: regionId param //added desc
+        schema:
+          $ref: "#/components/schemas/TypesRegionId"
     get:
       operationId: get-region
       responses:
-        '200':
+        "200":
           description: Details of a region
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResourcesRegion'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/ResourcesRegion"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Discovery
       summary: Fetch details for a region
-      description: Fetch details for a region        
+      description: Fetch details for a region
 
   /zones:
     get:
       operationId: get-zones
       parameters:
-        - $ref: '#/components/parameters/region'
+        - $ref: "#/components/parameters/region"
       responses:
-        '200':
+        "200":
           description: Zones matching query parameters
           content:
             application/json:
@@ -593,28 +589,28 @@ paths:
                   zones:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ResourcesZoneMetadata'
+                      $ref: "#/components/schemas/ResourcesZoneMetadata"
                   links:
                     type: array
                     items:
                       oneOf:
-                        - $ref: '#/components/schemas/LinksOptimalMecPlatformsByRegion'
-                        - $ref: '#/components/schemas/LinksOptimalMecPlatformsByZone'
-                        - $ref: '#/components/schemas/LinksOptimalServiceEndpointsByZone'
-                        - $ref: '#/components/schemas/LinksCommon'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByRegion"
+                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByZone"
+                        - $ref: "#/components/schemas/LinksOptimalServiceEndpointsByZone"
+                        - $ref: "#/components/schemas/LinksCommon"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       tags:
         - Discovery
       summary: List all zones, or zones within a region
       description: Returns a list of all zones or zones within a specified region.
 
-  '/zones/{zoneId}':
+  "/zones/{zoneId}":
     parameters:
       - schema:
-          $ref: '#/components/schemas/TypesZoneId'
+          $ref: "#/components/schemas/TypesZoneId"
         name: zoneId
         in: path
         required: true
@@ -623,79 +619,79 @@ paths:
       operationId: get-zone-by-Id
       summary: Read the properties of a zone
       responses:
-        '200':
+        "200":
           description: Representation of the Zone resource
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResourcesZone'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/ResourcesZone"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
         default:
-          $ref: '#/components/responses/Unexpected'
+          $ref: "#/components/responses/Unexpected"
       description: Read the properties of a zone
       tags:
         - Discovery
 
 components:
- ######################################################
- #  OAUTH
- #######################################################
+  ######################################################
+  #  OAUTH
+  #######################################################
   securitySchemes:
     oAuth2:
       type: oauth2
-      description: 'This API uses OAuth 2 with the implicit, password and client credentials grant flow'
+      description: "This API uses OAuth 2 with the implicit, password and client credentials grant flow"
       flows:
         implicit:
-          authorizationUrl: 'https://example.com/oauth/authorize'
+          authorizationUrl: "https://example.com/oauth/authorize"
           scopes:
-            'discovery:read': Grant read-only access to discovery data
-            'serviceprofile:read': Grant read-only access to service profile data
-            'serviceprofile:write': Grant write access to service profile data
-            'serviceregistry:read': Grant read-only access to service registry data
-            'serviceregistry:write': Grant write access to service registry data
+            "discovery:read": Grant read-only access to discovery data
+            "serviceprofile:read": Grant read-only access to service profile data
+            "serviceprofile:write": Grant write access to service profile data
+            "serviceregistry:read": Grant read-only access to service registry data
+            "serviceregistry:write": Grant write access to service registry data
         password:
-          tokenUrl: 'https://example.com/oauth/token'
+          tokenUrl: "https://example.com/oauth/token"
           scopes:
-            'discovery:read': Grant read-only access to discovery data
-            'serviceprofile:read': Grant read-only access to service profile data
-            'serviceprofile:write': Grant write access to service profile data
-            'serviceregistry:read': Grant read-only access to Service registry data
-            'serviceregistry:write': Grant write access to Service registry data
+            "discovery:read": Grant read-only access to discovery data
+            "serviceprofile:read": Grant read-only access to service profile data
+            "serviceprofile:write": Grant write access to service profile data
+            "serviceregistry:read": Grant read-only access to Service registry data
+            "serviceregistry:write": Grant write access to Service registry data
         clientCredentials:
-          tokenUrl: 'https://example.com/oauth/token'
+          tokenUrl: "https://example.com/oauth/token"
           scopes:
-            'discovery:read': Grant read-only access to discovery data
-            'serviceprofile:read': Grant read-only access to service profile data
-            'serviceprofile:write': Grant write access to service profile data
-            'serviceregistry:read': Grant read-only access to Service registry data
-            'serviceregistry:write': Grant write access to Service registry data
+            "discovery:read": Grant read-only access to discovery data
+            "serviceprofile:read": Grant read-only access to service profile data
+            "serviceprofile:write": Grant write access to service profile data
+            "serviceregistry:read": Grant read-only access to Service registry data
+            "serviceregistry:write": Grant write access to Service registry data
 
- ######################################################
- #  RESOURCES
- #######################################################
+  ######################################################
+  #  RESOURCES
+  #######################################################
   schemas:
     Resources:
       type: array
       description: Resources//added desc
       items:
         oneOf:
-          - $ref: '#/components/schemas/LinksAllRegions'
-          - $ref: '#/components/schemas/LinksAllZones'
-          - $ref: '#/components/schemas/LinksAllMecPlatforms' 
-          - $ref: '#/components/schemas/LinksAllServiceProfiles'
-          - $ref: '#/components/schemas/LinksAllServiceEndpoints'
+          - $ref: "#/components/schemas/LinksAllRegions"
+          - $ref: "#/components/schemas/LinksAllZones"
+          - $ref: "#/components/schemas/LinksAllMecPlatforms"
+          - $ref: "#/components/schemas/LinksAllServiceProfiles"
+          - $ref: "#/components/schemas/LinksAllServiceEndpoints"
       additionalProperties: false
     ResourcesServiceProfile:
       type: object
       description: serviceprofileResource//added desc
       properties:
         serviceProfileId:
-          $ref: '#/components/schemas/TypesServiceProfileId'
+          $ref: "#/components/schemas/TypesServiceProfileId"
         clientType:
           type: string
           enum:
@@ -722,12 +718,12 @@ components:
           type: string
           description: network resource name or properties
           additionalProperties:
-            $ref: '#/components/schemas/TypesNetworkResources'
+            $ref: "#/components/schemas/TypesNetworkResources"
         computeResources:
           type: string
           description: compute resource name or properties
           additionalProperties:
-            $ref: '#/components/schemas/TypesComputeResources'
+            $ref: "#/components/schemas/TypesComputeResources"
         properties:
           type: object
           description: Resources//added desc
@@ -744,23 +740,23 @@ components:
       type: object
       properties:
         ern:
-         $ref: '#/components/schemas/TypesEdgeResource'
+          $ref: "#/components/schemas/TypesEdgeResource"
         serviceEndpointsId:
-          $ref: '#/components/schemas/TypesServiceEndpointsId'
+          $ref: "#/components/schemas/TypesServiceEndpointsId"
         serviceEndpoint:
-          $ref: '#/components/schemas/ResourcesServiceEndpoint'
+          $ref: "#/components/schemas/ResourcesServiceEndpoint"
         applicationServerProviderId:
           type: string
           description: Unique ID representing the Edge Application Provider
         applicationId:
           type: string
-          description: Unique ID representing the Edge Application          
+          description: Unique ID representing the Edge Application
         serviceDescription:
           type: string
           description: Description of the Service Endpoint
           additionalProperties: false
         serviceProfileId:
-              $ref: '#/components/schemas/TypesServiceProfileId'
+          $ref: "#/components/schemas/TypesServiceProfileId"
     ResourcesServiceEndpoint:
       type: object
       description: ServiceEndpoint//added desc
@@ -790,11 +786,11 @@ components:
       description: Mecplatform service//added desc
       properties:
         edgeResourceName:
-          $ref: '#/components/schemas/TypesEdgeResource'
+          $ref: "#/components/schemas/TypesEdgeResource"
         zoneId:
-          $ref: '#/components/schemas/TypesZoneId'
+          $ref: "#/components/schemas/TypesZoneId"
         regionId:
-          $ref: '#/components/schemas/TypesRegionId'
+          $ref: "#/components/schemas/TypesRegionId"
         status:
           description: Status of the MEC Platform (default is 'unknown')
           type: string
@@ -817,7 +813,7 @@ components:
     ResourcesRegion:
       description: Resources Region//added desc
       allOf:
-        - $ref: '#/components/schemas/ResourcesRegionMetadata'
+        - $ref: "#/components/schemas/ResourcesRegionMetadata"
         - type: object
           required:
             - zones
@@ -825,14 +821,14 @@ components:
             zones:
               type: array
               items:
-                $ref: '#/components/schemas/ResourcesZone'
+                $ref: "#/components/schemas/ResourcesZone"
       additionalProperties: false
     ResourcesRegionMetadata:
       type: object
       description: Metadata for region//added desc
       properties:
         regionId:
-          $ref: '#/components/schemas/TypesRegionId'
+          $ref: "#/components/schemas/TypesRegionId"
         name:
           type: string
           description: name of service Endpoint if available //added desc
@@ -845,12 +841,12 @@ components:
         area:
           type: string
           description: area of service Endpoint if available //added desc
-      additionalProperties: false      
- 
+      additionalProperties: false
+
     ResourcesZone:
       description: Resources Zone//added desc
       allOf:
-        - $ref: '#/components/schemas/ResourcesZoneMetadata'
+        - $ref: "#/components/schemas/ResourcesZoneMetadata"
         - type: object
           required:
             - MECPlatforms
@@ -858,26 +854,26 @@ components:
             mecPlatforms:
               type: array
               items:
-                $ref: '#/components/schemas/ResourcesMecPlatform'
+                $ref: "#/components/schemas/ResourcesMecPlatform"
       additionalProperties: false
     ResourcesZoneMetadata:
       type: object
       description: Metadata for zone//added desc
       properties:
         zoneId:
-          $ref: '#/components/schemas/TypesZoneId'
+          $ref: "#/components/schemas/TypesZoneId"
         regionId:
-          $ref: '#/components/schemas/TypesRegionId'
-      additionalProperties: false       
+          $ref: "#/components/schemas/TypesRegionId"
+      additionalProperties: false
 
- ######################################################
- #  IDs
- #######################################################
+    ######################################################
+    #  IDs
+    #######################################################
     TypesEdgeResource:
       description: |
         An object defined by the service provider representing an edge resource within its network domain, such as a MEC Platform.  The string contains colon-separated metadata in the form   ern:<tsp-identifier>:<tsp-region>:<resource-type>:<resource-identifier>:<tsp-extensions>
       type: string
-      additionalProperties: false 
+      additionalProperties: false
     TypesRegionId:
       description: |
         Unique identifier representing a region
@@ -899,11 +895,11 @@ components:
       description: |
         Unique identifier representing a zone
       type: string
-      additionalProperties: false      
- 
- ######################################################
- #  TYPES
- #######################################################      
+      additionalProperties: false
+
+    ######################################################
+    #  TYPES
+    #######################################################
     TypesNetworkResources:
       type: object
       description: network resources//added desc
@@ -919,7 +915,7 @@ components:
           description: Maximum request rate that the application can handle
         maxLatencyMs:
           type: integer
-          description: 'Maximum response time or latency that the application can handle, in miliseconds'
+          description: "Maximum response time or latency that the application can handle, in miliseconds"
         minAvailability:
           type: integer
           description: Minimum availability required for the server
@@ -962,7 +958,7 @@ components:
           type: string
           description: message //added desc
         links:
-          $ref: '#/components/schemas/LinksCommon'
+          $ref: "#/components/schemas/LinksCommon"
       required:
         - code
         - message
@@ -979,11 +975,11 @@ components:
         - GPSI
     TypesUeIdentity:
       description: Identifier value for User Equipment. The type of identifier is defined by the 'UEIdentityType' parameter.
-      type: string      
+      type: string
 
- ######################################################
- #  LINKS
- #######################################################
+    ######################################################
+    #  LINKS
+    #######################################################
     LinksAllMecPlatforms:
       type: object
       description: links all Mex platforms //added desc
@@ -1009,8 +1005,8 @@ components:
             - href
             - rel
             - method
-      additionalProperties: false    
-    
+      additionalProperties: false
+
     LinksAllServiceProfiles:
       type: object
       description: linking all service profiles //added desc
@@ -1584,14 +1580,14 @@ components:
       readOnly: true
       items:
         oneOf:
-          - $ref: '#/components/schemas/LinksSelf'
-          - $ref: '#/components/schemas/LinksVersionHistory'
-          - $ref: '#/components/schemas/LinksTermsOfService'
-          - $ref: '#/components/schemas/LinksBookmark'
+          - $ref: "#/components/schemas/LinksSelf"
+          - $ref: "#/components/schemas/LinksVersionHistory"
+          - $ref: "#/components/schemas/LinksTermsOfService"
+          - $ref: "#/components/schemas/LinksBookmark"
 
- ######################################################
- #  PARAMETERS
- #######################################################
+  ######################################################
+  #  PARAMETERS
+  #######################################################
   parameters:
     serviceProfileId:
       name: serviceProfileId
@@ -1615,7 +1611,7 @@ components:
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/TypesServiceEndpointsId'
+          $ref: "#/components/schemas/TypesServiceEndpointsId"
       style: pipeDelimited
       explode: false
     subscriberDensity:
@@ -1631,14 +1627,14 @@ components:
       in: query
       required: false
       schema:
-        $ref: '#/components/schemas/TypesUeIdentityType'
+        $ref: "#/components/schemas/TypesUeIdentityType"
     UEIdentity:
       name: ueIdentity
       description: Identifier value for User Equipment. The type of identifier is defined by the UEIdentityType parameter.
       in: query
       required: false
       schema:
-        $ref: '#/components/schemas/TypesUeIdentity'
+        $ref: "#/components/schemas/TypesUeIdentity"
     zone:
       name: zone
       description: MEC zone ID
@@ -1646,10 +1642,10 @@ components:
       required: false
       schema:
         type: string
- 
- ######################################################
- #  RESPONSES
- #######################################################
+
+  ######################################################
+  #  RESPONSES
+  #######################################################
   responses:
     NoContent:
       description: HTTP 204 No Content
@@ -1658,22 +1654,22 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/TypesError'
+            $ref: "#/components/schemas/TypesError"
     NotFound:
       description: HTTP 404 The specified resource was not found
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/TypesError'
+            $ref: "#/components/schemas/TypesError"
     Unauthorized:
       description: HTTP 401 Unauthorized
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/TypesError'
+            $ref: "#/components/schemas/TypesError"
     Unexpected:
       description: HTTP 500 Internal Server Error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/TypesError'
+            $ref: "#/components/schemas/TypesError"
