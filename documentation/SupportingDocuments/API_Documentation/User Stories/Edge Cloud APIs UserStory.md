@@ -14,7 +14,7 @@ This story includes the whole journey from the Edge Cloud APIs with a couple of 
 |Application Endpoint Discovery(AED) |The Application Discovery API extends beyond the capabilities of the Simple Edge Discovery API by not only locating the nearest Edge Cloud Zone but also directly linking to the application endpoints within those zones. |
 |Edge Application Management(EAM)|Edge Application Management API allows API consumers to manage the Life Cycle of an Application and to Discover Edge Cloud Zones. 
 |Simple Edge Discovery(SED)|The Simple Edge Discovery API returns the name of the closest operator Edge Cloud Zone to a particular user device.
-|Traffic Influence(TI)|The TI API provides the capability to establish the best routing, in terms of latency, in a specific geographical area, between the user Device, e.g. the user’s smartphone, and the optimal EAS instance nearby.
+|Traffic Influence(TI)|The TI API provides the capability to establish the optimal routing, in terms of latency, in a specific geographical area, between the user Device, e.g. the user’s smartphone, and the optimal EAS instance nearby.
 
 To further information about each API, review the User story of each  one, which is available in the corresponding repository. 
 The purpose of this user story is to have a general picture of the life cycle management of the Edge cloud family APIs.
