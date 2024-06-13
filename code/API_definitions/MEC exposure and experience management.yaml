@@ -13,7 +13,7 @@ info:
     ---
 
     Use the MEC Exposure & Experience Management API for discovery and utilisation of Multi-Access Edge Compute (MEC)
-    resources and services.
+    resources and applications.
 
 
     ---
@@ -24,10 +24,10 @@ info:
     APIs defined in this version of the specification can be categorized into the following areas:
 
     * __MEC Edge Discovery__ - discovery of optimal MEC platforms
-    * __MEC Service Discovery__ - discovery of optimal Service Endpoints for client connections
-    * __MEC Service Profile management__ - register, retrieve, update, and delete MEC Service Profiles
-    * __MEC Service Endpoint management__ - register one or more Service Endpoints, and retrieve, update, and delete those registrations
-    * __MEC Edge Event notification__ - subscription management for MEC and Service discovery Event notifications
+    * __MEC application Discovery__ - discovery of optimal Application Endpoints for client connections
+    * __MEC Application Profile management__ - register, retrieve, update, and delete MEC Application Profiles
+    * __MEC application Endpoint management__ - register one or more Application Endpoints, and retrieve, update, and delete those registrations
+    * __MEC Edge Event notification__ - subscription management for MEC and application discovery Event notifications
 
     ---
     # Definitions
@@ -35,20 +35,20 @@ info:
     This section provides definitions of terminologies commonly referred to throughout the API descriptions.
 
     * __API Consumer__ - A user or an application consuming the MEC Exposure and Experience Management APIs.
-    * __Application Service Provider__ - the developer/publisher who deploys applications on MEC platforms.
+    * __Application application Provider__ - the developer/publisher who deploys applications on MEC platforms.
     * __Density__ - Minimum 4G/5G subscriber density in a geographical area, represented as the number of subscribers per square kilometer.
-    * __Edge Application__ - A cloud application that has some services deployed to MEC Platforms to take advantage of low latency and high bandwidth when interacting with devices.
-    * __Edge Discovery Service (EDS)__ - MEC Exposure and Experience Management APIs exposed as a service by a TSP.
+    * __Edge Application__ - A cloud application that has some applications deployed to MEC Platforms to take advantage of low latency and high bandwidth when interacting with devices.
+    * __Edge Discovery application (EDS)__ - MEC Exposure and Experience Management APIs exposed as a application by a TSP.
     * __Edge Resource__ - An object defined by the sevice provider representing an edge resource within its network domain, such as a MEC Platform.
     * __Event__ - A MEC event is triggered if the previously-discovered MEC platform is no longer the optimal choice of all available MEC platforms, due to a change in the underlying network or MEC infrastructure. The TSP will send out change notifications to API Consumers who have active subscription to the event notification.
     * __MEC  Platform__ - A collection of cloud computing resources housed in a TSP's network facility that provide Multi-access Edge Computing (MEC) capabilities.
-    * __Optimal MEC  Platforms__ - A list of one or more optimal MEC Platforms to register a Service Endpoint, based on the latency and availability of each MEC platform, and optionally also based on various query criteria (Service Profile, Region, subscriber density or UE identity) defined by the API Consumer.
-    * __Optimal MEC Service Endpoints__ – A list of one or more MEC Service Endpoints that provide optimal user experience to the client device, based on internal network conditions known to the MEC Platform, and also optionally based on various query criteria (Service Profile, Region, subscriber density or UE identity) defined by the API Consumer.
-    * __Region__ - A TSP-defined string identifier representing a certain geographical or logical area where MEC resources and services are provided.
-    * __Registered MEC Hosted Services__ - Applications running on MEC platforms which are registered with Edge Discovery Service using the service registry APIs.
-    * __Service Endpoint__ - The routable endpoint of the service(s) within a deployed application that clients connect to, where a service is a subcomponent of application
-    * __Service Profile__ - Information about the MEC application and the associated service characteristics.
-    * __TSP__ - Telecommunications Service Provider.
+    * __Optimal MEC  Platforms__ - A list of one or more optimal MEC Platforms to register a application Endpoint, based on the latency and availability of each MEC platform, and optionally also based on various query criteria (Application Profile, Region, subscriber density or UE identity) defined by the API Consumer.
+    * __Optimal MEC Application Endpoints__ – A list of one or more MEC Application Endpoints that provide optimal user experience to the client device, based on internal network conditions known to the MEC Platform, and also optionally based on various query criteria (Application Profile, Region, subscriber density or UE identity) defined by the API Consumer.
+    * __Region__ - A TSP-defined string identifier representing a certain geographical or logical area where MEC resources and applications are provided.
+    * __Registered MEC Hosted applications__ - Applications running on MEC platforms which are registered with Edge Discovery application using the application registry APIs.
+    * __application Endpoint__ - The routable endpoint of the application(s) within a deployed application that clients connect to, where a application is a subcomponent of application
+    * __Application Profile__ - Information about the MEC application and the associated application characteristics.
+    * __TSP__ - Telecommunications application Provider.
     * __UEIdentity__ - User Equipment identity, which can be a device's IP address, MSISDN, IMEI, MDN, or GPSI.
     * __Zone__ - A logical collection of MEC Platforms in a telecommunication provider's network. A Zone is part of a Region.
 
@@ -65,30 +65,30 @@ info:
     __MEC PLATFORMS__
     * __All-mec-platforms__ list all MEC platforms
     * __Optimal-MECPlatforms-by-density__ return the optimal MEC platform for a given subscriber density
-    * __Optimal-MECPlatforms-by-service-profile__ return the optimal MEC platform for a given service profile
+    * __Optimal-MECPlatforms-by-application-profile__ return the optimal MEC platform for a given Application Profile
     * __Optimal-MECPlatforms-by-UE__ return the optimal MEC platform for a given UE identifier
     * __Optimal-MECPlatforms-by-region__ return the optimal MEC platform for a given region
     * __Optimal-MECPlatforms-by-zone__ return the optimal MEC platform for a given zone
 
-    __Service Endpoints__
-    * __All-service-endpoints__ list all Service Endpoints
-    * __Register-service-endpoint__ Register a Service Endpoint
-    * __Update-service-endpoint__ Update a Service Endpoint
-    * __Delete-service-endpoint__ Delete a Service Endpoint
-    * __Optimal-service-endpoints-by-zone__ return the optimal Service Endpoints associated with the specified Zone
-    * __Optimal-service-endpoints-by-region__ return the optimal Service Endpoints associated with the specified Region
-    * __Optimal-service-endpoints-by-service-profile__ return the optimal Service Endpoints associated with the specified Service Profile
+    __Application Endpoints__
+    * __All-application-endpoints__ list all Application Endpoints
+    * __Register-application-endpoint__ Register a application Endpoint
+    * __Update-application-endpoint__ Update a application Endpoint
+    * __Delete-application-endpoint__ Delete a application Endpoint
+    * __Optimal-application-endpoints-by-zone__ return the optimal Application Endpoints associated with the specified Zone
+    * __Optimal-application-endpoints-by-region__ return the optimal Application Endpoints associated with the specified Region
+    * __Optimal-application-endpoints-by-application-profile__ return the optimal Application Endpoints associated with the specified Application Profile
 
-    __SERVICE PROFILES__
-    * __All-service-profiles__ list all Service Profiles
-    * __Create-service-profile__ create a new Service Profile
-    * __Update-service-profiles__ Update a Service Profiles
-    * __Delete-service-profile__ Delete a Service Profile based on ID
+    __Application Profiles__
+    * __All-application-profiles__ list all Application Profiles
+    * __Create-application-profile__ create a new Application Profile
+    * __Update-application-profiles__ Update a Application Profiles
+    * __Delete-application-profile__ Delete a Application Profile based on ID
 
     __COMMON__
     * __Self__ the self-referring URI for the response
     * __Version-History__ link to version history for this API
-    * __Terms-of-Service__ link The Terms of Service for this API
+    * __Terms-of-application__ link The Terms of application for this API
     * __Bookmark__ link to the API bookmark
 
     ---
@@ -109,10 +109,10 @@ info:
 security:
   - oAuth2:
       - "edge:discovery:read"
-      - "edge:serviceprofile:read"
-      - "edge:serviceprofile:write"
-      - "edge:serviceregistry:read"
-      - "edge:serviceregistry:write"
+      - "edge:applicationprofile:read"
+      - "edge:applicationprofile:write"
+      - "edge:applicationregistry:read"
+      - "edge:applicationregistry:write"
 
 ############################################################################
 #                                     Servers                              #
@@ -150,13 +150,13 @@ servers:
 tags:
   - name: Discovery
     description: |
-      Discover the regions and zones in the MEC service, find optimal MEC Platforms for your deployed applications, and optimal service endpoints for your clients to connect to.
-  - name: Service Endpoints
+      Discover the regions and zones in the MEC application, find optimal MEC Platforms for your deployed applications, and optimal Application Endpoints for your clients to connect to.
+  - name: Application Endpoints
     description: |
-      Register and manage the routable Service Endpoints of your deployed applications.
-  - name: Service Profiles
+      Register and manage the routable Application Endpoints of your deployed applications.
+  - name: Application Profiles
     description: |
-      Create and manage profiles that describe the service requirements of your MEC applications, such as the required connection bandwidth and maximum latency.
+      Create and manage profiles that describe the application requirements of your MEC applications, such as the required connection bandwidth and maximum latency.
 # - name: Events and Subscriptions
 #    description: |
 #      Subscribe to event notification callbacks to monitor platform and workload events and retrieve event details.
@@ -165,115 +165,73 @@ tags:
 #                                     Paths                                #
 ############################################################################
 paths:
-  /:
-    get:
-      responses:
-        "200":
-          description: List of top-level resources and their links
-          content:
-            application/json:
-              schema:
-                title: GetResourcesResponse
-                type: object
-                properties:
-                  resources:
-                    $ref: "#/components/schemas/Resources"
-                  links:
-                    $ref: "#/components/schemas/LinksCommon"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        default:
-          $ref: "#/components/responses/Unexpected"
-      tags:
-        - Discovery
-      operationId: bookmark
-      summary: List the links to the top-level resources of this API
-      description: List the top level resources available from the API bookmark and the links to reach them
-
-  /serviceprofiles:
+  /application-profiles:
     post:
-      operationId: create-service-profile
+      operationId: create-application-profile
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ResourcesServiceProfile"
-        description: service profile
-      responses:
-        "201":
-          description: service profile ID
-          content:
-            application/json:
-              schema:
-                title: PostServiceProfileResponse
-                type: object
-                properties:
-                  serviceProfileId:
-                    $ref: "#/components/schemas/TypesServiceProfileId"
-                  links:
-                    type: array
-                    items:
-                      oneOf:
-                        - $ref: "#/components/schemas/LinksUpdateServiceProfile"
-                        - $ref: "#/components/schemas/LinksDeleteServiceProfile"
-                        - $ref: "#/components/schemas/LinksCommon"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        default:
-          $ref: "#/components/responses/Unexpected"
-      tags:
-        - Service Profiles
-      summary: Create a service profile
-      description: Creates a service profile that describes the resource requirements of a service.
-    get:
-      operationId: get-service-profiles
+              $ref: "#/components/schemas/ResourcesApplicationProfile"
+        description: Application Profile
       responses:
         "200":
-          description: List all service profiles registered under your API key
-          content:
-            application/json:
-              schema:
-                title: GetServiceProfilesResponse
-                type: object
-                properties:
-                  serviceProfiles:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/ResourcesServiceProfile"
-                  links:
-                    type: array
-                    items:
-                      oneOf:
-                        - $ref: "#/components/schemas/LinksCreateServiceProfile"
-                        - $ref: "#/components/schemas/LinksCommon"
+              description: good
+              content:
+                application/json:
+                  schema:
+                      $ref: '#/components/schemas/ApplicationProfileId'
         "401":
           $ref: "#/components/responses/Unauthorized"
         default:
           $ref: "#/components/responses/Unexpected"
       tags:
-        - Service Profiles
-      summary: List all service profiles registered under your API key
-      description: List all service profiles registered under your API key
+        - Application Profiles
+      summary: Create a Application Profile
+      description: Creates a Application Profile that describes the resource requirements of a application.
+    get:
+      operationId: get-application-profiles
+      responses:
+        "200":
+          description: List all Application Profiles registered under your API key
+          content:
+            application/json:
+              schema:
+                title: GetapplicationProfilesResponse
+                type: object
+                properties:
+                  applicationProfiles:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/applicationProfile"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        default:
+          $ref: "#/components/responses/Unexpected"
+      tags:
+        - Application Profiles
+      summary: List all Application Profiles registered under your API key
+      description: List all Application Profiles registered under your API key
 
-  "/serviceprofiles/{serviceProfileId}":
+  "/application-profiles/{applicationProfileId}":
     parameters:
-      - name: serviceProfileId
+      - name: applicationProfileId
         in: path
         required: true
-        description: serviceprofileid param//added desc
+        description: applicationProfileid
         schema:
           type: string
     get:
-      operationId: get-service-profile-by-profile-Id
-      summary: Fetch a service profile
-      description: Returns a specified service profile.
+      operationId: get-application-profile-by-profile-Id
+      summary: Fetch a Application Profile
+      description: Returns a specified Application Profile.
       responses:
         "200":
-          description: Requested service profile
+          description: Requested Application Profile
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResourcesServiceProfile"
+                $ref: "#/components/schemas/applicationProfile"
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -283,17 +241,17 @@ paths:
         default:
           $ref: "#/components/responses/Unexpected"
       tags:
-        - Service Profiles
+        - Application Profiles
     put:
-      summary: Update Service Profile
-      description: Update the definition of a Service Profile.
-      operationId: update-service-profile
+      summary: Update Application Profile
+      description: Update the definition of a Application Profile.
+      operationId: update-application-profile
       requestBody:
-        description: Service Profile definition
+        description: Application Profile definition
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ResourcesServiceProfile"
+              $ref: "#/components/schemas/ResourcesApplicationProfile"
       responses:
         "204":
           $ref: "#/components/responses/NoContent"
@@ -304,120 +262,110 @@ paths:
         default:
           $ref: "#/components/responses/Unexpected"
       tags:
-        - Service Profiles
+        - Application Profiles
     delete:
-      summary: Delete a Service Profile
-      operationId: delete-service-profile
+      summary: Delete a Application Profile
+      operationId: delete-application-profile
       responses:
-        "204":
-          $ref: "#/components/responses/NoContent"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        default:
-          $ref: "#/components/responses/Unexpected"
-      description: Delete Service Profile based on unique service profile ID
+            "200":
+              description: application profile has been deleted
+            "400":
+              $ref: "#/components/responses/Generic400"
+            "401":
+              $ref: "#/components/responses/Generic401"
+            "403":
+              $ref: "#/components/responses/Generic403"
+            "404":
+              $ref: "#/components/responses/Generic404"
+            "409":
+              $ref: "#/components/responses/Generic409"
+            "500":
+              $ref: "#/components/responses/Generic500"
+            "503":
+              $ref: "#/components/responses/Generic503"
+      description: Delete Application Profile based on unique Application Profile ID
       tags:
-        - Service Profiles
+        - Application Profiles
 
-  /serviceendpoints:
+  /application-endpoints:
     get:
-      operationId: get-service-endpoints
+      operationId: get-applciation-endpoints
       parameters:
         - $ref: "#/components/parameters/region"
-        - $ref: "#/components/parameters/zone"
-        - $ref: "#/components/parameters/serviceEndpointsIds"
-        - $ref: "#/components/parameters/subscriberDensity"
+        - $ref: "#/components/parameters/applicationEndpointsId"
         - $ref: "#/components/parameters/UEIdentityType"
         - $ref: "#/components/parameters/UEIdentity"
       responses:
         "200":
-          description: Find optimal Service Endpoints for clients to connect to
+          description: Find optimal Application Endpoints for clients to connect to
           content:
             application/json:
               schema:
-                title: GetServiceEndpointsResponse
+                title: GetapplicationEndpointsResponse
                 type: object
                 properties:
-                  serviceEndpoints:
+                  applicationEndpoints:
                     type: array
                     items:
-                      $ref: "#/components/schemas/ResourcesEdgeHostedService"
-                  links:
-                    type: array
-                    items:
-                      oneOf:
-                        - $ref: "#/components/schemas/LinksRegisterServiceEndpoint"
-                        - $ref: "#/components/schemas/LinksCommon"
+                      $ref: "#/components/schemas/ResourcesEdgeHostedapplication"
         "401":
           $ref: "#/components/responses/Unauthorized"
         default:
           $ref: "#/components/responses/Unexpected"
       tags:
         - Discovery
-      summary: Find optimal Service Endpoints for clients to connect to
-      description: Returns a list of optimal Service Endpoints that client devices can connect to. You can search based on Service Profile, Region, subscriber density or UEIdentity.
+      summary: Find optimal Application Endpoints for clients to connect to
+      description: Returns a list of optimal Application Endpoints that client devices can connect to. You can search based on Application Profile, Region, subscriber density or UEIdentity.
     post:
-      operationId: register-service-endpoints
+      operationId: register-application-endpoints
       requestBody:
-        description: Array of Service Endpoints for a deployed application
+        description: Array of Application Endpoints for a deployed application
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: "#/components/schemas/ResourcesEdgeHostedService"
+                $ref: "#/components/schemas/ResourcesEdgeHostedapplication"
       responses:
         "201":
           # Action: discuss with team on diff with implementation and no 200 response
-          description: Returns a serviceEndpointsId
+          description: Returns a applicationEndpointsId
           content:
             application/json:
               schema:
-                title: PostServiceEndpointResponse
+                title: PostapplicationEndpointResponse
                 type: object
                 properties:
-                  serviceEndpointsId:
-                    $ref: "#/components/schemas/TypesServiceEndpointsId"
-                  links:
-                    type: array
-                    items:
-                      oneOf:
-                        - $ref: "#/components/schemas/LinksUpdateServiceEndpoint"
-                        - $ref: "#/components/schemas/LinksDeleteServiceEndpoint"
-                        - $ref: "#/components/schemas/LinksOptimalServiceEndpointsByServiceProfile"
-                        - $ref: "#/components/schemas/LinksCommon"
+                  applicationEndpointsId:
+                    $ref: "#/components/schemas/TypesApplicationEndpointsId"
         "401":
           $ref: "#/components/responses/Unauthorized"
         default:
           $ref: "#/components/responses/Unexpected"
       tags:
-        - Service Endpoints
-      summary: Register Service Endpoints
-      description: Register Service Endpoints of a deployed application to specified MEC Platforms.
+        - Application Endpoints
+      summary: Register Application Endpoints
+      description: Register Application Endpoints of a deployed application to specified MEC Platforms.
 
-  "/serviceendpoints/{serviceEndpointsId}":
+  "/application-endpoints/{applicationEndpointsId}":
     parameters:
-      - name: serviceEndpointsId
+      - name: applicationEndpointsId
         in: path
         required: true
-        description: serviceEndpointsId param //added desc
+        description: applicationEndpointsId param //added desc
         schema:
-          $ref: "#/components/schemas/TypesServiceEndpointsId"
+          $ref: "#/components/schemas/TypesApplicationEndpointsId"
     get:
-      operationId: get-service-endpoints-by-serviceEndpointsId
+      operationId: get-application-endpoints-by-applicationEndpointsId
       responses:
         "200":
-          description: Arry of registered service endpoints
+          description: Arry of registered Application Endpoints
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ResourcesEdgeHostedService"
+                  $ref: "#/components/schemas/ResourcesEdgeHostedapplication"
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -427,19 +375,19 @@ paths:
         default:
           $ref: "#/components/responses/Unexpected"
       tags:
-        - Service Endpoints
-      summary: Get registered edge service endpoint information
-      description: Returns endpoint information for all Service Endpoints registered to a specified serviceEndpointId.
+        - Application Endpoints
+      summary: Get registered edge application endpoint information
+      description: Returns endpoint information for all Application Endpoints registered to a specified applicationEndpointId.
     put:
-      operationId: update-service-endpoint
+      operationId: update-application-endpoint
       requestBody:
-        description: Service Endpoint information
+        description: application Endpoint information
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: "#/components/schemas/ResourcesEdgeHostedService"
+                $ref: "#/components/schemas/ResourcesEdgeHostedapplication"
       responses:
         "204":
           $ref: "#/components/responses/NoContent"
@@ -450,11 +398,11 @@ paths:
         default:
           $ref: "#/components/responses/Unexpected"
       tags:
-        - Service Endpoints
-      summary: Update a Service Endpoint
-      description: Update registered Service Endpoint information.
+        - Application Endpoints
+      summary: Update a application Endpoint
+      description: Update registered application Endpoint information.
     delete:
-      operationId: deregister-service-endpoint
+      operationId: deregister-application-endpoint
       responses:
         "204":
           $ref: "#/components/responses/NoContent"
@@ -467,18 +415,15 @@ paths:
         default:
           $ref: "#/components/responses/Unexpected"
       tags:
-        - Service Endpoints
-      summary: Deregister an application's Service Endpoint
-      description: Deregister an application's Service Endpoint from the MEC Platform(s).
+        - Application Endpoints
+      summary: Deregister an application's application Endpoint
+      description: Deregister an application's application Endpoint from the MEC Platform(s).
 
   /mecplatforms:
     get:
       operationId: get-mecplatforms
       parameters:
-        - $ref: "#/components/parameters/region"
-        - $ref: "#/components/parameters/zone"
-        - $ref: "#/components/parameters/serviceProfileId"
-        - $ref: "#/components/parameters/subscriberDensity"
+        - $ref: "#/components/parameters/applicationProfileId"
         - $ref: "#/components/parameters/UEIdentityType"
         - $ref: "#/components/parameters/UEIdentity"
       responses:
@@ -494,16 +439,6 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/ResourcesMecPlatform"
-                  links:
-                    type: array
-                    items:
-                      oneOf:
-                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByRegion"
-                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByDensity"
-                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByServiceProfile"
-                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByUe"
-                        - $ref: "#/components/schemas/LinksRegisterServiceEndpoint"
-                        - $ref: "#/components/schemas/LinksCommon"
         "401":
           $ref: "#/components/responses/Unauthorized"
         default:
@@ -511,132 +446,7 @@ paths:
       tags:
         - Discovery
       summary: Discover optimal MEC Platforms for deployed applications
-      description: Returns a list of optimal MEC Platforms where you can register your deployed application. You can choose to search without passing any of the inputs paramaters or a combination of Service Profile, Region, subscriber density or UEIdentity.
-
-  /regions:
-    get:
-      operationId: get-regions
-      responses:
-        "200":
-          description: List of the supported geographical regions
-          content:
-            application/json:
-              schema:
-                title: GetRegionsResponse
-                type: object
-                properties:
-                  regions:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/ResourcesRegionMetadata"
-                  links:
-                    type: array
-                    items:
-                      oneOf:
-                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByRegion"
-                        - $ref: "#/components/schemas/LinksOptimalServiceEndpointsByRegion"
-                        - $ref: "#/components/schemas/LinksCommon"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        default:
-          $ref: "#/components/responses/Unexpected"
-      tags:
-        - Discovery
-      summary: List the geographical regions supported, and the associated zones
-      description: List the geographical regions supported and the zones within each
-
-  /regions/{regionId}:
-    parameters:
-      - in: path
-        name: regionId
-        required: true
-        description: regionId param //added desc
-        schema:
-          $ref: "#/components/schemas/TypesRegionId"
-    get:
-      operationId: get-region
-      responses:
-        "200":
-          description: Details of a region
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResourcesRegion"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        default:
-          $ref: "#/components/responses/Unexpected"
-      tags:
-        - Discovery
-      summary: Fetch details for a region
-      description: Fetch details for a region
-
-  /zones:
-    get:
-      operationId: get-zones
-      parameters:
-        - $ref: "#/components/parameters/region"
-      responses:
-        "200":
-          description: Zones matching query parameters
-          content:
-            application/json:
-              schema:
-                title: GetZonesResponse
-                type: object
-                properties:
-                  zones:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/ResourcesZoneMetadata"
-                  links:
-                    type: array
-                    items:
-                      oneOf:
-                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByRegion"
-                        - $ref: "#/components/schemas/LinksOptimalMecPlatformsByZone"
-                        - $ref: "#/components/schemas/LinksOptimalServiceEndpointsByZone"
-                        - $ref: "#/components/schemas/LinksCommon"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        default:
-          $ref: "#/components/responses/Unexpected"
-      tags:
-        - Discovery
-      summary: List all zones, or zones within a region
-      description: Returns a list of all zones or zones within a specified region.
-
-  "/zones/{zoneId}":
-    parameters:
-      - schema:
-          $ref: "#/components/schemas/TypesZoneId"
-        name: zoneId
-        in: path
-        required: true
-        description: zoneId param//added desc
-    get:
-      operationId: get-zone-by-Id
-      summary: Read the properties of a zone
-      responses:
-        "200":
-          description: Representation of the Zone resource
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResourcesZone"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        default:
-          $ref: "#/components/responses/Unexpected"
-      description: Read the properties of a zone
-      tags:
-        - Discovery
+      description: Returns a list of optimal MEC Platforms where you can register your deployed application. You can choose to search without passing any of the inputs paramaters or a combination of Application Profile, Region, subscriber density or UEIdentity.
 
 components:
   ######################################################
@@ -651,48 +461,35 @@ components:
           authorizationUrl: "https://example.com/oauth/authorize"
           scopes:
             "discovery:read": Grant read-only access to discovery data
-            "serviceprofile:read": Grant read-only access to service profile data
-            "serviceprofile:write": Grant write access to service profile data
-            "serviceregistry:read": Grant read-only access to service registry data
-            "serviceregistry:write": Grant write access to service registry data
+            "applicationprofile:read": Grant read-only access to Application Profile data
+            "applicationprofile:write": Grant write access to Application Profile data
+            "applicationregistry:read": Grant read-only access to application registry data
+            "applicationregistry:write": Grant write access to application registry data
         password:
           tokenUrl: "https://example.com/oauth/token"
           scopes:
             "discovery:read": Grant read-only access to discovery data
-            "serviceprofile:read": Grant read-only access to service profile data
-            "serviceprofile:write": Grant write access to service profile data
-            "serviceregistry:read": Grant read-only access to Service registry data
-            "serviceregistry:write": Grant write access to Service registry data
+            "applicationprofile:read": Grant read-only access to Application Profile data
+            "applicationprofile:write": Grant write access to Application Profile data
+            "applicationregistry:read": Grant read-only access to application registry data
+            "applicationregistry:write": Grant write access to application registry data
         clientCredentials:
           tokenUrl: "https://example.com/oauth/token"
           scopes:
             "discovery:read": Grant read-only access to discovery data
-            "serviceprofile:read": Grant read-only access to service profile data
-            "serviceprofile:write": Grant write access to service profile data
-            "serviceregistry:read": Grant read-only access to Service registry data
-            "serviceregistry:write": Grant write access to Service registry data
+            "applicationprofile:read": Grant read-only access to Application Profile data
+            "applicationprofile:write": Grant write access to Application Profile data
+            "applicationregistry:read": Grant read-only access to application registry data
+            "applicationregistry:write": Grant write access to application registry data
 
   ######################################################
   #  RESOURCES
   #######################################################
   schemas:
-    Resources:
-      type: array
-      description: Resources//added desc
-      items:
-        oneOf:
-          - $ref: "#/components/schemas/LinksAllRegions"
-          - $ref: "#/components/schemas/LinksAllZones"
-          - $ref: "#/components/schemas/LinksAllMecPlatforms"
-          - $ref: "#/components/schemas/LinksAllServiceProfiles"
-          - $ref: "#/components/schemas/LinksAllServiceEndpoints"
-      additionalProperties: false
-    ResourcesServiceProfile:
+    ResourcesApplicationProfile:
       type: object
-      description: serviceprofileResource//added desc
+      description: applicationprofileResource//added desc
       properties:
-        serviceProfileId:
-          $ref: "#/components/schemas/TypesServiceProfileId"
         clientType:
           type: string
           enum:
@@ -708,18 +505,10 @@ components:
           description: The category of application client.
         preferredEdgeProvider:
           type: string
-          description: identity of the preferred Edge Computing Service Provider
-        clientSchedule:
-          type: string
-          description: The expected operation schedule of the application client (e.g. time windows)
-        clientServiceArea:
-          type: string
-          description: The expected location(s) (e.g. route) of the hosting UE during the Client's operation schedule.
+          description: identity of the preferred Edge Computing application Provider
+          example: aws, azure
         networkResources:
-          type: string
-          description: network resource name or properties
-          additionalProperties:
-            $ref: "#/components/schemas/TypesNetworkResources"
+          $ref: "#/components/schemas/NetworkQualityThresholds"
         computeResources:
           type: string
           description: compute resource name or properties
@@ -734,57 +523,177 @@ components:
             data:
               type: object
       required:
-        - clientType
+        - networkResources
       additionalProperties: false
-    ResourcesEdgeHostedService:
-      description: Edge hosted service represented by Service Endpoint definition
+    NetworkQualityThresholds:
+      description: //todo
       type: object
       properties:
-        ern:
-          $ref: "#/components/schemas/TypesEdgeResource"
-        serviceEndpointsId:
-          $ref: "#/components/schemas/TypesServiceEndpointsId"
-        serviceEndpoint:
-          $ref: "#/components/schemas/ResourcesServiceEndpoint"
+        packetDelayBudget:
+          $ref: '#/components/schemas/packetDelayBudget'
+        targetMinDownstreamRate:
+          $ref: '#/components/schemas/targetMinDownstreamRate'
+        targetMinUpstreamRate:
+          $ref: '#/components/schemas/targetMinUpstreamRate'
+        packetlossErrorRate:
+          $ref: '#/components/schemas/packetErrorLossRate'
+        jitter:
+          $ref: '#/components/schemas/jitter'
+
+    applicationProfile:
+      type: object
+      properties:
+        applicationProfileId:
+          type: string
+          format: uuid
+        ResourcesApplicationProfile:
+          $ref: "#/components/schemas/ResourcesApplicationProfile"
+
+    packetDelayBudget:
+      description: |
+        The packet delay budget is the maximum allowable one-way latency between the customer's device
+        and the gateway from the operator's network to other networks. By limiting the delay, the network
+        can provide an acceptable level of performance for various applications, such as voice calls,
+        video streaming, and data.
+        The end-to-end or round trip latency will be about two times this value plus the latency not controlled
+        by the operator
+      allOf:
+        - $ref: "#/components/schemas/Duration"
+
+    packetErrorLossRate:
+      type: integer
+      description: |
+        The exponential power of the allowable error loss rate 10^(-N).
+        For instance 3 would be an error loss rate of 10 to the power of -3 (0.001)
+        For 5G network the 3GPP specification TS 23.203 defines the packet error loss rate QCI attribute. It
+        describes the Quality of application (QoS) Class Identifier (QCI) parameters used to
+        differentiate traffic classes in mobile networks, ensuring appropriate resource
+        allocation and performance for various applications.
+        The packet error loss rate is one of the QCI attributes, providing information on the
+        acceptable packet loss rate for a specific traffic class. This attribute helps maintain
+        the desired performance level for applications like voice calls, video streaming, or data
+        transfers within the 3GPP mobile network.
+      format: int32
+      minimum: 1
+      maximum: 10
+      example: 3
+
+    jitter:
+      description: |
+        The jitter requirement aims to limit the maximum variation in round-trip
+        packet delay for the 99th percentile of traffic, following ITU Y.1540
+        standards. It considers only acknowledged packets in a session, which are
+        packets that receive a confirmation of receipt from the recipient (e.g.,
+        using TCP). This requirement helps maintain consistent latency, essential
+        for real-time applications such as VoIP, video calls, and gaming.
+      allOf:
+        - $ref: "#/components/schemas/Duration"
+
+    targetMinDownstreamRate:
+      description: |
+        This is the target minimum downstream rate.
+      allOf:
+        - $ref: "#/components/schemas/Rate"
+
+    targetMinUpstreamRate:
+      description: |
+        This is the target minimum upstream rate.
+      allOf:
+        - $ref: "#/components/schemas/Rate"
+
+    Duration:
+          type: object
+          properties:
+            value:
+              type: integer
+              example: 12
+              format: int32
+              minimum: 1
+            unit:
+              allOf:
+                - $ref: "#/components/schemas/TimeUnitEnum"
+                - example: Minutes
+    TimeUnitEnum:
+          type: string
+          enum:
+            - Days
+            - Hours
+            - Minutes
+            - Seconds
+            - Milliseconds
+            - Microseconds
+            - Nanoseconds
+
+    Rate:
+          type: object
+          properties:
+            value:
+              type: integer
+              example: 10
+              format: int32
+              minimum: 0
+              maximum: 1024
+            unit:
+              $ref: "#/components/schemas/RateUnitEnum"
+
+    RateUnitEnum:
+          type: string
+          enum:
+            - bps
+            - kbps
+            - Mbps
+            - Gbps
+            - Tbps
+
+    ResourcesEdgeHostedapplication:
+      description: Edge hosted application represented by application Endpoint definition
+      type: object
+      properties:
+        applicationEndpointsId:
+          $ref: "#/components/schemas/TypesApplicationEndpointsId"
+        applicationEndpoint:
+          $ref: "#/components/schemas/ResourcesapplicationEndpoint"
         applicationServerProviderId:
           type: string
           description: Unique ID representing the Edge Application Provider
+        ern:
+          $ref: "#/components/schemas/TypesEdgeResource"
         applicationId:
           type: string
           description: Unique ID representing the Edge Application
-        serviceDescription:
+        applicationDescription:
           type: string
-          description: Description of the Service Endpoint
+          description: Description of the application Endpoint
           additionalProperties: false
-        serviceProfileId:
-          $ref: "#/components/schemas/TypesServiceProfileId"
-    ResourcesServiceEndpoint:
+        applicationProfileId:
+          $ref: "#/components/schemas/TypesApplicationProfileId"
+    ResourcesapplicationEndpoint:
       type: object
-      description: ServiceEndpoint//added desc
+      description: applicationEndpoint//added desc
       properties:
         uri:
           type: string
-          description: URI of Service Endpoint if available
+          description: URI of application Endpoint if available
           format: uri
         fqdn:
           type: string
-          description: FQDN of Service Endpoint if available
+          description: FQDN of application Endpoint if available
         ipv4Address:
           type: string
-          description: IPv4 Address of Service Endpoint if available
+          description: IPv4 Address of application Endpoint if available
           format: ipv4
         ipv6Address:
           type: string
-          description: IPv6 Address of Service Endpoint if available
+          description: IPv6 Address of application Endpoint if available
           format: ipv6
         port:
           type: integer
           description: |
-            Port information of Service Endpoint if IPv4 or IPv6 is mentioned
+            Port information of application Endpoint if IPv4 or IPv6 is mentioned
       additionalProperties: false
     ResourcesMecPlatform:
       type: object
-      description: Mecplatform service//added desc
+      description: Mecplatform application//added desc
       properties:
         edgeResourceName:
           $ref: "#/components/schemas/TypesEdgeResource"
@@ -811,68 +720,36 @@ components:
               data:
                 type: object
       additionalProperties: false
-    ResourcesRegion:
-      description: Resources Region//added desc
-      allOf:
-        - $ref: "#/components/schemas/ResourcesRegionMetadata"
-        - type: object
-          required:
-            - zones
-          properties:
-            zones:
-              type: array
-              items:
-                $ref: "#/components/schemas/ResourcesZone"
-      additionalProperties: false
-    ResourcesRegionMetadata:
-      type: object
-      description: Metadata for region//added desc
-      properties:
-        regionId:
-          $ref: "#/components/schemas/TypesRegionId"
-        name:
-          type: string
-          description: name of service Endpoint if available //added desc
-        countryCode:
-          type: string
-          description: countrycode of service Endpoint if available //added desc
-        metro:
-          type: string
-          description: metro of service Endpoint if available //added desc
-        area:
-          type: string
-          description: area of service Endpoint if available //added desc
-      additionalProperties: false
 
-    ResourcesZone:
-      description: Resources Zone//added desc
-      allOf:
-        - $ref: "#/components/schemas/ResourcesZoneMetadata"
-        - type: object
-          required:
-            - MECPlatforms
-          properties:
-            mecPlatforms:
-              type: array
-              items:
-                $ref: "#/components/schemas/ResourcesMecPlatform"
-      additionalProperties: false
-    ResourcesZoneMetadata:
+    ApplicationProfileId:
+      type: string
+      format: uuid
+      description: reference id associated to application profile
+
+    ErrorInfo:
       type: object
-      description: Metadata for zone//added desc
+      description: Error information
+      required:
+        - status
+        - code
+        - message
       properties:
-        zoneId:
-          $ref: "#/components/schemas/TypesZoneId"
-        regionId:
-          $ref: "#/components/schemas/TypesRegionId"
-      additionalProperties: false
+        status:
+          type: integer
+          description: HTTP status code returned along with this error response
+        code:
+          type: string
+          description: Code given to this error
+        message:
+          type: string
+          description: Detailed error description
 
     ######################################################
     #  IDs
     #######################################################
     TypesEdgeResource:
       description: |
-        An object defined by the service provider representing an edge resource within its network domain, such as a MEC Platform.  The string contains colon-separated metadata in the form   ern:<tsp-identifier>:<tsp-region>:<resource-type>:<resource-identifier>:<tsp-extensions>
+        An object defined by the application provider representing an edge resource within its network domain, such as a MEC Platform.  The string contains colon-separated metadata in the form   ern:<tsp-identifier>:<tsp-region>:<resource-type>:<resource-identifier>:<tsp-extensions>
       type: string
       additionalProperties: false
     TypesRegionId:
@@ -880,15 +757,16 @@ components:
         Unique identifier representing a region
       type: string
       additionalProperties: false
-    TypesServiceEndpointsId:
+    TypesApplicationEndpointsId:
       description: |
-        A system-defined string identifier representing one or more registered Service Endpoints.
+        A system-defined string identifier representing one or more registered Application Endpoints.
       type: string
+      format: uuid
       readOnly: true
       additionalProperties: false
-    TypesServiceProfileId:
+    TypesApplicationProfileId:
       description: |
-        Unique identifier for a service profile
+        Unique identifier for a Application Profile
       type: string
       readOnly: false
       additionalProperties: false
@@ -908,9 +786,9 @@ components:
         minBandwidthKbits:
           type: integer
           description: Minimum required connection bandwidth in Kbit/s for the application
-        serviceContinuitySupport:
+        applicationContinuitySupport:
           type: boolean
-          description: Indicates if service continuity support is required or not for the application.
+          description: Indicates if application continuity support is required or not for the application.
         maxRequestRate:
           type: integer
           description: Maximum request rate that the application can handle
@@ -946,7 +824,7 @@ components:
         minStorageGB:
           type: integer
           description: Minimum storgae requirement in Gigabytes
-      description: Compute resources of a service profile
+      description: Compute resources of a Application Profile
       additionalProperties: false
     TypesError:
       type: object
@@ -958,8 +836,7 @@ components:
         message:
           type: string
           description: message //added desc
-        links:
-          $ref: "#/components/schemas/LinksCommon"
+
       required:
         - code
         - message
@@ -978,621 +855,13 @@ components:
       description: Identifier value for User Equipment. The type of identifier is defined by the 'UEIdentityType' parameter.
       type: string
 
-    ######################################################
-    #  LINKS
-    #######################################################
-    LinksAllMecPlatforms:
-      type: object
-      description: links all Mex platforms //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: ListMECPlatforms
-              example: ListMECPlatforms
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/mecplatforms'
-              example: /mecplatforms
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-
-    LinksAllServiceProfiles:
-      type: object
-      description: linking all service profiles //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: ListServiceProfiles
-              example: ListServiceProfiles
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/serviceprofiles'
-              example: /serviceprofiles
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksAllServiceEndpoints:
-      type: object
-      description: links all service endpoints //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: ListServiceEndpoints
-              example: ListServiceEndpoints
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/serviceendpoints'
-              example: /serviceendpoints
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksAllRegions:
-      type: object
-      description: links all Regions //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: ListRegions
-              example: ListRegions
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/regions'
-              example: /regions
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksAllZones:
-      type: object
-      description: links all zones //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: ListZones
-              example: ListZones
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/zones'
-              example: /zones
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksOptimalMecPlatformsByRegion:
-      type: object
-      readOnly: true
-      description: Links OptimalMecPlatforms By Region //added desc
-      properties:
-        link:
-          type: object
-          description: link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: GetOptimalPlatformsByRegion
-              example: GetOptimalPlatformsByRegion
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/mecplatforms\?region=[a-zA-Z0-9-]*$'
-              example: /mecplatforms?region=us-east1
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksOptimalMecPlatformsByZone:
-      type: object
-      description: links all optimalMECPlatforms byregion //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: GetOptimalPlatformsByZone
-              example: GetOptimalPlatformsByZone
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/mecplatforms\?zone=[a-zA-Z0-9-]*$'
-              example: /mecplatforms?zone=us-east1-boston
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksOptimalMecPlatformsByDensity:
-      type: object
-      description: Links OptimalMecPlatforms By Density //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: GetOptimalPlatformsBySubscriberDensity
-              example: GetOptimalPlatformsBySubscriberDensity
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/mecplatforms\?subscriberDensity=[0-9]*$'
-              example: /mecplatforms?subscriberDensity=100
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksOptimalMecPlatformsByServiceProfile:
-      type: object
-      description: Links OptimalMecPlatforms By service profile //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: GetOptimalPlatformsByServiceProfile
-              example: GetOptimalPlatformsByServiceProfile
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/mecplatforms\?serviceProfileId=[a-zA-Z0-9-]*$'
-              example: /mecplatforms?serviceProfileId=12345
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksOptimalMecPlatformsByUe:
-      type: object
-      description: Links OptimalMecPlatforms By UE //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: GetOptimalPlatformsByUEId
-              example: GetOptimalPlatformsByUEId
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/mecplatforms\?UEIdentityType=[a-zA-Z0-9-]*\&UEIdentity=[a-zA-Z0-9.-]*'
-              example: /mecplatforms?UEIdentityType=IPAddress&UEIdentity=123.456.78.101
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksRegisterServiceEndpoint:
-      type: object
-      description: Links Register ServiceEndpoint //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: RegisterServiceEndpoint
-              example: RegisterServiceEndpoint
-            method:
-              type: string
-              pattern: post
-              example: post
-            href:
-              type: string
-              pattern: /serviceendpoints
-              example: /serviceendpoints
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksUpdateServiceEndpoint:
-      type: object
-      description: Links Update ServiceEndpoint  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: UpdateServiceEndpoint
-              example: UpdateServiceEndpoint
-            method:
-              type: string
-              pattern: put
-              example: put
-            href:
-              type: string
-              pattern: '\/serviceendpoints\/[A-Za-z0-9]*$'
-              example: /serviceendpoints/98765
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksDeleteServiceEndpoint:
-      type: object
-      description: Links Delete ServiceEndpoint  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link //added desc
-          properties:
-            rel:
-              type: string
-              pattern: DeleteServiceEndpoint
-              example: DeleteServiceEndpoint
-            method:
-              type: string
-              pattern: delete
-              example: delete
-            href:
-              type: string
-              pattern: '\/serviceendpoints\/[A-Za-z0-9]*$'
-              example: /serviceendpoints/98765
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksOptimalServiceEndpointsByServiceProfile:
-      type: object
-      description: Links ServiceEndpoint by service profile  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link  //added desc
-          properties:
-            rel:
-              type: string
-              pattern: ListServiceEndpointsByServiceProfileId
-              example: ListServiceEndpointsByServiceProfileId
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/serviceendpoints\?serviceProfileId=[A-Za-z0-9]*$'
-              example: /serviceendpoints?serviceProfileId=12345
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksOptimalServiceEndpointsByZone:
-      type: object
-      description: Links ServiceEndpoint by zone  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link  //added desc
-          properties:
-            rel:
-              type: string
-              pattern: GetOptimalServiceEndpointsByZone
-              example: GetOptimalServiceEndpointsByZone
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: '\/serviceendpoints\?zone=[A-Za-z0-9-]*$'
-              example: /serviceendpoints?zone=us-east1
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksOptimalServiceEndpointsByRegion:
-      type: object
-      description: Links ServiceEndpoint by region  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link  //added desc
-          properties:
-            rel:
-              type: string
-              pattern: GetOptimalServiceEndpointsByRegion
-              example: GetOptimalServiceEndpointsByRegion
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              pattern: /serviceendpoints?region={string}
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksCreateServiceProfile:
-      type: object
-      description: Links create service profile  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link  //added desc
-          properties:
-            rel:
-              type: string
-              pattern: CreateServiceProfile
-              example: CreateServiceProfile
-            method:
-              type: string
-              pattern: post
-              example: post
-            href:
-              type: string
-              pattern: /serviceprofiles
-              example: /serviceprofiles
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksUpdateServiceProfile:
-      type: object
-      description: Links Update service profile  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link  //added desc
-          properties:
-            rel:
-              type: string
-              pattern: UpdateServiceProfile
-              example: UpdateServiceProfile
-            method:
-              type: string
-              pattern: put
-              example: put
-            href:
-              type: string
-              pattern: '\/serviceprofiles\/[0-9]*$'
-              example: /serviceprofiles/12345
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksDeleteServiceProfile:
-      type: object
-      description: Links delete Serviceprofile  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link  //added desc
-          properties:
-            rel:
-              type: string
-              pattern: DeleteServiceProfile
-              example: DeleteServiceProfile
-            method:
-              type: string
-              pattern: delete
-              example: delete
-            href:
-              type: string
-              pattern: '\/serviceprofiles\/[0-9]*$'
-              example: /serviceprofiles/12345
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksSelf:
-      type: object
-      description: Links Self  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link  //added desc
-          properties:
-            rel:
-              type: string
-              pattern: self
-              example: self
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              format: uri
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksVersionHistory:
-      type: object
-      description: Links version history  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link  //added desc
-          properties:
-            rel:
-              type: string
-              pattern: version-history
-              example: version-history
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              format: uri
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksTermsOfService:
-      type: object
-      description: Links terms of service  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link  //added desc
-          properties:
-            rel:
-              type: string
-              pattern: terms-of-service
-              example: terms-of-service
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              format: uri
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksBookmark:
-      type: object
-      description: Links bookmark  //added desc
-      readOnly: true
-      properties:
-        link:
-          type: object
-          description: Link  //added desc
-          properties:
-            rel:
-              type: string
-              pattern: bookmark
-              example: bookmark
-            method:
-              type: string
-              pattern: get
-              example: get
-            href:
-              type: string
-              format: uri
-          required:
-            - href
-            - rel
-            - method
-      additionalProperties: false
-    LinksCommon:
-      type: array
-      description: Links common  //added desc
-      readOnly: true
-      items:
-        oneOf:
-          - $ref: "#/components/schemas/LinksSelf"
-          - $ref: "#/components/schemas/LinksVersionHistory"
-          - $ref: "#/components/schemas/LinksTermsOfService"
-          - $ref: "#/components/schemas/LinksBookmark"
-
   ######################################################
   #  PARAMETERS
   #######################################################
   parameters:
-    serviceProfileId:
-      name: serviceProfileId
-      description: service profile identifier
+    applicationProfileId:
+      name: applicationProfileId
+      description: Application Profile identifier
       in: query
       required: false
       schema:
@@ -1604,24 +873,17 @@ components:
       required: false
       schema:
         type: string
-    serviceEndpointsIds:
-      name: serviceEndpointsIds
-      description: serviceEndpointsIds, delimited by pipe. Each serviceEndpointsId is a pointer to the service endpoints (IP address, FQDN etc.) previously registered for a given service.
+    applicationEndpointsId:
+      name: applicationEndpointsIds
+      description: applicationEndpointsId is a pointer to the Application Endpoints (IP address, FQDN etc.) previously registered for a given application.
       in: query
       required: true
       schema:
         type: array
         items:
-          $ref: "#/components/schemas/TypesServiceEndpointsId"
+          $ref: "#/components/schemas/TypesApplicationEndpointsId"
       style: pipeDelimited
       explode: false
-    subscriberDensity:
-      name: subscriberDensity
-      description: Minimum number of 4G/5G subscribers per square kilometer.
-      in: query
-      required: false
-      schema:
-        type: integer
     UEIdentityType:
       name: ueIdentityType
       description: Type of User Equipment identifier used in `UEIdentity`.
@@ -1636,13 +898,6 @@ components:
       required: false
       schema:
         $ref: "#/components/schemas/TypesUeIdentity"
-    zone:
-      name: zone
-      description: MEC zone ID
-      in: query
-      required: false
-      schema:
-        type: string
 
   ######################################################
   #  RESPONSES
@@ -1674,3 +929,79 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/TypesError"
+    Generic400:
+      description: Invalid argument
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            status: 400
+            code: INVALID_ARGUMENT
+            message: "Invalid argument"
+
+    Generic401:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            status: 401
+            code: UNAUTHENTICATED
+            message: "Authorization failed: ..."
+
+    Generic403:
+      description: Permission denied
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            status: 403
+            code: PERMISSION_DENIED
+            message: "Operation not allowed: ..."
+
+    Generic404:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            status: 404
+            code: NOT_FOUND
+            message: "The specified resource is not found"
+
+    Generic409:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            status: 409
+            code: Conflict
+            message: "There is conflict in the request"
+
+    Generic500:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            status: 500
+            code: INTERNAL
+            message: "Internal server error"
+
+    Generic503:
+      description: application unavailable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            status: 503
+            code: UNAVAILABLE
+            message: "application unavailable"
