@@ -176,11 +176,11 @@ paths:
         description: Application Profile
       responses:
         "200":
-              description: good
-              content:
-                application/json:
-                  schema:
-                      $ref: '#/components/schemas/ApplicationProfileId'
+          description: good
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationProfileId"
         "401":
           $ref: "#/components/responses/Unauthorized"
         default:
@@ -267,22 +267,22 @@ paths:
       summary: Delete a Application Profile
       operationId: delete-application-profile
       responses:
-            "200":
-              description: application profile has been deleted
-            "400":
-              $ref: "#/components/responses/Generic400"
-            "401":
-              $ref: "#/components/responses/Generic401"
-            "403":
-              $ref: "#/components/responses/Generic403"
-            "404":
-              $ref: "#/components/responses/Generic404"
-            "409":
-              $ref: "#/components/responses/Generic409"
-            "500":
-              $ref: "#/components/responses/Generic500"
-            "503":
-              $ref: "#/components/responses/Generic503"
+        "200":
+          description: application profile has been deleted
+        "400":
+          $ref: "#/components/responses/Generic400"
+        "401":
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
+        "404":
+          $ref: "#/components/responses/Generic404"
+        "409":
+          $ref: "#/components/responses/Generic409"
+        "500":
+          $ref: "#/components/responses/Generic500"
+        "503":
+          $ref: "#/components/responses/Generic503"
       description: Delete Application Profile based on unique Application Profile ID
       tags:
         - Application Profiles
@@ -530,15 +530,15 @@ components:
       type: object
       properties:
         packetDelayBudget:
-          $ref: '#/components/schemas/packetDelayBudget'
+          $ref: "#/components/schemas/packetDelayBudget"
         targetMinDownstreamRate:
-          $ref: '#/components/schemas/targetMinDownstreamRate'
+          $ref: "#/components/schemas/targetMinDownstreamRate"
         targetMinUpstreamRate:
-          $ref: '#/components/schemas/targetMinUpstreamRate'
+          $ref: "#/components/schemas/targetMinUpstreamRate"
         packetlossErrorRate:
-          $ref: '#/components/schemas/packetErrorLossRate'
+          $ref: "#/components/schemas/packetErrorLossRate"
         jitter:
-          $ref: '#/components/schemas/jitter'
+          $ref: "#/components/schemas/jitter"
 
     applicationProfile:
       type: object
@@ -602,48 +602,48 @@ components:
         - $ref: "#/components/schemas/Rate"
 
     Duration:
-          type: object
-          properties:
-            value:
-              type: integer
-              example: 12
-              format: int32
-              minimum: 1
-            unit:
-              allOf:
-                - $ref: "#/components/schemas/TimeUnitEnum"
-                - example: Minutes
+      type: object
+      properties:
+        value:
+          type: integer
+          example: 12
+          format: int32
+          minimum: 1
+        unit:
+          allOf:
+            - $ref: "#/components/schemas/TimeUnitEnum"
+            - example: Minutes
     TimeUnitEnum:
-          type: string
-          enum:
-            - Days
-            - Hours
-            - Minutes
-            - Seconds
-            - Milliseconds
-            - Microseconds
-            - Nanoseconds
+      type: string
+      enum:
+        - Days
+        - Hours
+        - Minutes
+        - Seconds
+        - Milliseconds
+        - Microseconds
+        - Nanoseconds
 
     Rate:
-          type: object
-          properties:
-            value:
-              type: integer
-              example: 10
-              format: int32
-              minimum: 0
-              maximum: 1024
-            unit:
-              $ref: "#/components/schemas/RateUnitEnum"
+      type: object
+      properties:
+        value:
+          type: integer
+          example: 10
+          format: int32
+          minimum: 0
+          maximum: 1024
+        unit:
+          $ref: "#/components/schemas/RateUnitEnum"
 
     RateUnitEnum:
-          type: string
-          enum:
-            - bps
-            - kbps
-            - Mbps
-            - Gbps
-            - Tbps
+      type: string
+      enum:
+        - bps
+        - kbps
+        - Mbps
+        - Gbps
+        - Tbps
 
     ResourcesEdgeHostedapplication:
       description: Edge hosted application represented by application Endpoint definition
