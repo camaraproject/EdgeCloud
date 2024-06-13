@@ -31,8 +31,9 @@ info:
     Application Endpoints for client connections
     * __MEC Application Profile management__ - register, retrieve,
     update, and delete MEC Application Profiles
-    * __MEC application Endpoint management__ - register one or more Application Endpoints, and retrieve, update, and delete those
-    registrations
+    * __MEC application Endpoint management__ - register
+    one or more Application Endpoints, and retrieve, update,
+    and delete those registrations
     * __MEC Edge Event notification__ - subscription management for
     MEC and application discovery Event notifications
 
@@ -235,8 +236,8 @@ tags:
 # - name: Events and Subscriptions
 #    description: |
 #      Subscribe to event notification callbacks
-#to monitor platform and workload events and
-#retrieve event details.
+# to monitor platform and workload events and
+# retrieve event details.
 
 ############################################################################
 #                                     Paths                                #
@@ -388,7 +389,7 @@ paths:
                   applicationEndpoints:
                     type: array
                     items:
-                      $ref: "#/components/schemas/ResourcesEdgeHostedapplication"
+                      $ref: "#/components/schemas/EdgeHostedapplication"
         "401":
           $ref: "#/components/responses/Unauthorized"
         default:
@@ -411,7 +412,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: "#/components/schemas/ResourcesEdgeHostedapplication"
+                $ref: "#/components/schemas/EdgeHostedapplication"
       responses:
         "200":
           description: Returns a applicationEndpointsId
@@ -447,7 +448,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ResourcesEdgeHostedapplication"
+                  $ref: "#/components/schemas/EdgeHostedapplication"
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -471,7 +472,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: "#/components/schemas/ResourcesEdgeHostedapplication"
+                $ref: "#/components/schemas/EdgeHostedapplication"
       responses:
         "204":
           $ref: "#/components/responses/NoContent"
@@ -769,7 +770,7 @@ components:
         - Gbps
         - Tbps
 
-    ResourcesEdgeHostedapplication:
+    EdgeHostedapplication:
       description: Edge hosted application represented
         by application Endpoint definition
       type: object
@@ -878,9 +879,7 @@ components:
       description: |
         An object defined by the application provider
         representing an edge resource within its network
-        domain, such as a MEC Platform.  The string
-        contains colon-separated metadata in the form   ern:<tsp-identifier>:<tsp-region>:<resource-type>
-        :<resource-identifier>:<tsp-extensions>
+        domain, such as a MEC Platform.
       type: string
       additionalProperties: false
     TypesRegionId:
