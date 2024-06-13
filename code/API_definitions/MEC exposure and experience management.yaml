@@ -12,7 +12,8 @@ info:
     # Introduction
     ---
 
-    Use the MEC Exposure & Experience Management API for discovery and utilisation of Multi-Access Edge Compute (MEC)resources and applications.
+    Use the MEC Exposure & Experience Management API for discovery and utilisation of Multi-Access Edge Compute (MEC)resources and
+    applications.
 
 
     ---
@@ -20,36 +21,82 @@ info:
 
     ---
 
-    APIs defined in this version of the specification can be categorized into the following areas:
+    APIs defined in this version of the specification can be categorized
+    into the following areas:
 
     * __MEC Edge Discovery__ - discovery of optimal MEC platforms
     * __MEC application Discovery__ - discovery of optimal Application Endpoints for client connections
-    * __MEC Application Profile management__ - register, retrieve, update, and delete MEC Application Profiles
-    * __MEC application Endpoint management__ - register one or more Application Endpoints, and retrieve, update, and delete those registrations
-    * __MEC Edge Event notification__ - subscription management for MEC and application discovery Event notifications
+    * __MEC Application Profile management__ - register, retrieve, update,
+    and delete MEC Application Profiles
+    * __MEC application Endpoint management__ - register one or more Application Endpoints, and retrieve, update, and delete those
+    registrations
+    * __MEC Edge Event notification__ - subscription management for
+    MEC and application discovery Event notifications
 
     ---
     # Definitions
     ---
-    This section provides definitions of terminologies commonly referred to throughout the API descriptions.
+    This section provides definitions of terminologies commonly referred
+    to throughout the API descriptions.
 
-    * __API Consumer__ - A user or an application consuming the MEC Exposure and Experience Management APIs.
-    * __Application application Provider__ - the developer/publisher who deploys applications on MEC platforms.
-    * __Density__ - Minimum 4G/5G subscriber density in a geographical area, represented as the number of subscribers per square kilometer.
-    * __Edge Application__ - A cloud application that has some applications deployed to MEC Platforms to take advantage of low latency and high bandwidth when interacting with devices.
-    * __Edge Discovery application (EDS)__ - MEC Exposure and Experience Management APIs exposed as a application by a TSP.
-    * __Edge Resource__ - An object defined by the sevice provider representing an edge resource within its network domain, such as a MEC Platform.
-    * __Event__ - A MEC event is triggered if the previously-discovered MEC platform is no longer the optimal choice of all available MEC platforms, due to a change in the underlying network or MEC infrastructure. The TSP will send out change notifications to API Consumers who have active subscription to the event notification.
-    * __MEC  Platform__ - A collection of cloud computing resources housed in a TSP's network facility that provide Multi-access Edge Computing (MEC) capabilities.
-    * __Optimal MEC  Platforms__ - A list of one or more optimal MEC Platforms to register a application Endpoint, based on the latency and availability of each MEC platform, and optionally also based on various query criteria (Application Profile, Region, subscriber density or UE identity) defined by the API Consumer.
-    * __Optimal MEC Application Endpoints__ – A list of one or more MEC Application Endpoints that provide optimal user experience to the client device, based on internal network conditions known to the MEC Platform, and also optionally based on various query criteria (Application Profile, Region, subscriber density or UE identity) defined by the API Consumer.
-    * __Region__ - A TSP-defined string identifier representing a certain geographical or logical area where MEC resources and applications are provided.
-    * __Registered MEC Hosted applications__ - Applications running on MEC platforms which are registered with Edge Discovery application using the application registry APIs.
-    * __application Endpoint__ - The routable endpoint of the application(s) within a deployed application that clients connect to, where a application is a subcomponent of application
-    * __Application Profile__ - Information about the MEC application and the associated application characteristics.
+    * __API Consumer__ - A user or an application consuming the MEC
+    Exposure and Experience Management APIs.
+    * __Application application Provider__ - the developer/publisher
+    who deploys applications on MEC platforms.
+    * __Density__ - Minimum 4G/5G subscriber density in a geographical
+    area, represented as the number of subscribers per square kilometer.
+    * __Edge Application__ - A cloud application that has some
+    applications deployed to MEC Platforms to take advantage of
+    low latency and high bandwidth when interacting with devices.
+    * __Edge Discovery application (EDS)__ - MEC Exposure and
+    Experience Management APIs exposed as a application by a TSP.
+    * __Edge Resource__ - An object defined by the sevice provider
+    representing an edge resource within its network domain,
+    such as a MEC Platform.
+    * __Event__ - A MEC event is triggered if the
+    previously-discovered MEC platform is no longer the optimal
+    choice of all available MEC platforms, due to a change in
+    the underlying network or MEC infrastructure. The TSP will
+    send out change notifications to API Consumers who have
+    active subscription to the event notification.
+    * __MEC  Platform__ - A collection of cloud computing
+    resources housed in a TSP's network facility that
+    provide Multi-access Edge Computing (MEC) capabilities.
+    * __Optimal MEC  Platforms__ - A list of one or more
+    optimal MEC Platforms to register a application
+    Endpoint, based on the latency and availability
+    of each MEC platform, and optionally also based
+    on various query criteria (Application Profile,
+    Region, subscriber density or UE identity)
+    defined by the API Consumer.
+    * __Optimal MEC Application Endpoints__ – A list
+    of one or more MEC Application Endpoints that
+    provide optimal user experience to the client
+    device, based on internal network conditions
+    known to the MEC Platform, and also optionally
+    based on various query criteria (Application
+    Profile, Region, subscriber density or UE identity)
+    defined by the API Consumer.
+    * __Region__ - A TSP-defined string identifier
+    representing a certain geographical or logical
+    area where MEC resources and applications are provided.
+    * __Registered MEC Hosted applications__ - Applications
+    running on MEC platforms which are registered with
+    Edge Discovery application using the application
+    registry APIs.
+    * __application Endpoint__ - The routable endpoint
+    of the application(s) within a deployed application
+    that clients connect to, where a application is a
+    subcomponent of application
+    * __Application Profile__ - Information about the
+    MEC application and the associated application
+    characteristics.
     * __TSP__ - Telecommunications application Provider.
-    * __UEIdentity__ - User Equipment identity, which can be a device's IP address, MSISDN, IMEI, MDN, or GPSI.
-    * __Zone__ - A logical collection of MEC Platforms in a telecommunication provider's network. A Zone is part of a Region.
+    * __UEIdentity__ - User Equipment identity, which
+    can be a device's IP address, MSISDN, IMEI, MDN, or GPSI.
+    * __Zone__ - A logical collection of MEC Platforms
+    in a telecommunication provider's network. A Zone is
+    part of a Region.
 
     ---
     # Link relationships
@@ -63,40 +110,59 @@ info:
 
     __MEC PLATFORMS__
     * __All-mec-platforms__ list all MEC platforms
-    * __Optimal-MECPlatforms-by-density__ return the optimal MEC platform for a given subscriber density
-    * __Optimal-MECPlatforms-by-application-profile__ return the optimal MEC platform for a given Application Profile
-    * __Optimal-MECPlatforms-by-UE__ return the optimal MEC platform for a given UE identifier
-    * __Optimal-MECPlatforms-by-region__ return the optimal MEC platform for a given region
-    * __Optimal-MECPlatforms-by-zone__ return the optimal MEC platform for a given zone
+    * __Optimal-MECPlatforms-by-density__ return the optimal
+    MEC platform for a given subscriber density
+    * __Optimal-MECPlatforms-by-application-profile__
+    return the optimal MEC platform for a
+    given Application Profile
+    * __Optimal-MECPlatforms-by-UE__ return the
+    optimal MEC platform for a given UE identifier
+    * __Optimal-MECPlatforms-by-region__ return the
+    optimal MEC platform for a given region
+    * __Optimal-MECPlatforms-by-zone__ return the
+    optimal MEC platform for a given zone
 
     __Application Endpoints__
     * __All-application-endpoints__ list all Application Endpoints
     * __Register-application-endpoint__ Register a application Endpoint
     * __Update-application-endpoint__ Update a application Endpoint
     * __Delete-application-endpoint__ Delete a application Endpoint
-    * __Optimal-application-endpoints-by-zone__ return the optimal Application Endpoints associated with the specified Zone
-    * __Optimal-application-endpoints-by-region__ return the optimal Application Endpoints associated with the specified Region
-    * __Optimal-application-endpoints-by-application-profile__ return the optimal Application Endpoints associated with the specified Application Profile
+    * __Optimal-application-endpoints-by-zone__ return
+    the optimal Application Endpoints associated with
+    the specified Zone
+    * __Optimal-application-endpoints-by-region__ return
+    the optimal Application Endpoints associated with the
+    specified Region
+    * __Optimal-application-endpoints-by-application-profile__
+    return the optimal Application Endpoints associated
+    with the specified Application Profile
 
     __Application Profiles__
     * __All-application-profiles__ list all Application Profiles
     * __Create-application-profile__ create a new Application Profile
     * __Update-application-profiles__ Update a Application Profiles
-    * __Delete-application-profile__ Delete a Application Profile based on ID
+    * __Delete-application-profile__ Delete a Application
+    Profile based on ID
 
     __COMMON__
     * __Self__ the self-referring URI for the response
     * __Version-History__ link to version history for this API
-    * __Terms-of-application__ link The Terms of application for this API
+    * __Terms-of-application__ link The Terms of
+    application for this API
     * __Bookmark__ link to the API bookmark
 
     ---
     # Security and resilience
     ---
-    * __Authentication:__ API requests are made with the API Consumer's unique key
-    * __Integrity:__ APIs requests, responses and callbacks are made using HTTP over TLS 1.3 (HTTPS)
-    * __Consent to access resources__ is brokered via OAuth2.0 with implicit, password and client credentials grant flows
-    * __Replay errors__ are mitigated through use of request correlator IDs.
+    * __Authentication:__ API requests are made with
+    the API Consumer's unique key
+    * __Integrity:__ APIs requests, responses and
+    callbacks are made using HTTP over TLS 1.3 (HTTPS)
+    * __Consent to access resources__ is brokered
+    via OAuth2.0 with implicit, password and client
+    credentials grant flows
+    * __Replay errors__ are mitigated through use
+    of request correlator IDs.
 
   license:
     name: Apache-2.0
@@ -149,13 +215,20 @@ servers:
 tags:
   - name: Discovery
     description: |
-      Discover the regions and zones in the MEC application, find optimal MEC Platforms for your deployed applications, and optimal Application Endpoints for your clients to connect to.
+      Discover the regions and zones in the MEC
+      application, find optimal MEC Platforms for
+      your deployed applications, and optimal
+      Application Endpoints for your clients to connect to.
   - name: Application Endpoints
     description: |
-      Register and manage the routable Application Endpoints of your deployed applications.
+      Register and manage the routable Application
+      Endpoints of your deployed applications.
   - name: Application Profiles
     description: |
-      Create and manage profiles that describe the application requirements of your MEC applications, such as the required connection bandwidth and maximum latency.
+      Create and manage profiles that describe the
+      application requirements of your MEC applications,
+      such as the required connection bandwidth
+      and maximum latency.
 # - name: Events and Subscriptions
 #    description: |
 #      Subscribe to event notification callbacks to monitor platform and workload events and retrieve event details.
@@ -187,12 +260,14 @@ paths:
       tags:
         - Application Profiles
       summary: Create a Application Profile
-      description: Creates a Application Profile that describes the resource requirements of a application.
+      description: Creates a Application Profile that
+        describes the resource requirements of a application.
     get:
       operationId: get-application-profiles
       responses:
         "200":
-          description: List all Application Profiles registered under your API key
+          description: List all Application Profiles registered
+            under your API key
           content:
             application/json:
               schema:
@@ -282,7 +357,8 @@ paths:
           $ref: "#/components/responses/Generic500"
         "503":
           $ref: "#/components/responses/Generic503"
-      description: Delete Application Profile based on unique Application Profile ID
+      description: Delete Application Profile based on
+        unique Application Profile ID
       tags:
         - Application Profiles
 
@@ -313,12 +389,17 @@ paths:
           $ref: "#/components/responses/Unexpected"
       tags:
         - Discovery
-      summary: Find optimal Application Endpoints for clients to connect to
-      description: Returns a list of optimal Application Endpoints that client devices can connect to. You can search based on Application Profile, Region, subscriber density or UEIdentity.
+      summary: Find optimal Application Endpoints for
+        clients to connect to
+      description: Returns a list of optimal Application
+        Endpoints that client devices can connect to. You can
+        search based on Application Profile, Region,
+        subscriber density or UEIdentity.
     post:
       operationId: register-application-endpoints
       requestBody:
-        description: Array of Application Endpoints for a deployed application
+        description: Array of Application Endpoints for a
+          deployed application
         content:
           application/json:
             schema:
@@ -344,7 +425,8 @@ paths:
       tags:
         - Application Endpoints
       summary: Register Application Endpoints
-      description: Register Application Endpoints of a deployed application to specified MEC Platforms.
+      description: Register Application Endpoints of a
+        deployed application to specified MEC Platforms.
 
   "/application-endpoints/{applicationEndpointsId}":
     parameters:
@@ -376,7 +458,9 @@ paths:
       tags:
         - Application Endpoints
       summary: Get registered edge application endpoint information
-      description: Returns endpoint information for all Application Endpoints registered to a specified applicationEndpointId.
+      description: Returns endpoint information for all
+        Application Endpoints registered to a
+        specified applicationEndpointId.
     put:
       operationId: update-application-endpoint
       requestBody:
@@ -416,7 +500,8 @@ paths:
       tags:
         - Application Endpoints
       summary: Deregister an application's application Endpoint
-      description: Deregister an application's application Endpoint from the MEC Platform(s).
+      description: Deregister an application's application
+        Endpoint from the MEC Platform(s).
 
   /mecplatforms:
     get:
@@ -444,8 +529,14 @@ paths:
           $ref: "#/components/responses/Unexpected"
       tags:
         - Discovery
-      summary: Discover optimal MEC Platforms for deployed applications
-      description: Returns a list of optimal MEC Platforms where you can register your deployed application. You can choose to search without passing any of the inputs paramaters or a combination of Application Profile, Region, subscriber density or UEIdentity.
+      summary: Discover optimal MEC Platforms for
+        deployed applications
+      description: Returns a list of optimal MEC Platforms
+        where you can register your deployed application.
+        You can choose to search without passing any of
+        the inputs paramaters or a combination of
+        Application Profile, Region, subscriber
+        density or UEIdentity.
 
 components:
   ######################################################
@@ -459,27 +550,42 @@ components:
         implicit:
           authorizationUrl: "https://example.com/oauth/authorize"
           scopes:
-            "discovery:read": Grant read-only access to discovery data
-            "applicationprofile:read": Grant read-only access to Application Profile data
-            "applicationprofile:write": Grant write access to Application Profile data
-            "applicationregistry:read": Grant read-only access to application registry data
-            "applicationregistry:write": Grant write access to application registry data
+            "discovery:read": Grant read-only access to
+              discovery data
+            "applicationprofile:read": Grant read-only
+              access to Application Profile data
+            "applicationprofile:write": Grant write access
+              to Application Profile data
+            "applicationregistry:read": Grant read-only access
+              to application registry data
+            "applicationregistry:write": Grant write access
+              to application registry data
         password:
           tokenUrl: "https://example.com/oauth/token"
           scopes:
-            "discovery:read": Grant read-only access to discovery data
-            "applicationprofile:read": Grant read-only access to Application Profile data
-            "applicationprofile:write": Grant write access to Application Profile data
-            "applicationregistry:read": Grant read-only access to application registry data
-            "applicationregistry:write": Grant write access to application registry data
+            "discovery:read": Grant read-only access to
+              discovery data
+            "applicationprofile:read": Grant read-only
+              access to Application Profile data
+            "applicationprofile:write": Grant write access
+              to Application Profile data
+            "applicationregistry:read": Grant read-only
+              access to application registry data
+            "applicationregistry:write": Grant write
+              access to application registry data
         clientCredentials:
           tokenUrl: "https://example.com/oauth/token"
           scopes:
-            "discovery:read": Grant read-only access to discovery data
-            "applicationprofile:read": Grant read-only access to Application Profile data
-            "applicationprofile:write": Grant write access to Application Profile data
-            "applicationregistry:read": Grant read-only access to application registry data
-            "applicationregistry:write": Grant write access to application registry data
+            "discovery:read": Grant read-only access to
+              discovery data
+            "applicationprofile:read": Grant read-only
+              access to Application Profile data
+            "applicationprofile:write": Grant write access
+              to Application Profile data
+            "applicationregistry:read": Grant read-only access
+              to application registry data
+            "applicationregistry:write": Grant write access
+              to application registry data
 
   ######################################################
   #  RESOURCES
@@ -504,7 +610,8 @@ components:
           description: The category of application client.
         preferredEdgeProvider:
           type: string
-          description: identity of the preferred Edge Computing application Provider
+          description: identity of the preferred Edge
+            Computing application Provider
           example: aws, azure
         networkResources:
           $ref: "#/components/schemas/NetworkQualityThresholds"
@@ -540,7 +647,8 @@ components:
           $ref: "#/components/schemas/jitter"
 
     applicationProfile:
-      description: information about the application which are required for decision making
+      description: information about the application
+        which are required for decision making
       type: object
       properties:
         applicationProfileId:
@@ -551,11 +659,15 @@ components:
 
     packetDelayBudget:
       description: |
-        The packet delay budget is the maximum allowable one-way latency between the customer's device
-        and the gateway from the operator's network to other networks. By limiting the delay, the network
-        can provide an acceptable level of performance for various applications, such as voice calls,
+        The packet delay budget is the maximum allowable
+        one-way latency between the customer's device
+        and the gateway from the operator's network to
+        other networks. By limiting the delay, the network
+        can provide an acceptable level of performance for
+        various applications, such as voice calls,
         video streaming, and data.
-        The end-to-end or round trip latency will be about two times this value plus the latency not controlled
+        The end-to-end or round trip latency will be about
+        two times this value plus the latency not controlled
         by the operator
       allOf:
         - $ref: "#/components/schemas/Duration"
@@ -563,16 +675,23 @@ components:
     packetErrorLossRate:
       type: integer
       description: |
-        The exponential power of the allowable error loss rate 10^(-N).
-        For instance 3 would be an error loss rate of 10 to the power of -3 (0.001)
-        For 5G network the 3GPP specification TS 23.203 defines the packet error loss rate QCI attribute. It
-        describes the Quality of application (QoS) Class Identifier (QCI) parameters used to
-        differentiate traffic classes in mobile networks, ensuring appropriate resource
+        The exponential power of the allowable error
+        loss rate 10^(-N).For instance 3 would be an error
+        loss rate of 10 to the power of -3 (0.001)
+        For 5G network the 3GPP specification TS 23.203
+        defines the packet error loss rate QCI attribute. It
+        describes the Quality of application (QoS) Class
+        Identifier (QCI) parameters used to
+        differentiate traffic classes in mobile networks,
+        ensuring appropriate resource
         allocation and performance for various applications.
-        The packet error loss rate is one of the QCI attributes, providing information on the
-        acceptable packet loss rate for a specific traffic class. This attribute helps maintain
-        the desired performance level for applications like voice calls, video streaming, or data
-        transfers within the 3GPP mobile network.
+        The packet error loss rate is one of the QCI attributes,
+        providing information on the
+        acceptable packet loss rate for a specific traffic class.
+        This attribute helps maintain
+        the desired performance level for applications like
+        voice calls, video streaming, or data transfers
+        within the 3GPP mobile network.
       format: int32
       minimum: 1
       maximum: 10
@@ -580,12 +699,15 @@ components:
 
     jitter:
       description: |
-        The jitter requirement aims to limit the maximum variation in round-trip
-        packet delay for the 99th percentile of traffic, following ITU Y.1540
-        standards. It considers only acknowledged packets in a session, which are
-        packets that receive a confirmation of receipt from the recipient (e.g.,
-        using TCP). This requirement helps maintain consistent latency, essential
-        for real-time applications such as VoIP, video calls, and gaming.
+        The jitter requirement aims to limit the
+        maximum variation in round-trip packet delay
+        for the 99th percentile of traffic, following
+        ITU Y.1540 standards. It considers only acknowledged
+        packets in a session, which are packets that receive
+        a confirmation of receipt from the recipient (e.g.,
+        using TCP). This requirement helps maintain consistent
+        latency, essential for real-time applications
+        such as VoIP, video calls, and gaming.
       allOf:
         - $ref: "#/components/schemas/Duration"
 
@@ -646,7 +768,8 @@ components:
         - Tbps
 
     ResourcesEdgeHostedapplication:
-      description: Edge hosted application represented by application Endpoint definition
+      description: Edge hosted application represented
+        by application Endpoint definition
       type: object
       properties:
         applicationEndpointsId:
@@ -655,7 +778,8 @@ components:
           $ref: "#/components/schemas/ResourcesapplicationEndpoint"
         applicationServerProviderId:
           type: string
-          description: Unique ID representing the Edge Application Provider
+          description: Unique ID representing the Edge
+            Application Provider
         ern:
           $ref: "#/components/schemas/TypesEdgeResource"
         applicationId:
@@ -866,14 +990,17 @@ components:
       explode: false
     UEIdentityType:
       name: ueIdentityType
-      description: Type of User Equipment identifier used in `UEIdentity`.
+      description: Type of User Equipment identifier
+        used in `UEIdentity`.
       in: query
       required: false
       schema:
         $ref: "#/components/schemas/TypesUeIdentityType"
     UEIdentity:
       name: ueIdentity
-      description: Identifier value for User Equipment. The type of identifier is defined by the UEIdentityType parameter.
+      description: Identifier value for User Equipment.
+        The type of identifier is defined by the
+        UEIdentityType parameter.
       in: query
       required: false
       schema:
