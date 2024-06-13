@@ -12,8 +12,7 @@ info:
     # Introduction
     ---
 
-    Use the MEC Exposure & Experience Management API for discovery and utilisation of Multi-Access Edge Compute (MEC)
-    resources and applications.
+    Use the MEC Exposure & Experience Management API for discovery and utilisation of Multi-Access Edge Compute (MEC)resources and applications.
 
 
     ---
@@ -541,6 +540,7 @@ components:
           $ref: "#/components/schemas/jitter"
 
     applicationProfile:
+      description: information about the application which are required for decision making
       type: object
       properties:
         applicationProfileId:
@@ -779,26 +779,6 @@ components:
     ######################################################
     #  TYPES
     #######################################################
-    TypesNetworkResources:
-      type: object
-      description: network resources//added desc
-      properties:
-        minBandwidthKbits:
-          type: integer
-          description: Minimum required connection bandwidth in Kbit/s for the application
-        applicationContinuitySupport:
-          type: boolean
-          description: Indicates if application continuity support is required or not for the application.
-        maxRequestRate:
-          type: integer
-          description: Maximum request rate that the application can handle
-        maxLatencyMs:
-          type: integer
-          description: "Maximum response time or latency that the application can handle, in miliseconds"
-        minAvailability:
-          type: integer
-          description: Minimum availability required for the server
-      additionalProperties: false
     TypesComputeResources:
       type: object
       properties:
