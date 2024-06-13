@@ -12,8 +12,9 @@ info:
     # Introduction
     ---
 
-    Use the MEC Exposure & Experience Management API for discovery and utilisation of Multi-Access Edge Compute (MEC)resources and
-    applications.
+    Use the MEC Exposure & Experience Management API for
+    discovery and utilisation of Multi-Access Edge Compute
+    (MEC)resources and applications.
 
 
     ---
@@ -21,13 +22,15 @@ info:
 
     ---
 
-    APIs defined in this version of the specification can be categorized
-    into the following areas:
+    APIs defined in this version of the specification c
+    an be categorized into the following areas:
 
-    * __MEC Edge Discovery__ - discovery of optimal MEC platforms
-    * __MEC application Discovery__ - discovery of optimal Application Endpoints for client connections
-    * __MEC Application Profile management__ - register, retrieve, update,
-    and delete MEC Application Profiles
+    * __MEC Edge Discovery__ - discovery of optimal
+    MEC platforms
+    * __MEC application Discovery__ - discovery of optimal
+    Application Endpoints for client connections
+    * __MEC Application Profile management__ - register, retrieve,
+    update, and delete MEC Application Profiles
     * __MEC application Endpoint management__ - register one or more Application Endpoints, and retrieve, update, and delete those
     registrations
     * __MEC Edge Event notification__ - subscription management for
@@ -36,8 +39,8 @@ info:
     ---
     # Definitions
     ---
-    This section provides definitions of terminologies commonly referred
-    to throughout the API descriptions.
+    This section provides definitions of terminologies
+    commonly referred to throughout the API descriptions.
 
     * __API Consumer__ - A user or an application consuming the MEC
     Exposure and Experience Management APIs.
@@ -231,7 +234,9 @@ tags:
       and maximum latency.
 # - name: Events and Subscriptions
 #    description: |
-#      Subscribe to event notification callbacks to monitor platform and workload events and retrieve event details.
+#      Subscribe to event notification callbacks
+#to monitor platform and workload events and
+#retrieve event details.
 
 ############################################################################
 #                                     Paths                                #
@@ -372,7 +377,8 @@ paths:
         - $ref: "#/components/parameters/UEIdentity"
       responses:
         "200":
-          description: Find optimal Application Endpoints for clients to connect to
+          description: Find optimal Application Endpoints
+            for clients to connect to
           content:
             application/json:
               schema:
@@ -407,17 +413,12 @@ paths:
               items:
                 $ref: "#/components/schemas/ResourcesEdgeHostedapplication"
       responses:
-        "201":
-          # Action: discuss with team on diff with implementation and no 200 response
+        "200":
           description: Returns a applicationEndpointsId
           content:
             application/json:
               schema:
-                title: PostapplicationEndpointResponse
-                type: object
-                properties:
-                  applicationEndpointsId:
-                    $ref: "#/components/schemas/TypesApplicationEndpointsId"
+                $ref: "#/components/schemas/TypesApplicationEndpointsId"
         "401":
           $ref: "#/components/responses/Unauthorized"
         default:
@@ -545,7 +546,8 @@ components:
   securitySchemes:
     oAuth2:
       type: oauth2
-      description: "This API uses OAuth 2 with the implicit, password and client credentials grant flow"
+      description: "This API uses OAuth 2 with the
+        implicit, password and client credentials grant flow"
       flows:
         implicit:
           authorizationUrl: "https://example.com/oauth/authorize"
@@ -813,7 +815,8 @@ components:
         port:
           type: integer
           description: |
-            Port information of application Endpoint if IPv4 or IPv6 is mentioned
+            Port information of application Endpoint
+            if IPv4 or IPv6 is mentioned
       additionalProperties: false
     ResourcesMecPlatform:
       type: object
@@ -873,7 +876,11 @@ components:
     #######################################################
     TypesEdgeResource:
       description: |
-        An object defined by the application provider representing an edge resource within its network domain, such as a MEC Platform.  The string contains colon-separated metadata in the form   ern:<tsp-identifier>:<tsp-region>:<resource-type>:<resource-identifier>:<tsp-extensions>
+        An object defined by the application provider
+        representing an edge resource within its network
+        domain, such as a MEC Platform.  The string
+        contains colon-separated metadata in the form   ern:<tsp-identifier>:<tsp-region>:<resource-type>
+        :<resource-identifier>:<tsp-extensions>
       type: string
       additionalProperties: false
     TypesRegionId:
@@ -883,7 +890,8 @@ components:
       additionalProperties: false
     TypesApplicationEndpointsId:
       description: |
-        A system-defined string identifier representing one or more registered Application Endpoints.
+        A system-defined string identifier representing
+        one or more registered Application Endpoints.
       type: string
       format: uuid
       readOnly: true
@@ -921,7 +929,8 @@ components:
               description: Minimum GPU bandwidth in GB/s
             minTFLOPS:
               type: integer
-              description: Minimum Floating Point Operations Per Second in Teraflops.
+              description: Minimum Floating Point Operations
+                Per Second in Teraflops.
         minRAMGB:
           type: integer
           description: minimum RAM required in Gigabytes.
@@ -956,7 +965,9 @@ components:
         - MDN
         - GPSI
     TypesUeIdentity:
-      description: Identifier value for User Equipment. The type of identifier is defined by the 'UEIdentityType' parameter.
+      description: Identifier value for User Equipment.
+        The type of identifier is defined by the
+        'UEIdentityType' parameter.
       type: string
 
   ######################################################
@@ -979,7 +990,10 @@ components:
         type: string
     applicationEndpointsId:
       name: applicationEndpointsIds
-      description: applicationEndpointsId is a pointer to the Application Endpoints (IP address, FQDN etc.) previously registered for a given application.
+      description: applicationEndpointsId is a pointer
+        to the Application Endpoints (IP address,
+        FQDN etc.) previously registered for a
+        given application.
       in: query
       required: true
       schema:
