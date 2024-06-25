@@ -7,7 +7,7 @@ info:
   contact:
     email: sp-edc@lists.camaraproject.org
   title: Edge Discovery API
-  version: 0.9.2
+  version: wip
   description: |
     # Introduction
     ---
