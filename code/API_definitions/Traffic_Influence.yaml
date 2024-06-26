@@ -5,7 +5,7 @@ openapi: 3.0.3
 ############################################################################
 info:
   title: Traffic Influence API
-  version: 0.9.5-wip
+  version: wip
   description: |
     ## Overview
     The reference scenario foresees a Service, composed by one or more Service
@@ -148,13 +148,15 @@ info:
     traffic toward a specific Application instance.\
     \
     **sourceTrafficFilters:**
-    The traffic can be from a specific application port in the Device.\
+    The traffic can be from a specific port in the device. If this parameter is
+    used, the influenced flow is from the port defined in "sourceTrafficFilters"
+    rathar than the port specified in "Device"\
     \
     **destinationTrafficFilters:**
     The Application can expose different service on different interfaces,
     identified by port and protocol, with this parameter it is possible to
-    route the traffic just toward some of those services maybe for different
-    sets of users.\
+    route the traffic toward a specific port and protocol exposed by the
+    Application.\
     \
     **Device:**
     An user Device can be provided as an input. The Device can be identified by
@@ -166,7 +168,10 @@ info:
     of each user Device. New "TrafficInfluence" resources are created (with
     different "trafficInfluenceID"). All the created resources are aggregated by
     the Application (identified by "appId"). The routing toward the selected
-    Application instance is only applied for provided user Devices.\
+    Application instance is only applied for provided user Devices. "publicPort"
+    can be used to identify the device. "publicPort" can be also used to
+    identify the flow to be influenced. If the flow to be influenced is from a
+    different port, "sourceTrafficFilters" can be used.\
     \
     **Notification URL and token:**
     Developers have a chance to specify call back URL on which notifications
@@ -175,9 +180,7 @@ info:
     ## Authentication and Authorization
     CAMARA guidelines defines a set of authorization flows which can grant API
     clients access to the API functionality, as outlined in the document
-    [CAMARA-API-access-and-user-consent.md](https://github.com/camaraproject\
-    /IdentityAndConsentManagement/blob/main/documentation/CAMARA-API-access\
-    -and-user-consent.md).
+    [CAMARA-Security-Interoperability.md](https://github.com/camaraproject/IdentityAndConsentManagement/blob/main/documentation/CAMARA-Security-Interoperability.md).
     Which specific authorization flows are to be used will be determined during
     onboarding process, happening between the API Client and the Telco Operator
     exposing the API, taking into account the declared purpose for accessing the
@@ -655,15 +658,15 @@ components:
             - 'deletion in progress'
             - 'deleted'
         sourceTrafficFilters:
-          description: Ports used locally by the device for flows to which
-           the requested traffic influence should apply. If omitted, then the
-           traffic influence will apply to all flows between the device and the
-           specified application server address and ports.
+          description: Port used locally by the device for flows to which
+           the requested traffic influence should apply.  Traffic influence will
+           be applied to the flow between "sourcePort" and the Application
+           Server address and port specified in "destinationTrafficFilters".
           type: object
           properties:
             sourcePort:
               allOf:
-                - $ref: "#/components/schemas/PortsSpec"
+                - $ref: "#/components/schemas/Port"
         destinationTrafficFilters:
           description: Identifies the destination IP packet filters. To be
            used when it is needed a traffic flow towards a specific EAS
@@ -673,7 +676,7 @@ components:
           properties:
             destinationPort:
               allOf:
-                - $ref: "#/components/schemas/PortsSpec"
+                - $ref: "#/components/schemas/Port"
             destinationProtocol:
               allOf:
                 - $ref: "#/components/schemas/Protocol"
@@ -811,25 +814,6 @@ components:
       type: string
       format: ipv4
       example: "84.125.93.10"
-    PortsSpec:
-      description: Specification of several TCP or UDP ports
-      type: object
-      minProperties: 1
-      properties:
-        ranges:
-          description: Range of TCP or UDP ports
-          type: array
-          minItems: 1
-          items:
-            type: object
-            required:
-              - from
-              - to
-            properties:
-              from:
-                $ref: "#/components/schemas/Port"
-              to:
-                $ref: "#/components/schemas/Port"
     Port:
       description: TCP or UDP port number
       type: integer
