@@ -122,7 +122,7 @@ info:
     CAMARA APIs (“MEC Exposure & Experience Management API” and “Simple Edge
     Discovery”). To add more regions the TI API must be invoked (POST) for each
     region. If in a "region" there are many Application instances active in
-    different "zones", the TI API can be invoked to configure the optimal 
+    different "zones", the TI API can be invoked to configure the optimal
     routing for all the instances with just one API call specifying the region.
     If just the Application instances in some regions must be affected, the TI
     API can be invoked for the regions of interest, without specifying "zone" in
