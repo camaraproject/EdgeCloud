@@ -1060,12 +1060,12 @@ components:
                 type: string
                 example: vfio-pci
                 enum:
-                - netdevice
-                - vfio-pci
-                - interface
+                  - netdevice
+                  - vfio-pci
+                  - interface
 
     AdditionalStorage:
-      description:  Additional storage for the application.
+      description: Additional storage for the application.
       type: array
       items:
         type: object
@@ -1116,8 +1116,8 @@ components:
           type: integer
           description: Number of nodes for Kubernetes control plane.
           enum:
-          - 1
-          - 3
+            - 1
+            - 3
         nodePools:
           type: array
           description: |
@@ -1257,9 +1257,9 @@ components:
       type: array
       items:
         oneOf:
-        - $ref: "#/components/schemas/Kubernetes"
-        - $ref: "#/components/schemas/VirtualMachine"
-        - $ref: "#/components/schemas/Container"
+          - $ref: "#/components/schemas/Kubernetes"
+          - $ref: "#/components/schemas/VirtualMachine"
+          - $ref: "#/components/schemas/Container"
         discriminator:
           propertyName: infraKind
           mapping:
