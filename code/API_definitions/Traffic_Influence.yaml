@@ -9,26 +9,31 @@ info:
   description: |
     ## Overview
     The reference scenario foresees a Service, composed by one or more Service
-    Producers deployed in different geographical locations on Edge Cloud Zones
-    (Edge datacentres of Telco Operator) or in Cloud. The Service Producer,
-    deployed at the Edge, is referred as Edge Application Server (EAS).\
-    An Edge Cloud Zone is a platform in the Telco Operator network, offering
-    network, compute and storage resources to developers. A developer can
-    deploy and run applications on an Edge Cloud Zone, meaning reduced latency
-    to end users that are nearby, as the network path is shorter. A network
-    operator's EdgeCloud may comprise multiple Edge Cloud Zones, each in a
-    discrete location to bring latency benefits to end users across a country.\
+    Producers deployed in different geographical locations in a distributed
+    Telco Edge Cloud. The Service Producer, deployed at the Edge, is referred
+    as Edge Application Server (EAS).\
+    The life cycle management of the EAS can be done with the CAMARA
+    "Edge Application Management API" whose definition is in the CAMARA Edge
+    Cloud repository (https://github.com/camaraproject/EdgeCloud).
+    The Telco Edge Cloud is composed by Edge Cloud Regions that contain
+    Edge Cloude Zones. For a more complete definition of such Telco Edge Cloud
+    architecture, please refer to the "Edge Application Management API"
+    documentation. A developer can deploy and run applications on an Edge
+    Cloud Zone, meaning reduced latency to end users that are nearby, as the
+    network path is shorter. A network operator's EdgeCloud may comprise
+    multiple Edge Cloud Zones, each in a discrete location to bring latency
+    benefits to end users across a country.\
     The operator can help developers know which of the Edge Cloud Zones will
     bring the optimal performance for a given end user and application\.
     The Traffic Influence API (TI API) provides the optimal routing from the
     user Device (e.g. a Smartphone) to the optimal EAS instance in a specific
     geographical location, installed in an Edge Cloud Zone.\
-    If a Service is offered by Cloud Instances and by Edge Instances, the TI API
-    can be used get the optimal routing of the traffic to the Edge Instances,
-    maybe for a set of users. Getting the optimal routing can be used to improve
-    latency maybe in combination with other CAMARA APIs such as QoD (Quality On
-    Demand). Providing the optimal routing is indeed an important step to get
-    the optimal latency.\
+    If a Service is offered by Cloud Instances and by Edge Instances, the TI
+    API can be used get the optimal routing of the traffic to the Edge
+    Instances, maybe for a set of users. Getting the optimal routing can be 
+    used to improve latency maybe in combination with other CAMARA APIs such as
+    QoD (Quality On Demand). Providing the optimal routing is indeed an
+    important step to get the optimal latency.\
     If the TI API is used to get the best routing at the Edge for a Device in a
     geographical location and the Device moves to another geographical location,
     the TI API can be invoked to get the optimal routing in the new geographical
@@ -48,9 +53,9 @@ info:
     specifying the desired intent.\
     The TI API Producer implements the intent specified in the
     "TrafficInfluence" resource.\
-    While the TI API can be invoked to activate the fastest routing for any
-    user, it can also be used to request the best routing for a specific user
-    also specifying,as an option, a source public port and a destination public
+    While the TI API can be invoked to activate the optimal routing for any
+    user, it can also be used to request the optimal routing for a specific user
+    also specifying, as an option, a source public port and a destination public
     port. Invoking the TI API for each user, many "TrafficInfluence" resources
     are created for each user to provide the requested routing for a set of
     users.\
@@ -113,27 +118,31 @@ info:
     **apiConsumerId:**
     Unique identifier for the TI API Consumer.\
     \
-    **region:**
+    **edgeCloudRegion:**
     The Developer can specify in which geographical area he requires the optimal
-    routing toward application instances running there. A "region" is a wide
-    geographical area and it contains one or more "zones". A "zone" is where the
-    Edge Cloud Zone is located. Zones and Regions identifiers are defined and
-    provided by the Telco Operator and can also be used or retrieved with other
-    CAMARA APIs (“MEC Exposure & Experience Management API” and “Simple Edge
-    Discovery”). To add more regions the TI API must be invoked (POST) for each
-    region. If in a "region" there are many Application instances active in
+    routing toward application instances running there. An Edge Cloud Region is
+    equivalent to a Region on a Public Cloud. The higher construct in the
+    hierarchy exposed to an Application Provider who wishes to deploy an
+    Application on the Edge Cloud and broadly represents a geography.
+    An Edge Cloud Region typically contains one or multiple Edge Cloud Zones.
+    The Edge Cloud Region name is provided by the Telco Operator and can also be
+    used or retrieved with other CAMARA APIs (e.g. “Edge Application Management
+    API”). To add more regions the TI API must be invoked (POST) for each
+    "region". If in a "region" there are many Application instances active in
     different "zones", the TI API can be invoked to configure the optimal
-    routing for all the instances with just one API call specifying the region.
-    If just the Application instances in some regions must be affected, the TI
-    API can be invoked for the regions of interest, without specifying "zone" in
-    the API call. If just some specific Application instance must be affected,
-    it is not required to specify any "region" or "zone", the parameter
-    "appInstanceId" can be used.\
+    routing for all the instances with just one API call specifying the
+    "region".\
+    If just the Application instances in some Edge Cloud Zone must be affected,
+    the TI API can be invoked for the zones of interest, without specifying
+    the "region" in the API call. If just some specific Application instance
+    must be affected, it is not required to specify any "region" or "zone",
+    and the parameter "appInstanceId" can be used.\
     \
-    **zone:**
-    A "zone" is a smaller geographical area inside a "region". A "zone" is where
-    the Edge Cloud Zone (th data center) is located.\
-    To add more zones the TI API must be invoked (POST) for each "zone".\
+    **edgeCloudZoneId:**
+    An Edge Cloud Zone is the lowest level of abstraction exposed to an 
+    Application Provider who wants to deploy an Application on Edge Cloud. 
+    Edge Cloud Zones exists within a Edge Cloud Region.\
+    To add more "zones" the TI API must be invoked (POST) for each "zone".\
     \
     **appId:**
     A globally unique identifier associated with the application. This
@@ -635,10 +644,10 @@ components:
           $ref: '#/components/schemas/AppId'
         appInstanceId:
           $ref: '#/components/schemas/AppInstanceId'
-        region:
-          $ref: '#/components/schemas/TypesRegionId'
-        zone:
-          $ref: '#/components/schemas/TypesZoneId'
+        edgeCloudRegion:
+          $ref: '#/components/schemas/EdgeCloudRegion'
+        edgeCloudZoneId:
+          $ref: '#/components/schemas/EdgeCloudZoneId'
         device:
           $ref: '#/components/schemas/Device'
         state:
@@ -728,14 +737,17 @@ components:
     ########################################################################
     #                                     Types                            #
     ########################################################################
-    TypesZoneId:
-      description: Unique identifier representing a zone
+    EdgeCloudZoneId:
       type: string
-      additionalProperties: false
-    TypesRegionId:
+      format: uuid
       description: |
-        Unique identifier representing a region
+        Unique identifier created by the Edge Cloud Platform to identify an
+        Edge Cloud Zone within an Edge Cloud
+    EdgeCloudRegion:
       type: string
+      description: |
+        Human readable name of the geographical Edge Cloud Region of
+        the Edge Cloud. Defined by the Edge Cloud Provider.
       additionalProperties: false
     Device:
       description: |
