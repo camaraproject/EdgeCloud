@@ -297,6 +297,8 @@ info:
     - change API name in YAML
     - introduced sourceTrafficFilters and modified trafficFilters into
     destinationTrafficFilters
+    - sourceTrafficFilters added
+    - Alignement with "Edge Application Management API"
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
