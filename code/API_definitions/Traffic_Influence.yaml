@@ -30,7 +30,7 @@ info:
     geographical location, installed in an Edge Cloud Zone.\
     If a Service is offered by Cloud Instances and by Edge Instances, the TI
     API can be used get the optimal routing of the traffic to the Edge
-    Instances, maybe for a set of users. Getting the optimal routing can be 
+    Instances, maybe for a set of users. Getting the optimal routing can be
     used to improve latency maybe in combination with other CAMARA APIs such as
     QoD (Quality On Demand). Providing the optimal routing is indeed an
     important step to get the optimal latency.\
@@ -139,8 +139,8 @@ info:
     and the parameter "appInstanceId" can be used.\
     \
     **edgeCloudZoneId:**
-    An Edge Cloud Zone is the lowest level of abstraction exposed to an 
-    Application Provider who wants to deploy an Application on Edge Cloud. 
+    An Edge Cloud Zone is the lowest level of abstraction exposed to an
+    Application Provider who wants to deploy an Application on Edge Cloud.
     Edge Cloud Zones exists within a Edge Cloud Region.\
     To add more "zones" the TI API must be invoked (POST) for each "zone".\
     \
