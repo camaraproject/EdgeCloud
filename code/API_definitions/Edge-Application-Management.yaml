@@ -897,6 +897,10 @@ components:
         and the value of the Edge Cloud Provider
         object. This value is used to identify an Edge Cloud zone
         between Edge Clouds from different Edge Cloud Providers.
+      required:
+        - edgeCloudZoneId
+        - edgeCloudZoneName
+        - edgeCloudProvider
       properties:
         edgeCloudZoneId:
           $ref: '#/components/schemas/EdgeCloudZoneId'
@@ -904,6 +908,8 @@ components:
           $ref: '#/components/schemas/EdgeCloudZoneName'
         edgeCloudZoneStatus:
           $ref: '#/components/schemas/EdgeCloudZoneStatus'
+        edgeCloudZoneFlavors:
+          $ref: '#/components/schemas/EdgeCloudZoneFlavors'
         edgeCloudProvider:
           $ref: '#/components/schemas/EdgeCloudProvider'
         edgeCloudRegion:
@@ -924,6 +930,14 @@ components:
         - inactive
         - unknown
       default: unknown
+
+    EdgeCloudZoneFlavors:
+      description: List of unique Name IDs of Infrastructure Flavors
+      type: array
+      items:
+        type: string
+        description: Flavor ID
+        example: A1.2C2M.GPU8G
 
     ErrorInfo:
       type: object
@@ -968,7 +982,7 @@ components:
         and storage capacity. (i.e - A1.2C4M.GPU8G, A1.2C4M.GPU16G, A1.4C8M,..)
       example: A1.2C2M.GPU8G
 
-    NodePools:
+    NodePool:
       description: |
         Set of worker nodes in a Kubernetes cluster.
       type: object
@@ -1005,18 +1019,6 @@ components:
           example: true
           default: false
           description: Enable ingress for Kubernetes cluster.
-
-    VmAddons:
-      description: |
-        Addons for the Virtual Machine.
-      type: object
-      properties:
-        dockerCompose:
-          type: boolean
-          example: true
-          default: false
-          description: |
-            Enable docker-compose in the virtual machine to deploy applications.
 
     K8sNetworking:
       description: |
@@ -1095,7 +1097,7 @@ components:
         millivcpu, or millivcpu (i.e 500m) format.
       example: "500m"
 
-    Kubernetes:
+    KubernetesResources:
       description: Definition of Kubernetes Cluster Infrastructure.
       type: object
       required:
@@ -1112,18 +1114,20 @@ components:
           type: string
           description: Minimum Kubernetes Version.
           example: "1.29"
-        controlNodes:
-          type: integer
-          description: Number of nodes for Kubernetes control plane.
-          enum:
-            - 1
-            - 3
+        controlPlaneHa:
+          type: boolean
+          description: |
+            True: Enable High avaliability of Kubernetes
+                  control plane (3 nodes)
+            False: Disable High avaliability of Kubernetes
+                   control plane (1 node)
+          default: false
         nodePools:
           type: array
           description: |
             Description of worker node set in a Kubernetes cluster.
           items:
-            $ref: '#/components/schemas/NodePools'
+            $ref: '#/components/schemas/NodePool'
         additionalStorage:
           type: string
           description: |
@@ -1135,9 +1139,8 @@ components:
         addons:
           $ref: '#/components/schemas/K8sAddons'
 
-
-    VirtualMachine:
-      description: Virtual Machine Infrastructure Definition
+    VmResources:
+      description: Definition of Virtual Machine Infrastructure
       type: object
       required:
         - flavor
@@ -1146,18 +1149,33 @@ components:
         infraKind:
           description: Type of infrastructure for the application.
           type: string
-          example: VirtualMachine
+          example: virtualMachine
           enum:
-            - VirtualMachine
+            - virtualMachine
         flavor:
           $ref: '#/components/schemas/Flavor'
         additionalStorages:
           $ref: '#/components/schemas/AdditionalStorage'
-        addons:
-          $ref: '#/components/schemas/VmAddons'
 
+    DockerComposeResources:
+      description: Definition of Docker Compose Infrastructure
+      type: object
+      required:
+        - flavor
+        - infraKind
+      properties:
+        infraKind:
+          description: Type of infrastructure for the application.
+          type: string
+          example: dockerCompose
+          enum:
+            - dockerCompose
+        flavor:
+          $ref: '#/components/schemas/Flavor'
+        additionalStorages:
+          $ref: '#/components/schemas/AdditionalStorage'
 
-    Container:
+    ContainerResources:
       description: Container Infrastructure Definition
       type: object
       required:
@@ -1169,9 +1187,9 @@ components:
         infraKind:
           description: Type of infrastructure for the application.
           type: string
-          example: containers
+          example: container
           enum:
-            - containers
+            - container
         numCPU:
           $ref: '#/components/schemas/Vcpu'
         memory:
@@ -1254,18 +1272,18 @@ components:
       description: |
         Fundamental hardware requirements to be provisioned by the
         Application Provider.
-      type: array
-      items:
-        oneOf:
-          - $ref: "#/components/schemas/Kubernetes"
-          - $ref: "#/components/schemas/VirtualMachine"
-          - $ref: "#/components/schemas/Container"
-        discriminator:
-          propertyName: infraKind
-          mapping:
-            kubernetes: "#/components/schemas/Kubernetes"
-            virtualMachine: "#/components/schemas/VirtualMachine"
-            container: "#/components/schemas/Container"
+      oneOf:
+        - $ref: "#/components/schemas/KubernetesResources"
+        - $ref: "#/components/schemas/VmResources"
+        - $ref: "#/components/schemas/ContainerResources"
+        - $ref: "#/components/schemas/DockerComposeResources"
+      discriminator:
+        propertyName: infraKind
+        mapping:
+          kubernetes: "#/components/schemas/KubernetesResources"
+          virtualMachine: "#/components/schemas/VmResources"
+          container: "#/components/schemas/ContainerResources"
+          dockerCompose: "#/components/schemas/DockerComposeResources"
 
     SubmittedApp:
       description: Information about the submitted app
