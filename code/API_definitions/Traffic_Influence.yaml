@@ -43,10 +43,11 @@ info:
     terms of latency, in a specific geographical area, between the user Device,
     e.g. the user’s smartphone, and the optimal EAS instance nearby. If the
     Device moves in a different geographical location where a more suitable EAS
-    instance is available, the TI API can be invoked to influence the Device
-    connectivity to get the optimal routing to the that local instance. It is
-    important to notice that it is a task of the Application invoking the TI API
-    to detect the changes in the Device location.\
+    instance is available, the TI API can be invoked again to influence the
+    Device connectivity to get the optimal routing also in the new location.
+    It is important to notice that it is a task of the TI API Consumer to
+    detect the changes in the Device location and to invoke the TI API
+    consequently.\
     The generic architecture for the Service can foresee some Cloud instances of
     the Application, one or more Edge Instances of the Application. The TI API
     Consumer invokes the TI API creating a "TrafficInfluence" resource
@@ -56,17 +57,27 @@ info:
     While the TI API can be invoked to activate the optimal routing for any
     user, it can also be used to request the optimal routing for a specific user
     also specifying, as an option, a source public port and a destination public
-    port. Invoking the TI API for each user, many "TrafficInfluence" resources
-    are created for each user to provide the requested routing for a set of
-    users.\
+    port and protocol. Invoking the TI API for each user, many "TrafficInfluence"
+    resources are created for each user to provide the requested routing for a
+    set of users. If the TI API is invoked to provide the optimal routing for an
+    application, for any user in a specific geographical area, for example, and
+    then the TI API is invoked, for the same application, in the same
+    geographical area but just for certain users (one API call for each user),
+    then just the traffic flow those selected users will be optimised.\
     The same approach is used for the geographical locations where the influence
     of the traffic must be applied. Invoking the TI API without specifying a
-    geographical area activates the optimal routing toward any EAS instance,
-    while invoking the TI API specifying a geographical area activates the
-    optimal routing only toward the EAS instance located closest to that
-    geographical area.\
+    geographical area, activates the optimal routing toward the closest EAS
+    instance. Invoking the TI API specifying a geographical area activates
+    the optimal routing only if the user is in that geographical area. The flow
+    is optimised to reach the EAS instance located closest to that geographical
+    area. In a different geographical area the user will not have the traffic
+    flow optimised.\
     To activate the optimal routing in selected geographical areas, the TI API
     must be invoked for each geographical area.\
+    The API API can also be used to optimise a specific traffic flow identified
+    by a source port and a destination port and protocol. To optimise the flow
+    from more source ports or destination ports or protocols, the TI API must be
+    invoked many times.\
     The TI API can be used to:
     - optimise the routing when Devices need to consume the service provided
         by a local EAS Instances.
@@ -156,7 +167,10 @@ info:
     a specific instance of the Application in a specific zone. To influence a
     traffic toward a specific Application instance. If just some specific
     Application instance must be affected, it is not required to specify any
-    "region" or "zone", the parameter "appInstanceId" can be used.\
+    "region" or "zone", the parameter "appInstanceId" can be used.
+    The value for appInstanceId can be retrived using the CAMARA API: [Edge
+    Application Management](https://github.com/camaraproject/EdgeCloud/blob\
+    /main/code/API_definitions/Edge-Application-Management.yaml).\
     \
     **sourceTrafficFilters:**
     The traffic can be from a specific public port in the device. If this
@@ -224,14 +238,16 @@ info:
     traffic filter based on IP, Port and Protocol can be used. I this way it is
     also possible to redirect different users to different interfaces.
     Here are some possible intents:
-    1) activate the optimal routing for any EAS instance: the TI API must be
-    invoked with the "appId". The Telco Operator Platform identifies all the EAS
-    instances and activates the optimal routing on the Mobile Network.
+    1) activate the optimal routing for the closest EAS instance: the TI API
+    must be invoked with the "appId". The Telco Operator Platform identifies
+    all the EAS instances and activates the optimal routing on the Mobile
+    Network so that the user is connect to the closest EAS insteance.
     2) activate the optimal routing in a specific Region or Zone: the TI API
     must be invoked with the "appId" and the Zones and Regions identifiers.
-    3) activate the optimal routing for a user devices: the TI API can  be
+    3) activate the optimal routing for a user Device: the TI API can  be
     invoked with a user Device identifier (“Device”). For each user Device,
-    a TI API invocation is required.
+    a TI API invocation is required. The optimal routing is provided only for
+    the requested Devices.
     ## Release Notes
     The Traffic Influence API reduces the complexity of activating the optimal
     routing toward an Application Instance and o provides the optimal routing
