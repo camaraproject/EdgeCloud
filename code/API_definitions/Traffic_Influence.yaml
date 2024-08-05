@@ -57,13 +57,14 @@ info:
     While the TI API can be invoked to activate the optimal routing for any
     user, it can also be used to request the optimal routing for a specific user
     also specifying, as an option, a source public port and a destination public
-    port and protocol. Invoking the TI API for each user, many "TrafficInfluence"
-    resources are created for each user to provide the requested routing for a
-    set of users. If the TI API is invoked to provide the optimal routing for an
-    application, for any user in a specific geographical area, for example, and
-    then the TI API is invoked, for the same application, in the same
-    geographical area but just for certain users (one API call for each user),
-    then just the traffic flow those selected users will be optimised.\
+    port and protocol. Invoking the TI API for each user, many
+    "TrafficInfluence" resources are created for each user to provide the
+    requested routing for a set of users. If the TI API is invoked to provide
+    the optimal routing for an application, for any user in a specific
+    geographical area, for example, and then the TI API is invoked, for the same
+    application, in the same geographical area but just for certain users (one
+    API call for each user), then just the traffic flow those selected users
+    will be optimised.\
     The same approach is used for the geographical locations where the influence
     of the traffic must be applied. Invoking the TI API without specifying a
     geographical area, activates the optimal routing toward the closest EAS
