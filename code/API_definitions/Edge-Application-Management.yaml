@@ -935,9 +935,33 @@ components:
       description: List of unique Name IDs of Infrastructure Flavors
       type: array
       items:
-        type: string
-        description: Flavor ID
-        example: A1.2C2M.GPU8G
+        type: object
+        description: Flavor
+        required:
+          - id
+          - numCpu
+          - memory
+          - gpuMemory
+        properties:
+          id:
+            type: string
+            example: A1.8C10M.GPU8G
+          description:
+            type: string
+            description: Additional information about the flavor
+            example: "x86 flavor"
+          numCPU:
+            type: integer
+            example: 8
+            description: Number of virtual Cores
+          memory:
+            type: integer
+            example: 10
+            description: Amount of memory in giga bytes
+          gpuMemory:
+            type: integer
+            example: 16
+            description: GPU memory in giga bytes
 
     ErrorInfo:
       type: object
