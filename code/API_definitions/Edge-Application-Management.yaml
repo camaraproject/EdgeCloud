@@ -1127,6 +1127,7 @@ components:
       required:
         - nodePools
         - infraKind
+        - applicationResources
       properties:
         infraKind:
           description: Type of infrastructure for the application.
@@ -1134,17 +1135,17 @@ components:
           example: kubernetes
           enum:
             - kubernetes
+        applicationResources:
+            $ref: '#/components/schemas/ApplicationResources'
         version:
           type: string
           description: Minimum Kubernetes Version.
           example: "1.29"
-        controlPlaneHa:
+        isShared:
           type: boolean
           description: |
-            True: Enable High avaliability of Kubernetes
-                  control plane (3 nodes)
-            False: Disable High avaliability of Kubernetes
-                   control plane (1 node)
+            True: Enable the operator platform to reuse the kubernetes cluster
+            False: Disable the operator platform to reuse the kubernetes cluster
           default: false
         nodePools:
           type: array
@@ -1162,6 +1163,30 @@ components:
           $ref: '#/components/schemas/K8sNetworking'
         addons:
           $ref: '#/components/schemas/K8sAddons'
+
+    KubernetesResourcesRef:
+      type: object
+      description: Kubernetes reference object
+      required:
+        - infraKind
+        - kubernetesClusterRef
+        - applicationResources
+      properties:
+        infraKind:
+          description: Type of infrastructure for the application.
+          type: string
+          example: kubernetesResourcesRef
+          enum:
+            - kubernetesResourcesRef
+        applicationResources:
+          $ref: '#/components/schemas/ApplicationResources'
+        kubernetesClusterRef:
+          description: | 
+            A global unique identifier associated with the Kubernetes Cluster 
+            Infrastructure.
+          type: string
+          format: uuid
+          example: "642f6105-7015-4af1-a4d1-e1ecb8437abc"
 
     VmResources:
       description: Definition of Virtual Machine Infrastructure
@@ -1218,8 +1243,8 @@ components:
           $ref: '#/components/schemas/Vcpu'
         memory:
           type: integer
-          example: 10
-          description: Memory in giga bytes
+          example: 1024
+          description: Memory in mega bytes
         storage:
           $ref: '#/components/schemas/AdditionalStorage'
         gpu:
@@ -1227,6 +1252,24 @@ components:
           description: Number of GPUs
           items:
             $ref: '#/components/schemas/GpuInfo'
+
+    ApplicationResources:
+      description: Application Resources Definition
+      type: object
+      required:
+        - numCPU
+        - memory
+      properties:
+        numCPU:
+          $ref: '#/components/schemas/Vcpu'
+        memory:
+          type: integer
+          example: 1024
+          description: Memory in mega bytes
+        gpuMemory:
+          type: integer
+          example: 16
+          description: GPU memory in giga bytes
 
     Ipv4Addr:
       type: string
@@ -1301,10 +1344,12 @@ components:
         - $ref: "#/components/schemas/VmResources"
         - $ref: "#/components/schemas/ContainerResources"
         - $ref: "#/components/schemas/DockerComposeResources"
+        - $ref: "#/components/schemas/KubernetesResourcesRef"
       discriminator:
         propertyName: infraKind
         mapping:
           kubernetes: "#/components/schemas/KubernetesResources"
+          kubernetesRef: "#/components/schemas/KubernetesResourcesRef"
           virtualMachine: "#/components/schemas/VmResources"
           container: "#/components/schemas/ContainerResources"
           dockerCompose: "#/components/schemas/DockerComposeResources"
