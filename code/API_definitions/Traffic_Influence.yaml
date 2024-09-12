@@ -92,6 +92,54 @@ info:
         Application detects a location change, it can invoke the TI API again to
         request a new routing optimization toward the new EAS instance.
     ## Quick Start
+    The TI API is consumed by an Application Function (AF) requesting for the
+    optimal routing, in term of latency, for the traffic flow from a Device
+    toward EAS instances in Edge Cloud Zones.\
+    When the Application (the EAS) is onboarded and deployed in the Edge Cloud
+    Zones, the Application is identified with a unique identifier ("appId").\
+    Using the application identifier ("appId") and specifying a Zone or a Region
+    the Telco Operator Platform, autonomously identifies the best instance of
+    the EAS toward which routing the traffic flow and configures the Mobile
+    Network accordingly to get the fastest routing.\
+    If just the application identifier is used, the Telco Operator Platform
+    identifies all the EAS Instances and activates the optimal routing on the
+    Mobile Network.\
+    If the optimal routing in term of latency should be available just for a set
+    of users, the TI API must be invoked for each user creating a new
+    TrafficInfluce resource for each one.
+    If the Application offers different services on different interfaces a
+    traffic filter based on IP, Port and Protocol can be used. I this way it is
+    also possible to redirect different users to different interfaces.
+    Here are some possible intents:
+    1) activate the optimal routing for the closest EAS instance: the TI API
+    must be invoked with the "appId". The Telco Operator Platform identifies
+    all the EAS instances and activates the optimal routing on the Mobile
+    Network so that the user is connect to the closest EAS insteance.
+    2) activate the optimal routing in a specific Region or Zone: the TI API
+    must be invoked with the "appId" and the Zones and Regions identifiers.
+    3) activate the optimal routing for a user Device: the TI API can  be
+    invoked with a user Device identifier (“Device”). For each user Device,
+    a TI API invocation is required. The optimal routing is provided only for
+    the requested Devices.    
+    ## Authentication and Authorization
+    CAMARA guidelines defines a set of authorization flows which can grant API
+    clients access to the API functionality, as outlined in the document
+    [CAMARA-API-access-and-user-consent.md](https:\
+    //github.com/camaraproject/IdentityAndConsentManagement/blob/main/\
+    documentation/CAMARA-API-access-and-user-consent.md).
+    Which specific authorization flows are to be used will be determined during
+    onboarding process, happening between the API Client and the Telco Operator
+    exposing the API, taking into account the declared purpose for accessing the
+    API, while also being subject to the prevailing legal framework dictated by
+    local legislation.\
+    It is important to remark that in cases where personal user data is
+    processed by the API, and users can exercise their rights through mechanisms
+    such as opt-in and/or opt-out, the use of 3-legged access tokens becomes
+    mandatory. This measure ensures that the API remains in strict compliance
+    with user privacy preferences and regulatory obligations, upholding the
+    principles of transparency and user-centric data control.
+    ## API Documentation
+    ## Details
     The usage of the TI API is based on the management of a "TrafficInfluence"
     resource, an object containing the intent requested invoking the TI API and
     that is implemented by the platform configuring the Mobile Network for the
@@ -103,6 +151,10 @@ info:
     information about the status of the requested resource.
     For an Application (identified by "appId") many "TrafficInfluence" resources
     can be created, e.g. to add multiple users, regions or zones.\
+    When an intent is expressed and a resource have been created, if the intent
+    must be modified, it is suggested to use the PATCH method
+    (/traffic-influeces/{trafficInfluenceID}). Anyway, any other new intent
+    (e.g. for the same device) will override the previous ones.\
     \
     Before starting to use the TI API, the developer needs to know about the
     below specified details:\
@@ -202,120 +254,8 @@ info:
     Developers can specify a callback URL on which notifications
     regarding the requested intent can be received. For example to be notified
     when the requested optimal routing is active.
-    ## Authentication and Authorization
-    CAMARA guidelines defines a set of authorization flows which can grant API
-    clients access to the API functionality, as outlined in the document
-    [CAMARA-API-access-and-user-consent.md](https:\
-    //github.com/camaraproject/IdentityAndConsentManagement/blob/main/\
-    documentation/CAMARA-API-access-and-user-consent.md).
-    Which specific authorization flows are to be used will be determined during
-    onboarding process, happening between the API Client and the Telco Operator
-    exposing the API, taking into account the declared purpose for accessing the
-    API, while also being subject to the prevailing legal framework dictated by
-    local legislation.\
-    It is important to remark that in cases where personal user data is
-    processed by the API, and users can exercise their rights through mechanisms
-    such as opt-in and/or opt-out, the use of 3-legged access tokens becomes
-    mandatory. This measure ensures that the API remains in strict compliance
-    with user privacy preferences and regulatory obligations, upholding the
-    principles of transparency and user-centric data control.
-    ## API Documentation
-    The TI API is consumed by an Application Function (AF) requesting for the
-    optimal routing, in term of latency, for the traffic flow from a Device
-    toward EAS instances in Edge Cloud Zones.\
-    When the Application (the EAS) is onboarded and deployed in the Edge Cloud
-    Zones, the Application is identified with a unique identifier ("appId").\
-    Using the application identifier ("appId") and specifying a Zone or a Region
-    the Telco Operator Platform, autonomously identifies the best instance of
-    the EAS toward which routing the traffic flow and configures the Mobile
-    Network accordingly to get the fastest routing.\
-    If just the application identifier is used, the Telco Operator Platform
-    identifies all the EAS Instances and activates the optimal routing on the
-    Mobile Network.\
-    If the optimal routing in term of latency should be available just for a set
-    of users, the TI API must be invoked for each user creating a new
-    TrafficInfluce resource for each one.
-    If the Application offers different services on different interfaces a
-    traffic filter based on IP, Port and Protocol can be used. I this way it is
-    also possible to redirect different users to different interfaces.
-    Here are some possible intents:
-    1) activate the optimal routing for the closest EAS instance: the TI API
-    must be invoked with the "appId". The Telco Operator Platform identifies
-    all the EAS instances and activates the optimal routing on the Mobile
-    Network so that the user is connect to the closest EAS insteance.
-    2) activate the optimal routing in a specific Region or Zone: the TI API
-    must be invoked with the "appId" and the Zones and Regions identifiers.
-    3) activate the optimal routing for a user Device: the TI API can  be
-    invoked with a user Device identifier (“Device”). For each user Device,
-    a TI API invocation is required. The optimal routing is provided only for
-    the requested Devices.
-    ## Release Notes
-    The Traffic Influence API reduces the complexity of activating the optimal
-    routing toward an Application Instance and o provides the optimal routing
-    for an user moving among geographical areas maybe served by different
-    Application instances. In this release it is up to the API Consumer to
-    detect the user moving among geographical areas.\
-    \
-    **Enhancements with respect to the previous release V0.8.1:**
-    - These release also effects existing data sessions
-    - These release can be also used to optimize  existing data sessions when a
-        Device moves among geographical areas.
-    - The ueId parameter is renamed into Device
-    - The parameter Device, that identifies the User, is now simplified to
-        guarantee the identification of an existing data session
-    - InstanceId added
-    - TrafficFilters description updated
-    - CAMEL type adopted
-    - FlowInfo deleted
-    - OpenAPI version updated to 3.0.3
-    - To let the Developer to just work on parameters actually editable, the PUT
-        method is changed into a PATCH method with a limitation on the
-        parameters usable and modifiable. A new resource is created,
-        PatchTrafficInfluence that contains only the editable parameters
-        The same approach is also adopted for the PUT method and a new resource
-        PostTrafficInfluence was created with just the editable parameters
-    - DELETE response code modified as 202. The Deletion request is accepted
-        (not yet completed, it must be carried on by the system)
-    - Added response code 400 (bad request) to POST
-    - General improvement in documentation
-    - applicationId changed into appId and instanceId changed into appInstanceId
-    - Alignement of parameters with EdgeCloud_LCM: applicationId changed into
-        appId and instanceId changed into appInstanceId
-    - Modified reference to CAMARA Authorization guidelines link
-    - Telco Edge Site changed in Edge Cloud Zone
-    - Added: info-contact
-    - Device: IPV4 and IPV6 changed to represent just one IP. Netmask is no more
-        valid
-    - Global tags definition
-    - Adopted lowerCamelCase for OperationId
-    - Added descriptions for Delete and Get (for specific resource) methods
-    - Added missing operationid
-    - Improvement of callback definition
-    - Added "description" to the TrafficInfluence resource
-    - Added "description" to the PatchTrafficInfluence resource
-    - Added "description" to TrafficInfluenceNotification
-    - Added "description" to NetworkAccessIdentifier
-    - Added "description" to ErrResponse
-    - Added "description" to message
-    - Added "description" to status
-    - Added "description" to ErrorInfo
-    - Removed unused error code SessionNotFound404
-    - Alignement of parameters with EdgeCloud_LCM: applicationId changed into
-        appId and instanceId changed into appInstanceId
-    - Adoption of OpenId authentication for Consent Management. Client
-        Credential is removed
-    - Intruduced xcorrelator
-    - General alignment with CAMARA on returned Errors
-    - Modified CAMARA URL to refer to the Edge Cloud Repository
-    - OAS version now includes "-wip" extension
-    - simplified "Servers" section and included "vwip" as version
-    - Updated documentation to better specify how to identify a Device
-    - Updated the Device parameter according to CAMARA_common.yaml
-    - change API name in YAML
-    - introduced sourceTrafficFilters and modified trafficFilters into
-    destinationTrafficFilters
-    - sourceTrafficFilters added
-    - Alignement with "Edge Application Management API"
+    # FAQ's
+    (FAQs will be added in a later version of the documentation)
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -493,9 +433,11 @@ paths:
       tags:
         - Traffic Influence API write
       summary: updates a specific TrafficInfluence resource, identified by the
-       trafficInfluenceID value.
+       trafficInfluenceID value. 
       description: The resource identified by the trafficInfluenceID value can
-       be modified.
+       be modified. Before the PATCH can be invoked the status (state) of the
+       resource must be "active". If not an errore code 409 (DENIED_WAIT) is
+       returned.
       operationId: patchTrafficInfluence
       parameters:
         - $ref: '#/components/parameters/x-correlator'
@@ -1025,6 +967,44 @@ components:
             code: CALL_FORWARDING.UNKNOWN_PHONE_NUMBER
             message: Call forwarding check can't be done because the phone
              number is unknown.
+    Generic409:
+      description: Conflict
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_409_ABORTED:
+              description: Concurreny of processes of the same nature/scope
+              value:
+                status: 409
+                code: ABORTED
+                message: Concurrency conflict.
+            GENERIC_409_ALREADY_EXISTS:
+              description: Trying to create an existing resource
+              value:
+                status: 409
+                code: ALREADY_EXISTS
+                message: The resource that a client tried to create already exists.
+            GENERIC_409_CONFLICT:
+              description: Duplication of an existing resource
+              value:
+                status: 409
+                code: CONFLICT
+                message: A specified resource duplicate entry found.
+            GENERIC_409_DENIED_WAIT:
+              description: Specific conflict situation that is relevant in the context of the API
+              value:
+                status: 409
+                code: DENIED_WAIT
+                message: It is not possibile to modify the Traffic Influence
+                 resource because it is still under provisioning. The resource
+                 can be modified when it is fully implemented and activated.
+                 Please wait for the resource status (state) to be "active"
+                 before trying to update it.
     Generic500:
       description: Server error
       headers:
