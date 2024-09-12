@@ -120,7 +120,7 @@ info:
     3) activate the optimal routing for a user Device: the TI API can  be
     invoked with a user Device identifier (“Device”). For each user Device,
     a TI API invocation is required. The optimal routing is provided only for
-    the requested Devices.    
+    the requested Devices.
     ## Authentication and Authorization
     CAMARA guidelines defines a set of authorization flows which can grant API
     clients access to the API functionality, as outlined in the document
@@ -433,7 +433,7 @@ paths:
       tags:
         - Traffic Influence API write
       summary: updates a specific TrafficInfluence resource, identified by the
-       trafficInfluenceID value. 
+       trafficInfluenceID value.
       description: The resource identified by the trafficInfluenceID value can
        be modified. Before the PATCH can be invoked the status (state) of the
        resource must be "active". If not an errore code 409 (DENIED_WAIT) is
@@ -988,7 +988,8 @@ components:
               value:
                 status: 409
                 code: ALREADY_EXISTS
-                message: The resource that a client tried to create already exists.
+                message: The resource that a client tried to create already
+                 exists.
             GENERIC_409_CONFLICT:
               description: Duplication of an existing resource
               value:
@@ -996,7 +997,8 @@ components:
                 code: CONFLICT
                 message: A specified resource duplicate entry found.
             GENERIC_409_DENIED_WAIT:
-              description: Specific conflict situation that is relevant in the context of the API
+              description: Specific conflict situation that is relevant in
+               the context of the API
               value:
                 status: 409
                 code: DENIED_WAIT
