@@ -912,6 +912,8 @@ components:
           $ref: '#/components/schemas/EdgeCloudProvider'
         edgeCloudRegion:
           $ref: '#/components/schemas/EdgeCloudRegion'
+        edgeCloudKubernetesClusterRef:
+          $ref: '#/components/schemas/KubernetesClusterRef'
       minItems: 1
 
     EdgeCloudZoneName:
@@ -1061,6 +1063,14 @@ components:
         millivcpu, or millivcpu (i.e 500m) format.
       example: "500m"
 
+    KubernetesClusterRef:
+      description: |
+        A global unique identifier associated with a Kubernetes cluster
+        infrastructure.
+      type: string
+      format: uuid
+      example: "642f6105-7015-4af1-a4d1-e1ecb8437abc"
+
     KubernetesResources:
       description: Definition of Kubernetes Cluster Infrastructure.
       required:
@@ -1208,12 +1218,7 @@ components:
           type: boolean
           example: false
         kubernetesClusterRef:
-          description: |
-            A global unique identifier associated with a Kubernetes cluster
-            infrastructure.
-          type: string
-          format: uuid
-          example: "642f6105-7015-4af1-a4d1-e1ecb8437abc"
+          $ref: '#/components/schemas/KubernetesClusterRef'
         version:
           type: string
           description: Minimum Kubernetes Version.
