@@ -225,6 +225,41 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
+    get:
+      security:
+        - openId:
+            - edge-application-management:apps:read
+      tags:
+        - Application
+      summary: Retrieve a list of existing Applications
+      description: |
+        Get the list of existing Application definitions from the Edge Cloud
+        Provider.
+      operationId: getApps
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+      responses:
+        '200':
+          description: List of existing applications
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppManifest'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
 
   /apps/{appId}:
     get:
@@ -701,6 +736,8 @@ components:
         Application information and requirements provided by the
         Application Provider
       properties:
+        appId:
+          $ref: '#/components/schemas/AppId'
         name:
           type: string
           pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
