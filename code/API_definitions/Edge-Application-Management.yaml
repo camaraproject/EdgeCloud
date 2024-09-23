@@ -355,7 +355,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AppZones'
+              $ref: '#/components/schemas/AppInstaces'
         required: true
       responses:
         '202':
@@ -683,16 +683,25 @@ components:
               accessPoints:
                 $ref: '#/components/schemas/AccessEndpoint'
           minItems: 1
+        kubernetesClusterRef:
+          $ref: '#/components/schemas/KubernetesClusterRef'
         edgeCloudZone:
           $ref: '#/components/schemas/EdgeCloudZone'
 
-    AppZones:
+    AppInstaces:
       description: |
         Collection of Edge Cloud Zones where the Application Provider wants to
         instantiate the application.
       type: array
       items:
-        $ref: '#/components/schemas/EdgeCloudZone'
+        type: object
+        properties:
+          kubernetesClusterRef:
+            $ref: '#/components/schemas/KubernetesClusterRef'
+          EdgeCloudZone:
+            $ref: '#/components/schemas/EdgeCloudZone'
+      required:
+        - EdgeCloudZone
       minItems: 1
       additionalProperties: false
 
@@ -912,8 +921,6 @@ components:
           $ref: '#/components/schemas/EdgeCloudProvider'
         edgeCloudRegion:
           $ref: '#/components/schemas/EdgeCloudRegion'
-        edgeCloudKubernetesClusterRef:
-          $ref: '#/components/schemas/KubernetesClusterRef'
       minItems: 1
 
     EdgeCloudZoneName:
@@ -1217,8 +1224,6 @@ components:
             applications.
           type: boolean
           example: false
-        kubernetesClusterRef:
-          $ref: '#/components/schemas/KubernetesClusterRef'
         version:
           type: string
           description: Minimum Kubernetes Version.
