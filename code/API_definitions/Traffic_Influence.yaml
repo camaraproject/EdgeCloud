@@ -997,8 +997,8 @@ components:
                 code: CONFLICT
                 message: A specified resource duplicate entry found.
             GENERIC_409_DENIED_WAIT:
-              description: Specific conflict situation that is relevant in
-               the context of the API
+              description: Patch denial if the previous intent is not yet
+               fulfilled.
               value:
                 status: 409
                 code: DENIED_WAIT
