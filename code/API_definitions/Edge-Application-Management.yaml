@@ -780,7 +780,6 @@ components:
                 digest for containers
         requiredResources:
           $ref: '#/components/schemas/RequiredResources'
-
         componentSpec:
           description: |
             Information defined in "appRepo" point to the application
