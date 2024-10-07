@@ -349,6 +349,9 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - appId
+                - appZones
               properties:
                 appId:
                   $ref: '#/components/schemas/AppId'
