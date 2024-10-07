@@ -706,7 +706,7 @@ components:
           pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
           description: Name of the application.
         version:
-          type: integer
+          type: string
           description: Application version information
         packageType:
           description: Format of the application image package
