@@ -355,7 +355,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AppInstaces'
+              $ref: '#/components/schemas/AppInstances'
         required: true
       responses:
         '202':
@@ -373,7 +373,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  appInstaces:
+                  appInstances:
                     type: array
                     items:
                       $ref: '#/components/schemas/AppInstanceInfo'
@@ -452,7 +452,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  appInstaceInfo:
+                  appInstanceInfo:
                     type: array
                     items:
                       $ref: '#/components/schemas/AppInstanceInfo'
@@ -688,7 +688,7 @@ components:
         edgeCloudZone:
           $ref: '#/components/schemas/EdgeCloudZone'
 
-    AppInstaces:
+    AppInstances:
       description: |
         Collection of Edge Cloud Zones where the Application Provider wants to
         instantiate the application.
