@@ -37,7 +37,10 @@ info:
     If the TI API is used to get the best routing at the Edge for a Device in a
     geographical location and the Device moves to another geographical location,
     the TI API can be invoked to get the optimal routing in the new geographical
-    location for that Device.
+    location for that Device.\
+    While the goal of the TI API is to optimise the traffic in the mobile 
+    network to reach the local instance of the EAS, it is a task of the
+    Application to generate the flow toward the expected EAS Instance.
     ## Introduction
     The TI API provides the capability to establish the optimal routing, in
     terms of latency, in a specific geographical area, between the user Device,
@@ -79,18 +82,23 @@ info:
     by a source port and a destination port and protocol. To optimise the flow
     from more source ports or destination ports or protocols, the TI API must be
     invoked many times.\
+    It is important to notice that it is a task of the Service Application to
+    use the most adequate means to send the application flow to the right
+    server (EAS), for example using Edge DNS or using the target EAS IP address.
+    The TI API provides back the EAS IP address toward which the traffic flow
+    is optimised.\
     The TI API can be used to:
     - optimise the routing when Devices need to consume the service provided
-        by a local EAS Instances.
+      by a local EAS Instances.
     - affect an already established Device routing when the Device moves
-        among different geographical locations. When the TI API consumer detects
-        a Device has entered a geographical location where an EAS instance is
-        available, it can invoke the TI API to get the optimal routing toward
-        that EAS instance.
-        If the Device moves to another geographical location, served by another
-        EAS instance, the routing might not be optimal anymore. In the case the
-        Application detects a location change, it can invoke the TI API again to
-        request a new routing optimization toward the new EAS instance.
+      among different geographical locations. When the TI API consumer detects
+      a Device has entered a geographical location where an EAS instance is
+      available, it can invoke the TI API to get the optimal routing toward
+      that EAS instance.
+      If the Device moves to another geographical location, served by another
+      EAS instance, the routing might not be optimal anymore. In the case the
+      Application detects a location change, it can invoke the TI API again to
+      request a new routing optimization toward the new EAS instance.\
     ## Quick Start
     The TI API is consumed by an Application Function (AF) requesting for the
     optimal routing, in term of latency, for the traffic flow from a Device
@@ -250,10 +258,13 @@ info:
     influenced is from a different public port, "sourceTrafficFilters" can be
     used.\
     \
-    **Notification URL and token:**
+    **Notification:**
     Developers can specify a callback URL on which notifications
     regarding the requested intent can be received. For example to be notified
-    when the requested optimal routing is active.
+    when the requested optimal routing is active. It is also provided back
+    the identificator for the selected EAS instace ("selected_appInstanceId")
+    from which the Service Application can retrive the destination IP address
+    of its backend server, to properly configure the service data flow.
     # FAQ's
     (FAQs will be added in a later version of the documentation)
   license:
@@ -689,12 +700,14 @@ components:
     TrafficInfluenceNotification:
       type: object
       description: Notifican channel for changes in the TrafficInfluence
-       resource
-      required:
-        - trafficInfluenceChanged
+       resource. It returnes back the TrafficInfluece resource with the
+       updated status ("state") and also proivides back the identifier
+       of the selected EAS instance.
+      allOf:
+        - $ref: "#/components/schemas/TrafficInfluence"
       properties:
-        trafficInfluenceChanged:
-          $ref: "#/components/schemas/TrafficInfluence"
+        selected_appInstanceId:
+          $ref: '#/components/schemas/AppInstanceId'
     ########################################################################
     #                                     Types                            #
     ########################################################################
