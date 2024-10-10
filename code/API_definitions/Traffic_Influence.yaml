@@ -85,7 +85,9 @@ info:
     It is important to notice that it is a task of the Service Application to
     use the most adequate means to send the application flow to the right
     server (EAS), for example using Edge DNS or using the target EAS IP address.
-    The TI API provides back the EAS IP address toward which the traffic flow
+    The TI API provides back the selected EAS instance identifier from which the
+    Service Application can retrive the destination IP address of its backend
+    server, to properly configure the service data flow.
     is optimised.\
     The TI API can be used to:
     - optimise the routing when Devices need to consume the service provided
