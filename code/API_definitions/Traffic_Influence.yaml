@@ -87,8 +87,7 @@ info:
     server (EAS), for example using Edge DNS or using the target EAS IP address.
     The TI API provides back the selected EAS instance identifier from which the
     Service Application can retrive the destination IP address of its backend
-    server, to properly configure the service data flow.
-    is optimised.\
+    server, to properly configure the service data flow.\
     The TI API can be used to:
     - optimise the routing when Devices need to consume the service provided
       by a local EAS Instances.
