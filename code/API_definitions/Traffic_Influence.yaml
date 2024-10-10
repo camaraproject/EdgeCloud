@@ -82,11 +82,11 @@ info:
     by a source port and a destination port and protocol. To optimise the flow
     from more source ports or destination ports or protocols, the TI API must be
     invoked many times.\
-    It is important to notice that it is a task of the Service Application to
+    It is important to notice that it is a task of the Client Application to
     use the most adequate means to send the application flow to the right
     server (EAS), for example using Edge DNS or using the target EAS IP address.
     The TI API provides back the selected EAS instance identifier from which the
-    Service Application can retrive the destination IP address of its backend
+    Client Application can retrive the destination IP address of its backend
     server, to properly configure the service data flow.\
     The TI API can be used to:
     - optimise the routing when Devices need to consume the service provided
@@ -264,8 +264,11 @@ info:
     regarding the requested intent can be received. For example to be notified
     when the requested optimal routing is active. It is also provided back
     the identificator for the selected EAS instace ("selected_appInstanceId")
-    from which the Service Application can retrive the destination IP address
-    of its backend server, to properly configure the service data flow.
+    from which the Client Application can retrive the destination IP address
+    of its backend server, to properly configure the service data flow. This
+    information can be retrived using the CAMARA API: [Edge
+    Application Management](https://github.com/camaraproject/EdgeCloud/blob\
+    /main/code/API_definitions/Edge-Application-Management.yaml).
     # FAQ's
     (FAQs will be added in a later version of the documentation)
   license:
