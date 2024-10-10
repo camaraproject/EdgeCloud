@@ -38,7 +38,7 @@ info:
     geographical location and the Device moves to another geographical location,
     the TI API can be invoked to get the optimal routing in the new geographical
     location for that Device.\
-    While the goal of the TI API is to optimise the traffic in the mobile 
+    While the goal of the TI API is to optimise the traffic in the mobile
     network to reach the local instance of the EAS, it is a task of the
     Application to generate the flow toward the expected EAS Instance.
     ## Introduction
