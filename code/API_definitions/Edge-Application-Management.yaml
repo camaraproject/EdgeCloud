@@ -233,8 +233,8 @@ paths:
         - Application
       summary: Retrieve a list of existing Applications
       description: |
-        Get the list of existing Application definitions from the Edge Cloud
-        Provider.
+        Get the list of all existing Application definitions from the
+        Edge Cloud Provider that the user has permission to view.
       operationId: getApps
       parameters:
         - $ref: '#/components/parameters/x-correlator'
