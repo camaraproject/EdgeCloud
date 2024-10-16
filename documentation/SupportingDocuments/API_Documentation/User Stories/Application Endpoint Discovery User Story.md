@@ -24,7 +24,7 @@ Note: the role of Edge Service Provider may be played by either the MNO or Cloud
 |Summary|The Application Endpoint Discovery API extends the capabilities of the Simple Edge Discovery API by locating the nearest Edge Cloud Zone and directly linking to application endpoints within those zones. This API enables immediate connection to the most optimal service endpoint, optimizing the application's interaction with edge computing resources. By providing the actual endpoints, developers can instantly integrate these into their applications, improving user experience by minimizing latency and enhancing service responsiveness.| M |
 |Pre-conditions|The AP has a resource usage agreement with the Operator| M |
 |Begins when|The user client request access to the application| M |
-|Step 1|The User invokes the Application Endpoint Discovery API to request an endpoint of the closest Edge Cloud Zone for this user (using MSISDN, IP-Address, or Network-Access-Identifier)| M |
+|Step 1|The User invokes the Application Endpoint Discovery API to request the  endpoint of the closest Application instance to the user (user is identified using MSISDN, IP-Address, or Network-Access-Identifier).   | M |
 |Step 2|The Application Endpoint Discovery API returns an endpoint of the closest application instance for this user.| M|
 |Step 3|The User stablish the connectivity with the application instance| M|
 |Ends when|The user successfully connects to the instance| M |
