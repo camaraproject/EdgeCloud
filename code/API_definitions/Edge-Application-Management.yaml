@@ -859,6 +859,7 @@ components:
       required:
         - name
         - version
+        - appProvider
         - packageType
         - appRepo
         - requiredResources
