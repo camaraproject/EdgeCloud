@@ -351,11 +351,14 @@ paths:
           schema:
             $ref: '#/components/schemas/AppId'
       requestBody:
-        description: Array of Edge Cloud Zone
+        description: | 
+                      The request body for app instances consists of an array 
+                      containing references to Edge Cloud Zones and/or 
+                      Kubernetes clusters.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AppInstances'
+              $ref: '#/components/schemas/AppInstanceLocations'
         required: true
       responses:
         '202':
@@ -688,10 +691,10 @@ components:
         edgeCloudZone:
           $ref: '#/components/schemas/EdgeCloudZone'
 
-    AppInstances:
+    AppInstanceLocations:
       description: |
-        Collection of Edge Cloud Zones where the Application Provider wants to
-        instantiate the application.
+        Collection of Edge Cloud Zones and/or Kubernetes cluster reference 
+        where the Application Provider wants to instantiate the application.
       type: array
       items:
         type: object
