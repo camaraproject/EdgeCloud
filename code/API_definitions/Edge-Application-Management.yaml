@@ -225,6 +225,41 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
+    get:
+      security:
+        - openId:
+            - edge-application-management:apps:read
+      tags:
+        - Application
+      summary: Retrieve a list of existing Applications
+      description: |
+        Get the list of all existing Application definitions from the
+        Edge Cloud Provider that the user has permission to view.
+      operationId: getApps
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+      responses:
+        '200':
+          description: List of existing applications
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppManifest'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
 
   /apps/{appId}:
     get:
@@ -326,7 +361,7 @@ paths:
         '503':
           $ref: '#/components/responses/503'
 
-  /apps/{appId}/instances:
+  /appinstances:
     post:
       security:
         - openId:
@@ -341,24 +376,22 @@ paths:
       operationId: createAppInstance
       parameters:
         - $ref: '#/components/parameters/x-correlator'
-        - name: appId
-          description: |
-            A globally unique identifier associated with the
-            application. Edge Cloud Provider generates this identifier when
-            the application is submitted.
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/AppId'
       requestBody:
-        description: | 
-                      The request body for app instances consists of an array 
-                      containing references to Edge Cloud Zones and/or 
-                      Kubernetes clusters.
+        description: |
+          The Application ID and the array of Edge Cloud Zones to deploy
+          it to.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AppInstanceLocations'
+              type: object
+              required:
+                - appId
+                - appZones
+              properties:
+                appId:
+                  $ref: '#/components/schemas/AppId'
+                appZones:
+                  $ref: '#/components/schemas/AppZones'
         required: true
       responses:
         '202':
@@ -423,8 +456,8 @@ paths:
             the application.
             Edge Cloud Provider generates this identifier when the
             application is submitted.
-          in: path
-          required: true
+          in: query
+          required: false
           schema:
             $ref: '#/components/schemas/AppId'
         - name: appInstanceId
@@ -470,7 +503,7 @@ paths:
           $ref: '#/components/responses/500'
         '503':
           $ref: '#/components/responses/503'
-  /apps/{appId}/instances/{appInstanceId}:
+  /appinstances/{appInstanceId}:
     delete:
       security:
         - openId:
@@ -484,15 +517,6 @@ paths:
       operationId: deleteAppInstance
       parameters:
         - $ref: '#/components/parameters/x-correlator'
-        - name: appId
-          description: |
-            A globally unique identifier associated with the
-            application. Edge Cloud Provider generates this identifier
-            when the application is submitted.
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/AppId'
         - name: appInstanceId
           in: path
           description: |
@@ -691,7 +715,7 @@ components:
         edgeCloudZone:
           $ref: '#/components/schemas/EdgeCloudZone'
 
-    AppInstanceLocations:
+    AppZones:
       description: |
         Collection of Edge Cloud Zones and/or Kubernetes cluster reference 
         where the Application Provider wants to instantiate the application.
@@ -713,10 +737,14 @@ components:
         Application information and requirements provided by the
         Application Provider
       properties:
+        appId:
+          $ref: '#/components/schemas/AppId'
         name:
           type: string
           pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
           description: Name of the application.
+        appProvider:
+          $ref: '#/components/schemas/AppProvider'
         version:
           type: integer
           description: Application version information
@@ -868,10 +896,16 @@ components:
       required:
         - name
         - version
+        - appProvider
         - packageType
         - appRepo
         - requiredResources
         - componentSpec
+
+    AppProvider:
+      type: string
+      pattern: ^[A-Za-z][A-Za-z0-9_]{7,63}$
+      description: Human readable name of the Application Provider.
 
     EdgeCloudProvider:
       type: string
