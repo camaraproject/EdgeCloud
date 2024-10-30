@@ -705,6 +705,8 @@ components:
           type: string
           pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
           description: Name of the application.
+        appProvider:
+          $ref: '#/components/schemas/AppProvider'
         version:
           type: integer
           description: Application version information
@@ -857,10 +859,16 @@ components:
       required:
         - name
         - version
+        - appProvider
         - packageType
         - appRepo
         - requiredResources
         - componentSpec
+
+    AppProvider:
+      type: string
+      pattern: ^[A-Za-z][A-Za-z0-9_]{7,63}$
+      description: Human readable name of the Application Provider.
 
     EdgeCloudProvider:
       type: string
