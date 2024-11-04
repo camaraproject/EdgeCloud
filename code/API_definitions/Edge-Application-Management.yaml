@@ -746,7 +746,7 @@ components:
         appProvider:
           $ref: '#/components/schemas/AppProvider'
         version:
-          type: integer
+          type: string
           description: Application version information
         packageType:
           description: Format of the application image package
