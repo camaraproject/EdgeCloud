@@ -23,7 +23,7 @@ info:
     network path is shorter. A network operator's EdgeCloud may comprise
     multiple Edge Cloud Zones, each in a discrete location to bring latency
     benefits to end users across a country.\
-    The operator can help developers know which of the Edge Cloud Zones will
+    The operator can help developers knowing which of the Edge Cloud Zones will
     bring the optimal performance for a given end user and application\.
     The Traffic Influence API (TI API) provides the optimal routing from the
     user Device (e.g. a Smartphone) to the optimal EAS instance in a specific
@@ -63,21 +63,24 @@ info:
     port and protocol. Invoking the TI API for each user, many
     "TrafficInfluence" resources are created for each user to provide the
     requested routing for a set of users. If the TI API is invoked to provide
-    the optimal routing for an application, for any user in a specific
-    geographical area, for example, and then the TI API is invoked, for the same
-    application, in the same geographical area but just for certain users (one
-    API call for each user), then just the traffic flow those selected users
-    will be optimised.\
-    The same approach is used for the geographical locations where the influence
+    the optimal routing for any user and later it is required to provide the
+    optimal access only for selected users, the previous intent/resource must
+    be deleted.\
+    The same approach is used for the geographical areas where the influence
     of the traffic must be applied. Invoking the TI API without specifying a
     geographical area, activates the optimal routing toward the closest EAS
-    instance. Invoking the TI API specifying a geographical area activates
-    the optimal routing only if the user is in that geographical area. The flow
-    is optimised to reach the EAS instance located closest to that geographical
-    area. In a different geographical area the user will not have the traffic
-    flow optimised.\
+    instance in any geographical location. This intent must be deleted if it is
+    required to provide the optimal access only in selected areas. Invoking the
+    TI API specifying a geographical area activates the optimal routing only if
+    the user is in that geographical area. The flow is optimised to reach the
+    EAS instance located closest to that geographical area. In a different
+    geographical area the user will not have the traffic flow optimised.\
     To activate the optimal routing in selected geographical areas, the TI API
-    must be invoked for each geographical area.\
+    must be invoked for each geographical area.\ Anyway it is importat to
+    understand that the traffic optimization strongly depends on the user's
+    geographical location so it is important for the TI API Consumer to always
+    verify the position of the user invoking the TI API for that user if it
+    moves changing its location.
     The API API can also be used to optimise a specific traffic flow identified
     by a source port and a destination port and protocol. To optimise the flow
     from more source ports or destination ports or protocols, the TI API must be
@@ -146,7 +149,9 @@ info:
     such as opt-in and/or opt-out, the use of 3-legged access tokens becomes
     mandatory. This measure ensures that the API remains in strict compliance
     with user privacy preferences and regulatory obligations, upholding the
-    principles of transparency and user-centric data control.
+    principles of transparency and user-centric data control.\
+    Endpoints not exchanging sensitive data use OAuth2 with Client Credential
+    while endpoint exchanging sensitive data use OpenId Connect.
     ## API Documentation
     ## Details
     The usage of the TI API is based on the management of a "TrafficInfluence"
@@ -304,7 +309,7 @@ paths:
   /traffic-influences:
     get:
       security:
-        - openId:
+        - oAuth2:
             - 'traffic-influence:traffic-influences:read'
       parameters:
         - $ref: '#/components/parameters/x-correlator'
@@ -313,7 +318,8 @@ paths:
           schema:
             $ref: "#/components/schemas/AppId"
           description: Used to select traffic influence resources filtered by
-           appId
+           appId. For privacy reasons, if a resource is related to a user, the
+           paramentr Device is not exchanged.
       tags:
         - Traffic Influence API read
       summary: Retries existing TrafficInfluence Resources
@@ -346,7 +352,8 @@ paths:
     post:
       tags:
         - Traffic Influence API write
-      summary: Creates a new TrafficInfluence resource
+      summary: Creates a new TrafficInfluence resource influencing the
+        traffic toward local instances of the Application for any user.
       description: Takes as input an object containing the intents from the API
         Consumer and creates a TrafficInfluence resourse accordingly. The
         trafficInfluenceID parameter, that is part of the object, must not be
@@ -358,7 +365,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/x-correlator'
       security:
-        - openId:
+        - oAuth2:
             - 'traffic-influence:traffic-influences:write'
       requestBody:
         description: Describes the request body
@@ -399,6 +406,64 @@ paths:
       callbacks:
         onTrafficInfluenceChanged:
           $ref: "#/components/callbacks/onTrafficInfluenceChanged"
+  /traffic-influence-devices:
+    post:
+      tags:
+        - Traffic Influence API write
+      summary: Creates a new TrafficInfluence resource influencing the
+        traffic toward local instances of the Application for a specific user.
+      description: Takes as input an object containing the intents from the API
+        Consumer and creates a TrafficInfluence resourse accordingly. The
+        trafficInfluenceID parameter, that is part of the object, must not be
+        valorized when creating a new resource. For this reason the
+        trafficInfluenceID parameter must be avoided in the object, anyway it
+        will be ignored by the API Producer. It is automatically generated by
+        the system and returned in the response.
+      operationId: postTrafficInfluenceDevice
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+      security:
+        - openId:
+            - 'traffic-influence:traffic-influence-devices:write'
+      requestBody:
+        description: Describes the request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostTrafficInfluenceDevice'
+      responses:
+        '201':
+          description: TrafficInfluence resource created, the related object is
+           returned with the resource ID (trafficInfluenceID) and status (state)
+           valorised.
+          headers:
+            x-correlator:
+              $ref: '#/components/headers/x-correlator'
+            Location:
+              description: Link to the created traffic influence resource
+              schema:
+                type: string
+                description: Link to the created traffic influence resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrafficInfluence'
+        "400":
+          $ref: "#/components/responses/Generic400"
+        '500':
+          $ref: '#/components/responses/GenericError'
+        '504':
+          $ref: '#/components/responses/BackendConnTimeout'
+        "401":
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
+        "503":
+          $ref: "#/components/responses/Generic503"
+      callbacks:
+        onTrafficInfluenceChanged:
+          $ref: "#/components/callbacks/onTrafficInfluenceChanged"          
   /traffic-influences/{trafficInfluenceID}:
     parameters:
       - name: trafficInfluenceID
@@ -415,12 +480,13 @@ paths:
       summary: Reads a specific TrafficInfluence resource identified by the
        trafficInfluenceID value.
       description: Returns a specific TrafficInfluence resources owned by the
-       same API Consumer.
+       same API Consumer. For privacy reasons, if a resource is related to a
+       user, the parameter Device is not exchanged. 
       operationId: getAllTrafficInfluences
       parameters:
         - $ref: '#/components/parameters/x-correlator'
       security:
-        - openId:
+        - oAuth2:
             - 'traffic-influence:traffic-influences:read'
       responses:
         '200':
@@ -448,7 +514,8 @@ paths:
       tags:
         - Traffic Influence API write
       summary: updates a specific TrafficInfluence resource, identified by the
-       trafficInfluenceID value.
+       trafficInfluenceID value. If used for a specific user, the Device
+       parameter can not be modified.
       description: The resource identified by the trafficInfluenceID value can
        be modified. Before the PATCH can be invoked the status (state) of the
        resource must be "active". If not an errore code 409 (DENIED_WAIT) is
@@ -457,7 +524,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/x-correlator'
       security:
-        - openId:
+        - oAuth2:
             - 'traffic-influence:traffic-influences:update'
       requestBody:
         description: Describes the request body
@@ -507,7 +574,7 @@ paths:
        deleting a TrafficInfluence resource previously created.
       operationId: deleteTrafficInfluence
       security:
-        - openId:
+        - oAuth2:
             - 'traffic-influence:traffic-influences:delete'
       parameters:
         - $ref: '#/components/parameters/x-correlator'
@@ -544,10 +611,21 @@ paths:
 components:
   securitySchemes:
     openId:
-      description: to support Consent Management
+      description: to support Consent Management, via 3-legged authentication,
+        when sensitive data are exchanged.
       type: openIdConnect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
-
+    oAuth2:    
+      type: oauth2
+      description: for endpoints not exchanging sensitive data.
+      flows:        
+        clientCredentials:
+          tokenUrl: 'https://example.com/oauth/token'
+          scopes:
+            'traffic-influence:traffic-influences:write': Grants write access to the TrafficInfluence resource
+            'traffic-influence:traffic-influences:delete': Grants delete access to the TrafficInfluence resource
+            'traffic-influence:traffic-influences:read': Grants read access to the TrafficInfluence resource
+            'traffic-influence:traffic-influences:update': Grants update access to the TrafficInfluence resource
   parameters:
     x-correlator:
       name: x-correlator
@@ -605,14 +683,14 @@ components:
   schemas:
     TrafficInfluence:
       description: Resource conteining the informations to influence the
-       traffic from the device to the EAS
+       traffic toward local instances of the Application, for any user.
       type: object
       properties:
         trafficInfluenceID:
           type: string
           description: Identifier for the Traffic Influence resource. This
-           parameter is returned by the API and must be used to update it
-           (e.g., adding new users or deleting it).
+           parameter is returned by the API and it is used to update it
+           (e.g., modify or delete the TrafficInfluence resource).
         apiConsumerId:
           type: string
           description: Unique Identifier of the TI API Consumer.
@@ -624,8 +702,6 @@ components:
           $ref: '#/components/schemas/EdgeCloudRegion'
         edgeCloudZoneId:
           $ref: '#/components/schemas/EdgeCloudZoneId'
-        device:
-          $ref: '#/components/schemas/Device'
         state:
           type: string
           description: it reports the state of the TrafficInfluence resource.
@@ -678,10 +754,36 @@ components:
       required:
         - apiConsumerId
         - appId
+    PostTrafficInfluence:
+      description: iherits from TrafficInfluence restricting the access
+        (readonly) to "trafficInfluenceID" and "state", to be used by the API
+        Consumer to create a TrafficInfluece resource for any user.
+      allOf:
+        - $ref: "#/components/schemas/TrafficInfluence"
+      properties:
+        trafficInfluenceID:
+          readOnly: true
+        state:
+          readOnly: true
+    PostTrafficInfluenceDevice:
+      description: iherits from TrafficInfluence restricting the access
+        (readonly) to "trafficInfluenceID" and "state", to be used by the API
+        Consumer to create a TrafficInfluece resource for a specific user.    
+      allOf:
+        - $ref: "#/components/schemas/TrafficInfluence"
+      properties:
+        device:
+          $ref: '#/components/schemas/Device'      
+        trafficInfluenceID:
+          readOnly: true
+        state:
+          readOnly: true
+      required:
+        - device
     PatchTrafficInfluence:
       description: inherits from TrafficInfluence and restricts the access to
        certain parameters.
-       Only some paramter can be indeed modified with the PATCH operation.
+       Only some parameter can be indeed modified with the PATCH operation.
       allOf:
         - $ref: "#/components/schemas/TrafficInfluence"
       properties:
@@ -690,14 +792,6 @@ components:
         apiConsumerId:
           readOnly: true
         appId:
-          readOnly: true
-        state:
-          readOnly: true
-    PostTrafficInfluence:
-      allOf:
-        - $ref: "#/components/schemas/TrafficInfluence"
-      properties:
-        trafficInfluenceID:
           readOnly: true
         state:
           readOnly: true
