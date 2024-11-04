@@ -409,7 +409,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  appInstaces:
+                  appInstances:
                     type: array
                     items:
                       $ref: '#/components/schemas/AppInstanceInfo'
@@ -488,7 +488,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  appInstaceInfo:
+                  appInstanceInfo:
                     type: array
                     items:
                       $ref: '#/components/schemas/AppInstanceInfo'
@@ -710,16 +710,25 @@ components:
               accessPoints:
                 $ref: '#/components/schemas/AccessEndpoint'
           minItems: 1
+        kubernetesClusterRef:
+          $ref: '#/components/schemas/KubernetesClusterRef'
         edgeCloudZone:
           $ref: '#/components/schemas/EdgeCloudZone'
 
     AppZones:
       description: |
-        Collection of Edge Cloud Zones where the Application Provider wants to
-        instantiate the application.
+        Collection of Edge Cloud Zones and/or Kubernetes cluster reference 
+        where the Application Provider wants to instantiate the application.
       type: array
       items:
-        $ref: '#/components/schemas/EdgeCloudZone'
+        type: object
+        properties:
+          kubernetesClusterRef:
+            $ref: '#/components/schemas/KubernetesClusterRef'
+          EdgeCloudZone:
+            $ref: '#/components/schemas/EdgeCloudZone'
+      required:
+        - EdgeCloudZone
       minItems: 1
       additionalProperties: false
 
@@ -802,7 +811,6 @@ components:
                 digest for containers
         requiredResources:
           $ref: '#/components/schemas/RequiredResources'
-
         componentSpec:
           description: |
             Information defined in "appRepo" point to the application
@@ -934,6 +942,10 @@ components:
         and the value of the Edge Cloud Provider
         object. This value is used to identify an Edge Cloud zone
         between Edge Clouds from different Edge Cloud Providers.
+      required:
+        - edgeCloudZoneId
+        - edgeCloudZoneName
+        - edgeCloudProvider
       properties:
         edgeCloudZoneId:
           $ref: '#/components/schemas/EdgeCloudZoneId'
@@ -984,6 +996,7 @@ components:
       type: string
       description: |
         Full qualified domain name of an application instance
+
     GpuInfo:
       type: object
       description: Information about the supported GPUs
@@ -997,6 +1010,351 @@ components:
         numGPU:
           type: integer
           description: Number of GPUs
+
+    K8sAddons:
+      description: |
+        Addons for the Kubernetes cluster.
+        Additional addons should be defined in application the helm chart
+        (Service Mesh, Serverless, AI).
+      type: object
+      properties:
+        monitoring:
+          type: boolean
+          example: true
+          default: false
+          description: Enable monitoring for Kubernetes cluster.
+        ingress:
+          type: boolean
+          example: true
+          default: false
+          description: Enable ingress for Kubernetes cluster.
+
+    K8sNetworking:
+      description: |
+        Kubernetes networking definition
+      type: object
+      properties:
+        primaryNetwork:
+          description: Definition of Kubernetes primary Network
+          type: object
+          properties:
+            provider:
+              description: CNI provider name
+              type: string
+              example: cilium
+            version:
+              description: CNI provider version
+              type: string
+              example: "1.13"
+        additionalNetworks:
+          description: Additional Networks for the Kubernetes cluster.
+          type: array
+          items:
+            type: object
+            description: Additional network interface definition
+            properties:
+              name:
+                description: Additional Network Name
+                type: string
+                example: net1
+              interfaceType:
+                description: |
+                  Type of additional Interface:
+                  netdevice: (SR-IOV) A regular kernel network device in the
+                             Network Namespace (netns) of the container
+                  vfio-pci: (SR-IOV) A PCI network interface directly mounted
+                            in the container
+                  interface: Additional interface to be used by cni plugins
+                             such as macvlan, ipvlan
+                  Note: The use of SR-IOV interfaces automatically
+                  configure the required kernel parameters for the nodes.
+                type: string
+                example: vfio-pci
+                enum:
+                  - netdevice
+                  - vfio-pci
+                  - interface
+
+    AdditionalStorage:
+      description: Additional storage for the application.
+      type: array
+      items:
+        type: object
+        required:
+          - storageSize
+          - mountPoint
+        properties:
+          name:
+            type: string
+            description: Name of additional storage resource.
+            example: logs
+          storageSize:
+            type: string
+            description: Additional persistent volume for the application.
+            example: 80GB
+            pattern: ^\d+(GB|MB)$
+          mountPoint:
+            type: string
+            description: Location of additional storage resource.
+            example: /logs
+
+    Vcpu:
+      type: string
+      pattern: ^\d+((\.\d{1,3})|(m))?$
+      description: |
+        Number of vcpus in whole (i.e 1), decimal (i.e 0.500) up to
+        millivcpu, or millivcpu (i.e 500m) format.
+      example: "500m"
+
+    KubernetesClusterRef:
+      description: |
+        A global unique identifier associated with a Kubernetes cluster
+        infrastructure.
+      type: string
+      format: uuid
+      example: "642f6105-7015-4af1-a4d1-e1ecb8437abc"
+
+    KubernetesResources:
+      description: Definition of Kubernetes Cluster Infrastructure.
+      required:
+        - infraKind
+        - applicationResources
+        - isStandalone
+      properties:
+        infraKind:
+          description: Type of infrastructure for the application.
+          type: string
+          example: kubernetes
+          enum:
+            - kubernetes
+        applicationResources:
+            description: |
+              Application resources define the resources pool required
+              by the application to be executed in a Kubernetes clusters.
+            type: object
+            properties:
+              cpuPool:
+                required:
+                  - numCPU
+                  - memory
+                  - topology
+                type: object
+                description: |
+                  CPU Pool refers to the amount of application' resources
+                  that is executed in nodes with CPU only. That means the part
+                  of application that doesn't require GPU or other kind of
+                  acceleration.
+                  CPU pool is not mandatory when the application is executed
+                  exclusively in a GPU pool.
+                  A CPU pool is composed by CPU and memory.
+                properties:
+                  numCPU:
+                    description: |
+                      Total number of vcpus in whole (i.e 1) of CPU pool.
+                    type: integer
+                    example: 1
+                  memory:
+                    description: Total memory in mega bytes of CPU pool.
+                    type: integer
+                    example: 1024
+                  topology:
+                    type: object
+                    description: |
+                      CPU pool topology defines an application's CPU-based
+                      architecture.
+                      When deploying for high availability or redundancy, it
+                      allows for clustering with a configurable number of nodes
+                      and minimum CPU/memory resource per Kubernetes node
+                      requirements.
+                    required:
+                      - minNumberOfNodes
+                      - minNodeCpu
+                      - minNodeMemory
+                    properties:
+                      minNumberOfNodes:
+                        description: |
+                          Minimum number of worker nodes required by the
+                          application.
+                        type: integer
+                        example: 5
+                      minNodeCpu:
+                        description: |
+                          Minimum number of vcpus in whole (i.e 1) per cluster
+                          node in CPU pool.
+                        type: integer
+                        example: 2
+                      minNodeMemory:
+                        description: |
+                          Minimum memory in mega bytes per cluster node in
+                          CPU pool.
+                        type: integer
+                        example: 1024
+              gpuPool:
+                required:
+                  - numCPU
+                  - memory
+                  - gpuMemory
+                  - topology
+                type: object
+                description: |
+                  GPU Pool refers to the amount of resources of the application
+                  that is executed in nodes with GPU.
+                  GPU Pool is not mandatory when the application is executed
+                  exclusively in a CPU pool.
+                  A GPU pool is composed by memory, CPU and GPU memory
+                properties:
+                  numCPU:
+                    description: |
+                      Total Number of vcpus in whole (i.e 1) of GPU pool.
+                    type: integer
+                    example: 1
+                  memory:
+                    description: Total memory in mega bytes of GPU pool.
+                    type: integer
+                    example: 1024
+                  gpuMemory:
+                    description: Total GPU memory in giga bytes of GPU pool.
+                    type: integer
+                    example: 16
+                  topology:
+                    type: object
+                    description: |
+                      GPU pool topology defines an application's GPU-based
+                      architecture.
+                      When deploying for high availability or redundancy, it
+                      allows for clustering with a configurable number of nodes
+                      and minimum CPU/memory/GPU memory resource per Kubernetes
+                      node requirements.
+                    required:
+                      - minNumberOfNodes
+                      - minNodeCpu
+                      - minNodeMemory
+                      - minNodeGpuMemory
+                    properties:
+                      minNumberOfNodes:
+                        description: |
+                          Minimum number of worker nodes with GPU required by
+                          the application.
+                        type: integer
+                        example: 2
+                      minNodeCpu:
+                        description: |
+                          Minimum number of vcpus in whole (i.e 1) per cluster
+                          node in GPU pool.
+                        type: integer
+                        example: 2
+                      minNodeMemory:
+                        description: |
+                          Minimum memory in mega bytes per cluster node in
+                          GPU pool.
+                        type: integer
+                        example: 1024
+                      minNodeGpuMemory:
+                        description: Minimum memory in giga bytes per cluster
+                         node in GPU pool.
+                        type: integer
+                        example: 8
+        isStandalone:
+          description: |
+            Define if the Kubernetes clusters can be reused by other
+            applications.
+          type: boolean
+          example: false
+        version:
+          type: string
+          description: Minimum Kubernetes Version.
+          example: "1.29"
+        additionalStorage:
+          type: string
+          description: |
+            Amount of persistent storage allocated to the Kubernetes PVC.
+          example: 80GB
+          pattern: ^\d+(GB|MB)$
+        networking:
+          $ref: '#/components/schemas/K8sNetworking'
+        addons:
+          $ref: '#/components/schemas/K8sAddons'
+
+    VmResources:
+      description: Definition of Virtual Machine Infrastructure
+      type: object
+      required:
+        - infraKind
+        - numCPU
+        - memory
+      properties:
+        infraKind:
+          description: Type of infrastructure for the application.
+          type: string
+          example: virtualMachine
+          enum:
+            - virtualMachine
+        numCPU:
+          type: integer
+          description: |
+            Number of vcpus in whole (i.e 1)
+          example: 1
+        memory:
+          type: integer
+          example: 1024
+          description: Memory in mega bytes
+        additionalStorages:
+          $ref: '#/components/schemas/AdditionalStorage'
+        gpu:
+          $ref: '#/components/schemas/GpuInfo'
+
+    DockerComposeResources:
+      description: Definition of Docker Compose Infrastructure
+      type: object
+      required:
+        - infraKind
+        - numCPU
+        - memory
+      properties:
+        infraKind:
+          description: Type of infrastructure for the application.
+          type: string
+          example: dockerCompose
+          enum:
+            - dockerCompose
+        numCPU:
+          type: integer
+          description: |
+            Number of vcpus in whole (i.e 1)
+          example: 1
+        memory:
+          type: integer
+          example: 1024
+          description: Memory in mega bytes
+        storage:
+          $ref: '#/components/schemas/AdditionalStorage'
+        gpu:
+          $ref: '#/components/schemas/GpuInfo'
+
+    ContainerResources:
+      description: Container Infrastructure Definition
+      type: object
+      required:
+        - infraKind
+        - numCPU
+        - memory
+      properties:
+        infraKind:
+          description: Type of infrastructure for the application.
+          type: string
+          example: container
+          enum:
+            - container
+        numCPU:
+          $ref: '#/components/schemas/Vcpu'
+        memory:
+          type: integer
+          example: 1024
+          description: Memory in mega bytes
+        storage:
+          $ref: '#/components/schemas/AdditionalStorage'
+        gpu:
+          $ref: '#/components/schemas/GpuInfo'
 
     Ipv4Addr:
       type: string
@@ -1061,33 +1419,23 @@ components:
       type: integer
       description: Port to stablish the connection
       minimum: 0
+
     RequiredResources:
       description: |
         Fundamental hardware requirements to be provisioned by the
         Application Provider.
-      type: object
-      required:
-        - numCPU
-        - memory
-        - storage
-      properties:
-        numCPU:
-          type: integer
-          description: Number of virtual CPUs
-          example: 1
-        memory:
-          type: integer
-          example: 10
-          description: Memory in giga bytes
-        storage:
-          type: integer
-          example: 60
-          description: Storage in giga bytes
-        gpu:
-          type: array
-          description: Number of GPUs
-          items:
-            $ref: '#/components/schemas/GpuInfo'
+      oneOf:
+        - $ref: "#/components/schemas/KubernetesResources"
+        - $ref: "#/components/schemas/VmResources"
+        - $ref: "#/components/schemas/ContainerResources"
+        - $ref: "#/components/schemas/DockerComposeResources"
+      discriminator:
+        propertyName: infraKind
+        mapping:
+          kubernetes: "#/components/schemas/KubernetesResources"
+          virtualMachine: "#/components/schemas/VmResources"
+          container: "#/components/schemas/ContainerResources"
+          dockerCompose: "#/components/schemas/DockerComposeResources"
 
     SubmittedApp:
       description: Information about the submitted app
