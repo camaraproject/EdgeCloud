@@ -463,7 +463,7 @@ paths:
           $ref: "#/components/responses/Generic503"
       callbacks:
         onTrafficInfluenceChanged:
-          $ref: "#/components/callbacks/onTrafficInfluenceChanged"          
+          $ref: "#/components/callbacks/onTrafficInfluenceChanged"
   /traffic-influences/{trafficInfluenceID}:
     parameters:
       - name: trafficInfluenceID
@@ -481,7 +481,7 @@ paths:
        trafficInfluenceID value.
       description: Returns a specific TrafficInfluence resources owned by the
        same API Consumer. For privacy reasons, if a resource is related to a
-       user, the parameter Device is not exchanged. 
+       user, the parameter Device is not exchanged.
       operationId: getAllTrafficInfluences
       parameters:
         - $ref: '#/components/parameters/x-correlator'
@@ -615,17 +615,21 @@ components:
         when sensitive data are exchanged.
       type: openIdConnect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
-    oAuth2:    
+    oAuth2:
       type: oauth2
       description: for endpoints not exchanging sensitive data.
-      flows:        
+      flows:
         clientCredentials:
           tokenUrl: 'https://example.com/oauth/token'
           scopes:
-            'traffic-influence:traffic-influences:write': Grants write access to the TrafficInfluence resource
-            'traffic-influence:traffic-influences:delete': Grants delete access to the TrafficInfluence resource
-            'traffic-influence:traffic-influences:read': Grants read access to the TrafficInfluence resource
-            'traffic-influence:traffic-influences:update': Grants update access to the TrafficInfluence resource
+            'traffic-influence:traffic-influences:write': Grants write access
+              to the TrafficInfluence resource
+            'traffic-influence:traffic-influences:delete': Grants delete
+              access to the TrafficInfluence resource
+            'traffic-influence:traffic-influences:read': Grants read access
+              to the TrafficInfluence resource
+            'traffic-influence:traffic-influences:update': Grants update
+              access to the TrafficInfluence resource
   parameters:
     x-correlator:
       name: x-correlator
@@ -768,12 +772,12 @@ components:
     PostTrafficInfluenceDevice:
       description: iherits from TrafficInfluence restricting the access
         (readonly) to "trafficInfluenceID" and "state", to be used by the API
-        Consumer to create a TrafficInfluece resource for a specific user.    
+        Consumer to create a TrafficInfluece resource for a specific user.
       allOf:
         - $ref: "#/components/schemas/TrafficInfluence"
       properties:
         device:
-          $ref: '#/components/schemas/Device'      
+          $ref: '#/components/schemas/Device'
         trafficInfluenceID:
           readOnly: true
         state:
