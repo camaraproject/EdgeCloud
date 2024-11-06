@@ -370,28 +370,31 @@ paths:
         - Application
       summary: Instantiation of an Application
       description: |
-        Ask the Edge Cloud Platform to instantiate an application to one
-        or several Edge Cloud Zones with an Application as an input and an
-        Application Instance as the output.
+        Ask the Edge Cloud Platform to instantiate an application to an
+        Edge Cloud Zone.
       operationId: createAppInstance
       parameters:
         - $ref: '#/components/parameters/x-correlator'
       requestBody:
         description: |
-          The Application ID and the array of Edge Cloud Zones to deploy
-          it to.
+          Information about the application and where to deploy it.
         content:
           application/json:
             schema:
               type: object
               required:
+                - name
                 - appId
-                - appZones
+                - edgeCloudZoneId
               properties:
+                name:
+                  $ref: '#/components/schemas/AppInstanceName'
                 appId:
                   $ref: '#/components/schemas/AppId'
-                appZones:
-                  $ref: '#/components/schemas/AppZones'
+                edgeCloudZoneId:
+                  $ref: '#/components/schemas/EdgeCloudZoneId'
+                kubernetesClusterRef:
+                  $ref: '#/components/schemas/KubernetesClusterRef'
         required: true
       responses:
         '202':
@@ -407,13 +410,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  appInstances:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AppInstanceInfo'
-                minItems: 1
+                $ref: '#/components/schemas/AppInstanceInfo'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -430,7 +427,7 @@ paths:
                 status: 409
                 code: CONFLICT
                 message: "Application already instantiated in the given
-                  Edge Cloud Zone or Edge Cloud Region"
+                  Edge Cloud Zone"
         '500':
           $ref: '#/components/responses/500'
         '501':
@@ -675,9 +672,21 @@ components:
     AppInstanceInfo:
       description: Information about the application instance.
       type: object
+      required:
+        - name
+        - appId
+        - appInstanceId
+        - appProvider
+        - edgeCloudZoneId
       properties:
+        name:
+          $ref: '#/components/schemas/AppInstanceName'
+        appId:
+          $ref: '#/components/schemas/AppId'
         appInstanceId:
           $ref: '#/components/schemas/AppInstanceId'
+        appProvider:
+          $ref: '#/components/schemas/AppProvider'
         status:
           description: Status of the application instance (default is 'unknown')
           type: string
@@ -712,25 +721,13 @@ components:
           minItems: 1
         kubernetesClusterRef:
           $ref: '#/components/schemas/KubernetesClusterRef'
-        edgeCloudZone:
-          $ref: '#/components/schemas/EdgeCloudZone'
+        edgeCloudZoneId:
+          $ref: '#/components/schemas/EdgeCloudZoneId'
 
-    AppZones:
-      description: |
-        Collection of Edge Cloud Zones and/or Kubernetes cluster reference
-        where the Application Provider wants to instantiate the application.
-      type: array
-      items:
-        type: object
-        properties:
-          kubernetesClusterRef:
-            $ref: '#/components/schemas/KubernetesClusterRef'
-          EdgeCloudZone:
-            $ref: '#/components/schemas/EdgeCloudZone'
-      required:
-        - EdgeCloudZone
-      minItems: 1
-      additionalProperties: false
+    AppInstanceName:
+      type: string
+      pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
+      description: Name of the App instance, scoped to the AppProvider
 
     AppManifest:
       description: |
