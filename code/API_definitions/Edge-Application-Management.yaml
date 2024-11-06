@@ -547,6 +547,68 @@ paths:
           $ref: '#/components/responses/500'
         '503':
           $ref: '#/components/responses/503'
+  /clusters:
+    get:
+      security:
+        - openId:
+            - edge-application-management:clusters:read
+      tags:
+        - Cluster
+      summary: |
+        Retrieve a list of the available clusters filtered by the optional
+        query parameters.
+      description: |
+        List available cluster information
+      operationId: getClusters
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+        - name: region
+          description: |
+            Human readable name of the geographical Edge Cloud Region of
+            the Cluster. Defined by the Edge Cloud Provider.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/EdgeCloudRegion'
+        - name: clusterRef
+          description: |
+            A globally unique identifier for the Cluster.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/KubernetesClusterRef'
+        - name: edgeCloudZoneId
+          description: |
+            Edge Cloud Zone identifier.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/EdgeCloudZoneId'
+      responses:
+        '200':
+          description: |
+            Successful response, returning the cluster's information.
+            Returns an empty list if no clusters were found or none match
+            the specified query parameters.
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClusterInfo'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
   /edge-cloud-zones:
     get:
       security:
@@ -907,6 +969,36 @@ components:
       pattern: ^[A-Za-z][A-Za-z0-9_]{7,63}$
       description: Human readable name of the Application Provider.
 
+    ClusterInfo:
+      description: Kubernetes cluster information
+      required:
+        - name
+        - provider
+        - clusterRef
+        - edgeCloudZoneId
+      properties:
+        name:
+          type: string
+          description: |
+            Name of the Cluster, scoped to the Provider
+        provider:
+          $ref: '#/components/schemas/AppProvider'
+        clusterRef:
+          $ref: '#/components/schemas/KubernetesClusterRef'
+        edgeCloudZoneId:
+          $ref: '#/components/schemas/EdgeCloudZoneId'
+        edgeCloudRegion:
+          $ref: '#/components/schemas/EdgeCloudRegion'
+        version:
+          type: string
+          description: Kubernetes version of the cluster.
+        nodePools:
+          description: Node Pools in the cluster.
+          type: array
+          items:
+            $ref: '#/components/schemas/KubernetesNodePool'
+          minItems: 1
+
     EdgeCloudProvider:
       type: string
       description: Human readable name of the Edge Cloud Provider.
@@ -1113,6 +1205,47 @@ components:
       type: string
       format: uuid
       example: "642f6105-7015-4af1-a4d1-e1ecb8437abc"
+
+    KubernetesNodePool:
+      description: |
+        A Kubernetes node pool is a set of Kubernetes nodes that have the
+        same configuration (vCPU, memory, networking, OS, etc) on each node.
+      required:
+        - name
+        - numNodes
+        - nodeResources
+        - scalable
+      properties:
+        name:
+          description: Human readable name of the Kubernetes Node Pool.
+          type: string
+        numNodes:
+          description: Number of nodes in the Node Pool.
+          type: integer
+        scalable:
+          description: |
+            Indicates if the node pool can be dynamically scaled up by the
+            system to accomodate more applications, and dynamically scaled
+            down by the system when there are unused resources.
+          type: boolean
+          example: false
+        nodeResources:
+          description: Resource configuration of a node.
+          type: object
+          required:
+            - numCPU
+            - memory
+          properties:
+            numCPU:
+              description: |
+                Number of whole vcpus for the node.
+              type: integer
+              example: 2
+            memory:
+              description: |
+                Amount of system memory in mega bytes for the node.
+              type: integer
+              example: 4096
 
     KubernetesResources:
       description: Definition of Kubernetes Cluster Infrastructure.
