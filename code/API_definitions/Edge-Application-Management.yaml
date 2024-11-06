@@ -717,7 +717,7 @@ components:
 
     AppZones:
       description: |
-        Collection of Edge Cloud Zones and/or Kubernetes cluster reference 
+        Collection of Edge Cloud Zones and/or Kubernetes cluster reference
         where the Application Provider wants to instantiate the application.
       type: array
       items:
@@ -1128,132 +1128,132 @@ components:
           enum:
             - kubernetes
         applicationResources:
-            description: |
-              Application resources define the resources pool required
-              by the application to be executed in a Kubernetes clusters.
-            type: object
-            properties:
-              cpuPool:
-                required:
-                  - numCPU
-                  - memory
-                  - topology
-                type: object
-                description: |
-                  CPU Pool refers to the amount of application' resources
-                  that is executed in nodes with CPU only. That means the part
-                  of application that doesn't require GPU or other kind of
-                  acceleration.
-                  CPU pool is not mandatory when the application is executed
-                  exclusively in a GPU pool.
-                  A CPU pool is composed by CPU and memory.
-                properties:
-                  numCPU:
-                    description: |
-                      Total number of vcpus in whole (i.e 1) of CPU pool.
-                    type: integer
-                    example: 1
-                  memory:
-                    description: Total memory in mega bytes of CPU pool.
-                    type: integer
-                    example: 1024
-                  topology:
-                    type: object
-                    description: |
-                      CPU pool topology defines an application's CPU-based
-                      architecture.
-                      When deploying for high availability or redundancy, it
-                      allows for clustering with a configurable number of nodes
-                      and minimum CPU/memory resource per Kubernetes node
-                      requirements.
-                    required:
-                      - minNumberOfNodes
-                      - minNodeCpu
-                      - minNodeMemory
-                    properties:
-                      minNumberOfNodes:
-                        description: |
-                          Minimum number of worker nodes required by the
-                          application.
-                        type: integer
-                        example: 5
-                      minNodeCpu:
-                        description: |
-                          Minimum number of vcpus in whole (i.e 1) per cluster
-                          node in CPU pool.
-                        type: integer
-                        example: 2
-                      minNodeMemory:
-                        description: |
-                          Minimum memory in mega bytes per cluster node in
-                          CPU pool.
-                        type: integer
-                        example: 1024
-              gpuPool:
-                required:
-                  - numCPU
-                  - memory
-                  - gpuMemory
-                  - topology
-                type: object
-                description: |
-                  GPU Pool refers to the amount of resources of the application
-                  that is executed in nodes with GPU.
-                  GPU Pool is not mandatory when the application is executed
-                  exclusively in a CPU pool.
-                  A GPU pool is composed by memory, CPU and GPU memory
-                properties:
-                  numCPU:
-                    description: |
-                      Total Number of vcpus in whole (i.e 1) of GPU pool.
-                    type: integer
-                    example: 1
-                  memory:
-                    description: Total memory in mega bytes of GPU pool.
-                    type: integer
-                    example: 1024
-                  gpuMemory:
-                    description: Total GPU memory in giga bytes of GPU pool.
-                    type: integer
-                    example: 16
-                  topology:
-                    type: object
-                    description: |
-                      GPU pool topology defines an application's GPU-based
-                      architecture.
-                      When deploying for high availability or redundancy, it
-                      allows for clustering with a configurable number of nodes
-                      and minimum CPU/memory/GPU memory resource per Kubernetes
-                      node requirements.
-                    required:
-                      - minNumberOfNodes
-                      - minNodeCpu
-                      - minNodeMemory
-                      - minNodeGpuMemory
-                    properties:
-                      minNumberOfNodes:
-                        description: |
-                          Minimum number of worker nodes with GPU required by
-                          the application.
-                        type: integer
-                        example: 2
-                      minNodeCpu:
-                        description: |
-                          Minimum number of vcpus in whole (i.e 1) per cluster
-                          node in GPU pool.
-                        type: integer
-                        example: 2
-                      minNodeMemory:
-                        description: |
-                          Minimum memory in mega bytes per cluster node in
-                          GPU pool.
-                        type: integer
-                        example: 1024
-                      minNodeGpuMemory:
-                        description: Minimum memory in giga bytes per cluster
-                         node in GPU pool.
-                        type: integer
-                        example: 8
+          description: |
+            Application resources define the resources pool required
+            by the application to be executed in a Kubernetes clusters.
+          type: object
+          properties:
+            cpuPool:
+              required:
+                - numCPU
+                - memory
+                - topology
+              type: object
+              description: |
+                CPU Pool refers to the amount of application' resources
+                that is executed in nodes with CPU only. That means the part
+                of application that doesn't require GPU or other kind of
+                acceleration.
+                CPU pool is not mandatory when the application is executed
+                exclusively in a GPU pool.
+                A CPU pool is composed by CPU and memory.
+              properties:
+                numCPU:
+                  description: |
+                    Total number of vcpus in whole (i.e 1) of CPU pool.
+                  type: integer
+                  example: 1
+                memory:
+                  description: Total memory in mega bytes of CPU pool.
+                  type: integer
+                  example: 1024
+                topology:
+                  type: object
+                  description: |
+                    CPU pool topology defines an application's CPU-based
+                    architecture.
+                    When deploying for high availability or redundancy, it
+                    allows for clustering with a configurable number of nodes
+                    and minimum CPU/memory resource per Kubernetes node
+                    requirements.
+                  required:
+                    - minNumberOfNodes
+                    - minNodeCpu
+                    - minNodeMemory
+                  properties:
+                    minNumberOfNodes:
+                      description: |
+                        Minimum number of worker nodes required by the
+                        application.
+                      type: integer
+                      example: 5
+                    minNodeCpu:
+                      description: |
+                        Minimum number of vcpus in whole (i.e 1) per cluster
+                        node in CPU pool.
+                      type: integer
+                      example: 2
+                    minNodeMemory:
+                      description: |
+                        Minimum memory in mega bytes per cluster node in
+                        CPU pool.
+                      type: integer
+                      example: 1024
+            gpuPool:
+              required:
+                - numCPU
+                - memory
+                - gpuMemory
+                - topology
+              type: object
+              description: |
+                GPU Pool refers to the amount of resources of the application
+                that is executed in nodes with GPU.
+                GPU Pool is not mandatory when the application is executed
+                exclusively in a CPU pool.
+                A GPU pool is composed by memory, CPU and GPU memory
+              properties:
+                numCPU:
+                  description: |
+                    Total Number of vcpus in whole (i.e 1) of GPU pool.
+                  type: integer
+                  example: 1
+                memory:
+                  description: Total memory in mega bytes of GPU pool.
+                  type: integer
+                  example: 1024
+                gpuMemory:
+                  description: Total GPU memory in giga bytes of GPU pool.
+                  type: integer
+                  example: 16
+                topology:
+                  type: object
+                  description: |
+                    GPU pool topology defines an application's GPU-based
+                    architecture.
+                    When deploying for high availability or redundancy, it
+                    allows for clustering with a configurable number of nodes
+                    and minimum CPU/memory/GPU memory resource per Kubernetes
+                    node requirements.
+                  required:
+                    - minNumberOfNodes
+                    - minNodeCpu
+                    - minNodeMemory
+                    - minNodeGpuMemory
+                  properties:
+                    minNumberOfNodes:
+                      description: |
+                        Minimum number of worker nodes with GPU required by
+                        the application.
+                      type: integer
+                      example: 2
+                    minNodeCpu:
+                      description: |
+                        Minimum number of vcpus in whole (i.e 1) per cluster
+                        node in GPU pool.
+                      type: integer
+                      example: 2
+                    minNodeMemory:
+                      description: |
+                        Minimum memory in mega bytes per cluster node in
+                        GPU pool.
+                      type: integer
+                      example: 1024
+                    minNodeGpuMemory:
+                      description: Minimum memory in giga bytes per cluster
+                        node in GPU pool.
+                      type: integer
+                      example: 8
         isStandalone:
           description: |
             Define if the Kubernetes clusters can be reused by other
