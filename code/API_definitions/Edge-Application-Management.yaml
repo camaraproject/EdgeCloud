@@ -717,7 +717,7 @@ components:
 
     AppZones:
       description: |
-        Collection of Edge Cloud Zones and/or Kubernetes cluster reference 
+        Collection of Edge Cloud Zones and/or Kubernetes cluster reference
         where the Application Provider wants to instantiate the application.
       type: array
       items:
