@@ -48,9 +48,10 @@ info:
     Device moves in a different geographical location where a more suitable EAS
     instance is available, the TI API can be invoked again to influence the
     Device connectivity to get the optimal routing also in the new location.
-    It is important to notice that it is a task of the TI API Consumer to
-    detect the changes in the Device location and to invoke the TI API
-    consequently.\
+    It is important to notice that the  service data flow is not automatically
+    optimised when the user moves in a specific area, it is a task of the TI API
+    Consumer to detect the changes in the Device location and to invoke the
+    TI API consequently.\
     The generic architecture for the Service can foresee some Cloud instances of
     the Application, one or more Edge Instances of the Application. The TI API
     Consumer invokes the TI API creating a "TrafficInfluence" resource
