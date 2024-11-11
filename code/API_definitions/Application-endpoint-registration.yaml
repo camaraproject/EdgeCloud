@@ -12,7 +12,7 @@ info:
 
     This information can we used for various usecases like optimal end
     point discovery to help end users connect to the most most optimal
-    instance of the application. Addtionally the information can be used 
+    instance of the application. Addtionally the information can be used
     to also monitor the different instance to take decisions from a lifecycle
     mangement perspective.
 
@@ -51,7 +51,7 @@ servers:
 tags:
   - name: Application Endpoint Registration
     description: |
-      Operations to register, read and manage an deployed instances of the 
+      Operations to register, read and manage an deployed instances of the
       application.
 
 paths:
