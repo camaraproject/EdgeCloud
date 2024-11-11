@@ -1,4 +1,4 @@
-openapi: 3.0.3
+---openapi: 3.0.3
 info:
   title: Application Endpoint Registration API
   version: 0.1.0
@@ -6,35 +6,35 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   description: |
-    Application endpoint registration allows application developers to 
-    register one or more Application Endpoints, and retrieve, update,and 
+    Application endpoint registration allows application developers to
+    register one or more Application Endpoints, and retrieve, update,and
     delete those egistrations.
 
-    This information can we used for various usecases like optimal end 
-    point discovery to help end users connect to the most most optimal 
+    This information can we used for various usecases like optimal end
+    point discovery to help end users connect to the most most optimal
     instance of the application. Addtionally the information can be used 
-    to also monitor the different instance to take decisions from a lifecycle 
+    to also monitor the different instance to take decisions from a lifecycle
     mangement perspective.
 
     ### Authorization and authentication
 
-    The "Camara Security and Interoperability Profile" provides details on 
-    how a client requests an access token. Please refer to Identify and 
-    Consent Management 
-    (https://github.com/camaraproject/IdentityAndConsentManagement/) 
+    The "Camara Security and Interoperability Profile" provides details on
+    how a client requests an access token. Please refer to Identify and
+    Consent Management
+    (https://github.com/camaraproject/IdentityAndConsentManagement/)
     for the released version of the Profile.
 
     Which specific authorization flows are to be used will be determined
-    during onboarding process, happening between the API Client and the 
-    Telco Operator exposing the API, taking into account the declared 
+    during onboarding process, happening between the API Client and the
+    Telco Operator exposing the API, taking into account the declared
     purpose for accessing the API, while also being subject to the prevailing
      legal framework dictated by local legislation.
 
-    It is important to remark that in cases where personal user data 
-    is processed by the API, and users can exercise their rights through 
-    mechanisms such as opt-in and/or opt-out, the use of 3-legged access 
-    tokens becomes mandatory. This measure ensures that the API remains in 
-    strict compliance with user privacy preferences and regulatory obligations, 
+    It is important to remark that in cases where personal user data
+    is processed by the API, and users can exercise their rights through
+    mechanisms such as opt-in and/or opt-out, the use of 3-legged access
+    tokens becomes mandatory. This measure ensures that the API remains in
+    strict compliance with user privacy preferences and regulatory obligations,
     upholding the principles of transparency and user-centric data control.
 
   x-camara-commonalities: 0.4.0
@@ -51,7 +51,8 @@ servers:
 tags:
   - name: Application Endpoint Registration
     description: |
-      Operations to register, read and manage an deployed instances of the application.
+      Operations to register, read and manage an deployed instances of the 
+      application.
 
 paths:
   /application-endpoints:
