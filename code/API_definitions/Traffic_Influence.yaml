@@ -366,16 +366,24 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TrafficInfluence"
+        "400":
+          $ref: "#/components/responses/Generic400"
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
+        "409":
+          $ref: "#/components/responses/Generic409"
+        "415":
+          $ref: "#/components/responses/Generic415"
+        "429":
+          $ref: "#/components/responses/Generic429"
         '500':
-          $ref: "#/components/responses/GenericError"
+          $ref: '#/components/responses/GenericError'
         "503":
           $ref: "#/components/responses/Generic503"
         '504':
-          $ref: "#/components/responses/BackendConnTimeout"
+          $ref: '#/components/responses/BackendConnTimeout'
     post:
       tags:
         - Traffic Influence API write
@@ -420,16 +428,22 @@ paths:
                 $ref: '#/components/schemas/TrafficInfluence'
         "400":
           $ref: "#/components/responses/Generic400"
-        '500':
-          $ref: '#/components/responses/GenericError'
-        '504':
-          $ref: '#/components/responses/BackendConnTimeout'
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
+        "409":
+          $ref: "#/components/responses/Generic409"
+        "415":
+          $ref: "#/components/responses/Generic415"
+        "429":
+          $ref: "#/components/responses/Generic429"
+        '500':
+          $ref: '#/components/responses/GenericError'
         "503":
           $ref: "#/components/responses/Generic503"
+        '504':
+          $ref: '#/components/responses/BackendConnTimeout'
       callbacks:
         onTrafficInfluenceChanged:
           $ref: "#/components/callbacks/onTrafficInfluenceChanged"
@@ -525,18 +539,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TrafficInfluence'
-        '404':
-          $ref: '#/components/responses/ResNotFound'
-        '500':
-          $ref: '#/components/responses/GenericError'
-        '504':
-          $ref: '#/components/responses/BackendConnTimeout'
+        "400":
+          $ref: "#/components/responses/Generic400"
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
+        '404':
+          $ref: '#/components/responses/ResNotFound'
+        '500':
+          $ref: '#/components/responses/GenericError'
         "503":
           $ref: "#/components/responses/Generic503"
+        '504':
+          $ref: '#/components/responses/BackendConnTimeout'
     patch:
       tags:
         - Traffic Influence API write
@@ -578,18 +594,22 @@ paths:
               $ref: '#/components/headers/x-correlator'
         "400":
           $ref: "#/components/responses/Generic400"
-        '404':
-          $ref: '#/components/responses/ResNotFound'
-        '500':
-          $ref: '#/components/responses/GenericError'
-        '504':
-          $ref: '#/components/responses/BackendConnTimeout'
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
+        "409":
+          $ref: "#/components/responses/Generic409"
+        "415":
+          $ref: "#/components/responses/Generic415"
+        "429":
+          $ref: "#/components/responses/Generic429"
+        '500':
+          $ref: '#/components/responses/GenericError'
         "503":
           $ref: "#/components/responses/Generic503"
+        '504':
+          $ref: '#/components/responses/BackendConnTimeout'
       callbacks:
         onTrafficInfluenceChanged:
           $ref: "#/components/callbacks/onTrafficInfluenceChanged"
@@ -619,16 +639,20 @@ paths:
       responses:
         '202':
           $ref: '#/components/responses/OkDeletionInProgress'
-        '404':
-          $ref: '#/components/responses/ResNotFound'
-        '504':
-          $ref: '#/components/responses/BackendConnTimeout'
+        "400":
+          $ref: "#/components/responses/Generic400"
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
+        '404':
+          $ref: '#/components/responses/ResNotFound'
+        '500':
+          $ref: '#/components/responses/GenericError'
         "503":
           $ref: "#/components/responses/Generic503"
+        '504':
+          $ref: '#/components/responses/BackendConnTimeout'
       callbacks:
         onTrafficInfluenceChanged:
           $ref: "#/components/callbacks/onTrafficInfluenceChanged"
@@ -1147,6 +1171,24 @@ components:
                  can be modified when it is fully implemented and activated.
                  Please wait for the resource status (state) to be "active"
                  before trying to update it.
+    Generic415:
+      description: Unsupported Media Type
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_415_UNSUPPORTED_MEDIA_TYPE:
+              description: Payload format of the request is in an unsupported
+               format by the Server.
+              value:
+                status: 415
+                code: UNSUPPORTED_MEDIA_TYPE
+                message: The server refuses to accept the request because the
+                 payload format is in an unsupported format.
     Generic422:
       description: Unprocessable Content
       headers:
@@ -1177,6 +1219,29 @@ components:
                 status: 422
                 code: UNIDENTIFIABLE_DEVICE
                 message: phone number not defined
+    Generic429:
+      description: Too Many Requests
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_429_QUOTA_EXCEEDED:
+              description: Request is rejected due to exceeding a business quota
+               limit.
+              value:
+                status: 429
+                code: QUOTA_EXCEEDED
+                message: Either out of resource quota or reaching rate limiting.
+            GENERIC_429_TOO_MANY_REQUESTS:
+              description: API Server request limit is overpassed
+              value:
+                status: 429
+                code: TOO_MANY_REQUESTS
+                message: Either out of resource quota or reaching rate limiting.
     Generic500:
       description: Server error
       headers:
