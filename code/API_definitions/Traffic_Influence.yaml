@@ -135,24 +135,49 @@ info:
     a TI API invocation is required. The optimal routing is provided only for
     the requested Devices.
     ## Authentication and Authorization
-    CAMARA guidelines defines a set of authorization flows which can grant API
-    clients access to the API functionality, as outlined in the document
-    [CAMARA-API-access-and-user-consent.md](https:\
-    //github.com/camaraproject/IdentityAndConsentManagement/blob/main/\
-    documentation/CAMARA-API-access-and-user-consent.md).
+    The "Camara Security and Interoperability Profile" provides details on how
+    a client requests an access token. Please refer to Identify and Consent
+    Management (https://github.com/camaraproject/IdentityAndConsentManagement/)
+    for the released version of the Profile.\
+    \
     Which specific authorization flows are to be used will be determined during
     onboarding process, happening between the API Client and the Telco Operator
     exposing the API, taking into account the declared purpose for accessing the
     API, while also being subject to the prevailing legal framework dictated by
     local legislation.\
+    \
     It is important to remark that in cases where personal user data is
     processed by the API, and users can exercise their rights through mechanisms
     such as opt-in and/or opt-out, the use of 3-legged access tokens becomes
     mandatory. This measure ensures that the API remains in strict compliance
     with user privacy preferences and regulatory obligations, upholding the
     principles of transparency and user-centric data control.\
-    Endpoints not exchanging sensitive data use OAuth2 with Client Credential
-    while endpoint exchanging sensitive data use OpenId Connect.
+    \
+    Note that endpoints not exchanging sensitive data use OAuth2 with Client
+    Credential while endpoint exchanging sensitive data use OpenId Connect.
+    # Identifying the phone number from the access token
+    This specification defines the "phoneNumber" field as optional in API
+    requests because using a 3-legged access token the phone number can be
+    uniquely identified by the token.
+    ## Handling of phone number information:
+    ### Optional phone number object for 3-legged tokens:
+    When using a 3-legged access token, the phone number associated with the
+    access token must be considered as the phone number for the API request.
+    This means that the "phoneNumber" paramenter is not required in the request,
+    and if it is included it must identify the same phone number.
+    ### Validation mechanism:
+    - The server will extract the phone number identification from the access
+    token, if available.
+    - If the API request additionally includes a "phoneNumber" parameter when
+    using a 3-legged access token, the API will validate that the phone number
+    identifier provided matches the one associated with the access token.
+    - If there is a mismatch, the API will respond with a
+    403 `INVALID_TOKEN_CONTEXT` error, indicating that the device information
+    in the request does not match the token.
+    ### Error handling for unidentifiable devices:
+    - If the "phoneNumber" parameter is not included in the request and the
+    phone number information cannot be derived from the 3-legged access token,
+    the server will return a 422 `UNIDENTIFIABLE_DEVICE` error.
     ## API Documentation
     ## Details
     The usage of the TI API is based on the management of a "TrafficInfluence"
@@ -263,7 +288,8 @@ info:
     Devices. "publicPort" can be used to identify the device. "publicPort" can
     be also used to identify the flow to be influenced. If the flow to be
     influenced is from a different public port, "sourceTrafficFilters" can be
-    used.\
+    used. Note: if phone number is used, the value of this optional parameter
+    must match the value of the phone number retrieved from the access token.\
     \
     **Notification:**
     Developers can specify a callback URL on which notifications
@@ -783,8 +809,6 @@ components:
           readOnly: true
         state:
           readOnly: true
-      required:
-        - device
     PatchTrafficInfluence:
       description: inherits from TrafficInfluence and restricts the access to
        certain parameters.
@@ -1067,8 +1091,8 @@ components:
               value:
                 status: 403
                 code: INVALID_TOKEN_CONTEXT
-                message: Phone number cannot be deducted from access token
-                 context
+                message: the phoneNumber parameter doesn't match the value from the
+                 access token context
     Generic404:
       description: The specified resource was not found
       headers:
