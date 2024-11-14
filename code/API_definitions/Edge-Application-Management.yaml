@@ -486,13 +486,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  appInstanceInfo:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AppInstanceInfo'
-                minItems: 1
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppInstanceInfo'
         '401':
           $ref: '#/components/responses/401'
         '403':
