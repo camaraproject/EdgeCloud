@@ -8,13 +8,13 @@ info:
   description: |
     Application endpoint registration allows application developers to
     register one or more Application Endpoints, and retrieve, update,and
-    delete those egistrations.
+    delete those registrations.
 
     This information can we used for various usecases like optimal end
     point discovery to help end users connect to the most most optimal
     instance of the application. Addtionally the information can be used
     to also monitor the different instance to take decisions from a lifecycle
-    mangement perspective.
+    management perspective.
 
     ### Authorization and authentication
 
