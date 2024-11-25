@@ -64,7 +64,7 @@ info:
 
     [GSMA Mobile Connect Account Takeover Protection specification]
     (https://www.gsma.com/identity/wp-content/uploads/2022/12/IDY.24-Mobile-
-    \Connect-Account-Takeover-Protection-Definition-and-Technical-Requirements-v2.0.pdf)
+    Connect-Account-Takeover-Protection-Definition-and-Technical-Requirements-v2.0.pdf)
     was used as source of input for this API. For more about Mobile Connect,
     please see [Mobile Connect website](https://mobileconnect.io/).
 
@@ -407,14 +407,14 @@ components:
             Port information of application Endpoint
             if IPv4 or IPv6 is mentioned
       anyOf:
-        - required: [fqdn, ipv4Address, port, uri]
-        - required: [fqdn, ipv6Address, port, uri]
+        - required: [fqdn, ipv4Address, port]
+        - required: [fqdn, ipv6Address, port]
       example:
         {
-          "ipv4Address": "203.0.113.0",
+          "ipv4Address": "203.0.113.10",
           "port": 59765,
           "fqdn": "app.test.com",
-          "uri": "http://aap.test.com/v1/test"
+          "uri": "http://app.test.com/v1/test"
         }
       additionalProperties: false
     EdgeCloudZoneId:
