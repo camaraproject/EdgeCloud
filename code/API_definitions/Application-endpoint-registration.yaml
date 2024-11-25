@@ -1,22 +1,45 @@
 openapi: 3.0.3
 info:
-  title: Application Endpoint Registration API
-  version: 0.1.0
-  license:
-    name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: Application Endpoints Registration
   description: |
-    Application endpoint registration allows application developers to
-    register one or more Application Endpoints, and retrieve, update,and
-    delete those registrations.
+    The Application Endpoints Registration API provides a programmable
+    interface for developers to register the endpoints of an application
+    which is deployed across various Edge Cloud Zones.
+    It allows developers to retrieve, update, and delete those registrations.
 
-    This information can we used for various usecases like optimal end
-    point discovery to help end users connect to the most most optimal
-    instance of the application. Addtionally the information can be used
-    to also monitor the different instance to take decisions from a lifecycle
-    management perspective.
+    # Introduction
 
-    ### Authorization and authentication
+    The API registers the Edge Application Endpoint.
+    This information can be used for various use cases like optimal endpoint
+    discovery to help end users connect to the most optimal instance of the
+    application which is distributed across various Edge Cloud Zones.
+    Additionally the information can be used to monitor the edge instances to
+    take decisions from a lifecycle management perspective. The API provides
+    the ability to register, read and manage the deployed edge instances of
+    the application.
+
+    # Relevant terms and definitions
+
+    * **Application Endpoint**:
+
+    The Endpoint on which the application is running.
+    It can be a URI, FQDN, IPv4, or IPv6 address with a port number.
+
+    # API functionality
+
+    The API provides 4 operations:
+    - POST registerApplicationEndpoints: Registers the Application Endpoints
+                    of a deployed application to a specified edge cloud zone.
+    - GET getAllRegisteredApplicationEndpoints: Returns endpoint information for all
+        registered Applications.
+    - GET getApplicationEndpointsByID: Returns endpoint information for all
+        Applications registered to a specified applicationEndpointId.
+    - PUT updateApplicationEndpoint: Update registered application endpoint
+        information.
+    - DELETE deregisterApplicationEndpoint: Deregister an application's
+                          application Endpoint from the edge cloud zone.
+
+    # Authorization and authentication
 
     The "Camara Security and Interoperability Profile" provides details on
     how a client requests an access token. Please refer to Identify and
@@ -37,7 +60,26 @@ info:
     strict compliance with user privacy preferences and regulatory obligations,
     upholding the principles of transparency and user-centric data control.
 
+    # Further info and support
+
+    [GSMA Mobile Connect Account Takeover Protection specification]
+    (https://www.gsma.com/identity/wp-content/uploads/2022/12/IDY.24-Mobile-
+    \Connect-Account-Takeover-Protection-Definition-and-Technical-Requirements-v2.0.pdf)
+    was used as source of input for this API. For more about Mobile Connect,
+    please see [Mobile Connect website](https://mobileconnect.io/).
+
+    (FAQs will be added in a later version of the documentation)
+
+  version: 0.1.0
+  contact:
+    email: sp-edc@lists.camaraproject.org
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
   x-camara-commonalities: 0.4.0
+externalDocs:
+  description: Project documentation at Camara
+  url: https://github.com/camaraproject/EdgeCloud
 
 servers:
   - url: "{apiRoot}/application-endpoint-registration/v0.1"
@@ -51,119 +93,239 @@ servers:
 tags:
   - name: Application Endpoint Registration
     description: |
-      Operations to register, read and manage an deployed instances of the
+      Operations to register, read and manage deployed instances of the
       application.
 
 paths:
   /application-endpoints:
     post:
-      operationId: register-application-endpoints
+      security:
+        - openId:
+            - application-endpoint-registration:application-endpoints:write
+      tags:
+        - Application Endpoint Registration
+      summary: Register endpoints of a deployed application
+      description: |
+        Register the endpoints of a deployed application
+        to a specified edge cloud zone.
+      operationId: registerApplicationEndpoints
+      parameters:
+        - $ref: "#/components/parameters/x-correlator"
       requestBody:
         description: Array of Application Endpoints for a
           deployed application
+        required: true
         content:
           application/json:
             schema:
               type: array
+              minItems: 1
               items:
-                $ref: "#/components/schemas/ApplicationInstance"
+                $ref: "#/components/schemas/ApplicationEndpointRequest"
       responses:
         "200":
-          description: Returns a applicationEndpointsId
+          description: Returns an applicationEndpointsId
+          headers:
+            x-correlator:
+              $ref: '#/components/headers/x-correlator'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TypesApplicationEndpointsId"
+                $ref: "#/components/schemas/ApplicationEndpointsId"
+        "400":
+          $ref: "#/components/responses/Generic400"
         "401":
-          $ref: "#/components/responses/Unauthorized"
-        default:
-          $ref: "#/components/responses/Unexpected"
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
+        "404":
+          $ref: "#/components/responses/Generic404"
+        "422":
+          $ref: "#/components/responses/Generic422"
+        "500":
+          $ref: "#/components/responses/Generic500"
+        "503":
+          $ref: "#/components/responses/Generic503"
+        "504":
+          $ref: "#/components/responses/Generic504"
+    get:
+      security:
+        - openId:
+            - application-endpoint-registration:application-endpoints:read
       tags:
         - Application Endpoint Registration
-      summary: Register Application Endpoints
-      description: Register Application Endpoints of a
-        deployed application to specified edge cloud zone.
+      summary: Get all registered edge application endpoint information
+      description: |
+        Returns endpoint information for all
+        Application Endpoints registered.
+      operationId: getAllRegisteredApplicationEndpoints
+      parameters:
+        - $ref: "#/components/parameters/x-correlator"
+      responses:
+        "200":
+          description: Array of registered Application Endpoints
+          headers:
+            x-correlator:
+              $ref: '#/components/headers/x-correlator'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApplicationEndpoints"
+        "400":
+          $ref: "#/components/responses/Generic400"
+        "401":
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
+        "404":
+          $ref: "#/components/responses/Generic404"
+        "422":
+          $ref: "#/components/responses/Generic422"
+        "500":
+          $ref: "#/components/responses/Generic500"
+        "503":
+          $ref: "#/components/responses/Generic503"
+        "504":
+          $ref: "#/components/responses/Generic504"
 
   "/application-endpoints/{applicationEndpointsId}":
     parameters:
       - name: applicationEndpointsId
         in: path
         required: true
-        description: applicationEndpointsId param //added desc
+        description: The unique identifier for the application endpoints
         schema:
-          $ref: "#/components/schemas/TypesApplicationEndpointsId"
+          $ref: "#/components/schemas/ApplicationEndpointsId"
+      - $ref: "#/components/parameters/x-correlator"
     get:
-      operationId: get-application-endpoints-by-applicationEndpointsId
-      responses:
-        "200":
-          description: Arry of registered Application Endpoints
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApplicationInstance"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        default:
-          $ref: "#/components/responses/Unexpected"
+      security:
+        - openId:
+            - application-endpoint-registration:application-endpoints:read
       tags:
         - Application Endpoint Registration
       summary: Get registered edge application endpoint information
-      description: Returns endpoint information for all
+      description: |
+        Returns endpoint information for all
         Application Endpoints registered to a
         specified applicationEndpointId.
+      operationId: getApplicationEndpointsById
+      responses:
+        "200":
+          description: Array of registered Application Endpoints
+          headers:
+            x-correlator:
+              $ref: '#/components/headers/x-correlator'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationEndpoints"
+        "400":
+          $ref: "#/components/responses/Generic400"
+        "401":
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
+        "404":
+          $ref: "#/components/responses/Generic404"
+        "422":
+          $ref: "#/components/responses/Generic422"
+        "500":
+          $ref: "#/components/responses/Generic500"
+        "503":
+          $ref: "#/components/responses/Generic503"
+        "504":
+          $ref: "#/components/responses/Generic504"
+
     put:
-      operationId: update-application-endpoint
+      security:
+        - openId:
+            - application-endpoint-registration:application-endpoints:update
+      tags:
+        - Application Endpoint Registration
+      summary: Update an application Endpoint
+      description: |
+        Update registered application Endpoint information.
+      operationId: updateApplicationEndpoint
       requestBody:
-        description: application Endpoint information
+        description: Application Endpoint information
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: "#/components/schemas/ApplicationInstance"
+                $ref: "#/components/schemas/ApplicationEndpointRequest"
       responses:
         "204":
-          $ref: "#/components/responses/NoContent"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        default:
-          $ref: "#/components/responses/Unexpected"
-      tags:
-        - Application Endpoint Registration
-      summary: Update a application Endpoint
-      description: Update registered application Endpoint information.
-    delete:
-      operationId: deregister-application-endpoint
-      responses:
-        "204":
-          $ref: "#/components/responses/NoContent"
+          description: Updates Application Endpoint Information
+          headers:
+            x-correlator:
+              $ref: '#/components/headers/x-correlator'
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/Generic400"
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
         "404":
-          $ref: "#/components/responses/NotFound"
-        default:
-          $ref: "#/components/responses/Unexpected"
+          $ref: "#/components/responses/Generic404"
+        "422":
+          $ref: "#/components/responses/Generic422"
+        "500":
+          $ref: "#/components/responses/Generic500"
+        "503":
+          $ref: "#/components/responses/Generic503"
+        "504":
+          $ref: "#/components/responses/Generic504"
+
+    delete:
+      security:
+        - openId:
+            - application-endpoint-registration:application-endpoints:delete
       tags:
         - Application Endpoint Registration
-      summary: Deregister an application's application Endpoint
-      description: Deregister an application's application
+      summary: Deregister an application Endpoint
+      description: |
+        Deregister an application's
         Endpoint from the edge cloud zone.
+      operationId: deregisterApplicationEndpoint
+      responses:
+        "200":
+          description: Deregister Application Endpoint
+          headers:
+            x-correlator:
+              $ref: '#/components/headers/x-correlator'
+        "400":
+          $ref: "#/components/responses/Generic400"
+        "401":
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
+        "404":
+          $ref: "#/components/responses/Generic404"
+        "422":
+          $ref: "#/components/responses/Generic422"
+        "500":
+          $ref: "#/components/responses/Generic500"
+        "503":
+          $ref: "#/components/responses/Generic503"
+        "504":
+          $ref: "#/components/responses/Generic504"
+
 components:
   securitySchemes:
     openId:
       description: OpenID Provider Configuration Information
       type: openIdConnect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
+  parameters:
+    x-correlator:
+      name: x-correlator
+      in: header
+      description: Correlation id for the different services
+      schema:
+        type: string
   headers:
     x-correlator:
       description: Correlation id for the different services
@@ -171,28 +333,22 @@ components:
         type: string
 
   schemas:
-    ApplicationInstance:
+    ApplicationEndpointRequest:
       description: Application instance represented
-        by application Endpoint definition
+        by the application Endpoint definition
       type: object
       properties:
-        applicationEndpointsId:
-          $ref: "#/components/schemas/TypesApplicationEndpointsId"
         applicationEndpoint:
-          $ref: "#/components/schemas/ResourcesapplicationEndpoint"
+          $ref: "#/components/schemas/ResourcesApplicationEndpoint"
         applicationServerProviderName:
           type: string
           description: Unique ID representing the Edge
             Application Provider
-        applicationId:
-          type: string
-          description: Unique ID representing the Edge Application
         applicationDescription:
           type: string
           description: Description of the application Endpoint
-          additionalProperties: false
         applicationProfileId:
-          $ref: "#/components/schemas/TypesApplicationProfileId"
+          $ref: "#/components/schemas/ApplicationProfileId"
         edgeCloudZoneId:
           $ref: "#/components/schemas/EdgeCloudZoneId"
         edgeCloudZoneName:
@@ -201,9 +357,32 @@ components:
           $ref: "#/components/schemas/EdgeCloudProvider"
         edgeCloudRegionId:
           $ref: "#/components/schemas/EdgeCloudRegionName"
-    ResourcesapplicationEndpoint:
+      required:
+        - applicationEndpoint
+        - applicationServerProviderName
+        - applicationProfileId
+        - edgeCloudZoneId
+        - edgeCloudZoneName
+        - edgeCloudProvider
+        - edgeCloudRegionId
+      additionalProperties: false
+    ApplicationEndpoints:
+      description: |
+        List of Application endpoints information
+        deployed across various cloud zones.
+      properties:
+        applicationEndpointsId:
+          $ref: "#/components/schemas/ApplicationEndpointsId"
+        applicationInstance:
+          description: |
+            Application Endpoint Information
+          type: array
+          items:
+            $ref: "#/components/schemas/ApplicationEndpointRequest"
+          minItems: 0
+    ResourcesApplicationEndpoint:
       type: object
-      description: applicationEndpoint//added desc
+      description: Resources of the Application Endpoint
       properties:
         uri:
           type: string
@@ -216,15 +395,27 @@ components:
           type: string
           description: IPv4 Address of application Endpoint if available
           format: ipv4
+          example: "203.0.113.10"
         ipv6Address:
           type: string
           description: IPv6 Address of application Endpoint if available
           format: ipv6
+          example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
         port:
           type: integer
           description: |
             Port information of application Endpoint
             if IPv4 or IPv6 is mentioned
+      anyOf:
+        - required: [fqdn, ipv4Address, port, uri]
+        - required: [fqdn, ipv6Address, port, uri]
+      example:
+        {
+          "ipv4Address": "203.0.113.0",
+          "port": 59765,
+          "fqdn": "app.test.com",
+          "uri": "http://aap.test.com/v1/test"
+        }
       additionalProperties: false
     EdgeCloudZoneId:
       description: |
@@ -245,7 +436,7 @@ components:
       description: |
         region of the Edge Cloud Zone.
       type: string
-    TypesApplicationEndpointsId:
+    ApplicationEndpointsId:
       description: |
         A system-defined string identifier representing
         one or more registered Application Endpoints.
@@ -253,25 +444,15 @@ components:
       format: uuid
       readOnly: true
       additionalProperties: false
-    TypesApplicationProfileId:
+    ApplicationProfileId:
       description: |
         Unique identifier for a Application Profile
       type: string
       readOnly: false
       additionalProperties: false
-    TypesError:
-      type: object
-      description: types Error//added desc
-      properties:
-        code:
-          type: string
-          description: code //added desc
-        message:
-          type: string
-          description: message //added desc
     ErrorInfo:
+      description: Common schema for errors
       type: object
-      description: Error information
       required:
         - status
         - code
@@ -286,107 +467,145 @@ components:
         message:
           type: string
           description: Detailed error description
-
   responses:
-    NoContent:
-      description: HTTP 204 No Content
-    BadRequest:
-      description: HTTP 400 Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/TypesError"
-    NotFound:
-      description: HTTP 404 The specified resource was not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/TypesError"
-    Unauthorized:
-      description: HTTP 401 Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/TypesError"
-    Unexpected:
-      description: HTTP 500 Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/TypesError"
     Generic400:
-      description: Invalid argument
+      description: Bad Request
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorInfo"
-          example:
-            status: 400
-            code: INVALID_ARGUMENT
-            message: "Invalid argument"
-
+          examples:
+            GENERIC_400_INVALID_ARGUMENT:
+              description: Invalid Argument. Generic Syntax Exception
+              value:
+                status: 400
+                code: INVALID_ARGUMENT
+                message: Client specified an invalid argument, request body or query param.
     Generic401:
-      description: Unauthenticated
+      description: Unauthorized
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorInfo"
-          example:
-            status: 401
-            code: UNAUTHENTICATED
-            message: "Authorization failed: ..."
-
+          examples:
+            GENERIC_401_UNAUTHENTICATED:
+              description: Request cannot be authenticated
+              value:
+                status: 401
+                code: UNAUTHENTICATED
+                message: Request not authenticated due to missing, invalid, or expired credentials.
     Generic403:
-      description: Permission denied
+      description: Forbidden
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorInfo"
-          example:
-            status: 403
-            code: PERMISSION_DENIED
-            message: "Operation not allowed: ..."
-
+            $ref: '#/components/schemas/ErrorInfo'
+          examples:
+            GENERIC_403_PERMISSION_DENIED:
+              description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
+              value:
+                status: 403
+                code: PERMISSION_DENIED
+                message: Client does not have sufficient permissions to perform this action.
+            GENERIC_403_INVALID_TOKEN_CONTEXT:
+              description: Reflect some inconsistency between information in some field of the API and the related OAuth2 Token
+              value:
+                status: 403
+                code: INVALID_TOKEN_CONTEXT
+                message: applicationProfileId is not consistent with access token
     Generic404:
       description: Not found
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorInfo"
-          example:
-            status: 404
-            code: NOT_FOUND
-            message: "The specified resource is not found"
-
-    Generic409:
-      description: Conflict
+          examples:
+            GENERIC_404_NOT_FOUND:
+              description: Resource is not found
+              value:
+                status: 404
+                code: NOT_FOUND
+                message: The specified resource is not found.
+    Generic422:
+      description: Unprocessable Content
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorInfo"
-          example:
-            status: 409
-            code: Conflict
-            message: "There is conflict in the request"
-
+          examples:
+            GENERIC_422_NOT_SUPPORTED:
+              description: Not Supported
+              value:
+                status: 422
+                code: NOT_SUPPORTED
+                message: Service not supported for this applicationProfileId
+            UNIDENTIFIABLE_APPLICATION_PROFILE:
+              description: The Application Profile is not included in the request and the profile information cannot be derived from the 3-legged access token
+              value:
+                status: 422
+                code: UNIDENTIFIABLE_APPLICATION_PROFILE
+                message: The Application Profile cannot be identified
     Generic500:
-      description: Internal server error
+      description: Internal Server Error
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorInfo"
-          example:
-            status: 500
-            code: INTERNAL
-            message: "Internal server error"
-
+          examples:
+            GENERIC_500_INTERNAL:
+              description: Problem in Server side. Regular Server Exception
+              value:
+                status: 500
+                code: INTERNAL
+                message: Unknown server error. Typically a server bug.
     Generic503:
-      description: application unavailable
+      description: Service Unavailable
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorInfo"
-          example:
-            status: 503
-            code: UNAVAILABLE
-            message: "application unavailable"
+          examples:
+            GENERIC_503_UNAVAILABLE:
+              description: Service is not available.
+                Temporary situation usually related to maintenance process in the server side
+              value:
+                status: 503
+                code: UNAVAILABLE
+                message: Service Unavailable.
+    Generic504:
+      description: Gateway Timeout
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_504_TIMEOUT:
+              description: API Server Timeout
+              value:
+                status: 504
+                code: TIMEOUT
+                message: Request timeout exceeded.
