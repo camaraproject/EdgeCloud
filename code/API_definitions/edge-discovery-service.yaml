@@ -13,29 +13,30 @@ info:
     ---
     The Edge Discovery API is designed to help users discover the most optimal
     edge cloud zones for their applications. This API allows users to find the
-    best regions and zones for their edge cloud applications, discover optimal
-    edge cloud zones for deployed applications, and find the best application
+    optimal regions and zones for their edge cloud applications, discover optimal
+    edge cloud zones for deployed applications, and find the optimal application
     endpoints for clients to connect to.
 
     ## Features
     - Discover regions and zones to deploy edge cloud applications.
-    - Discover optimal application endpoints for client connections for deployed applications.
+    - Discover optimal application endpoints for client connections for 
+      deployed applications.
 
     ## Usage
     Users can utilize this API to enhance the performance and connectivity of
     their applications by selecting the most suitable edge cloud zones and
     application endpoints.
 
-    ## Use Cases
-    - **Edge Cloud Zone Discovery**: A developer wants to find the best edge cloud zones to deploy their application to minimize latency for users in a specific region.
-    - **Application Endpoint Discovery**: A client application needs to find the optimal endpoints to connect to for the best performance and reliability.
-    
-    # API Scope
-    
-    The APIs defined in this version of the specification are categorized into
-    the following areas:
-    - Edge Cloud Zone Discovery
-    - Application Endpoint Discovery
+    These APIs may be called either by an application client hosted on a device 
+    attached to the operator network (i.e. phone, tablet) for following scenarios:
+
+    - **Edge Cloud Zone Discovery**: A developer wants to find the optimal edge cloud 
+        zones to deploy their application to minimize latency for users in a specific 
+        region. This can be achieved using the `GET /edge-cloud-zones` API.
+
+    - **Application Endpoint Discovery**: A client application needs to find the 
+        optimal endpoints to connect to for the optimal performance and reliability.
+        This can be achieved using the `POST /application-endpoints` API.
     
     # Identifying the device
 
