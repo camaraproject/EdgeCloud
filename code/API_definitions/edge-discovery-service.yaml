@@ -11,30 +11,33 @@ info:
   description: |
     # Introduction
     ---
-    The Edge Discovery API allows users to find the
-    optimal edge cloud zones for their edge cloud applications and 
-    find the optimal application endpoints for app clients to connect to.
+    The Edge Discovery API is designed to help users discover the most optimal
+    edge cloud zones for their applications. This API allows users to find the
+    optimal regions and zones for their edge cloud applications, discover optimal
+    edge cloud zones for deployed applications, and find the optimal application
+    endpoints for clients to connect to.
 
     ## Features
-    - Discover optimal edge cloud zones for edge cloud applications.
+    - Discover regions and zones to deploy edge cloud applications.
     - Discover optimal application endpoints for client connections for 
       deployed applications.
 
     ## Usage
-    Users can utilize this API to select the most suitable edge cloud zones and
+    Users can utilize this API to enhance the performance and connectivity of
+    their applications by selecting the most suitable edge cloud zones and
     application endpoints.
 
     These APIs may be called either by an application client hosted on a device 
     attached to the operator network (i.e. phone, tablet) for following scenarios:
 
-    - **Edge Cloud Zone Discovery**: To find the optimal edge cloud 
-        zones to deploy application to minimize latency for users in a specific 
+    - **Edge Cloud Zone Discovery**: A developer wants to find the optimal edge cloud 
+        zones to deploy their application to minimize latency for users in a specific 
         region. This can be achieved using the `GET /edge-cloud-zones` API.
 
     - **Application Endpoint Discovery**: A client application needs to find the 
         optimal endpoints to connect to for the optimal performance and reliability.
         This can be achieved using the `POST /application-endpoints` API.
-    
+  
     # Identifying the device
 
     The API returns the closest Edge Cloud Zone to a given device, so that
@@ -240,16 +243,18 @@ tags:
       Get all Region IDs and Names for edge cloud zones
   - name: Discovery
     description: |
-      Discover the regions and edge cloud zones applications, and optimal
+      Discover the regions and zones in the edge cloud
+      application, find optimal edge cloud zones for
+      your deployed applications, and optimal
       Application Endpoints for your clients to connect to.
 ############################################################################
 #                                     Paths                                #
 ############################################################################
 paths:
-  /edge-cloud-regions:
+  /regions:
     get:
-      summary: Get all Edge Cloud Region IDs and Names
-      operationId: get-region-ids-and-names
+      summary: Fetch all Regions 
+      operationId: get-regions
       parameters:
         - name: x-correlator
           in: header
@@ -269,27 +274,19 @@ paths:
             application/json:
               schema:
                 title: GetEdgeCloudRegionsResponse
-                type: object
-                properties:
-                  edgeCloudRegions:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/ResourcesEdgeCloudZones"
+                type: array
+                items:
+                      $ref: "#/components/schemas/EdgeCloudRegions"
         '500':
           description: Internal server error
       tags:
         - Regions
       description: |
-        Returns a list of all Edge Cloud Regions with their IDs and names.
-        This information can be used to identify the regions where edge cloud zones are available.
+        This is a helper API to get all the regions. The response identifies the regions where edge cloud zones are available.
   /edge-cloud-zones:
       post:
         operationId: get-edgeCloudZone
         parameters:
-          - name: applicationProfileId
-            in: query
-            schema:
-             $ref: "#/components/parameters/applicationProfileId"
           - name: x-correlator
             in: header
             schema:
@@ -318,7 +315,10 @@ paths:
             content:
               application/json:
                 schema:
-                 $ref: "#/components/schemas/ResourcesEdgeCloudZones"
+                  title: EdgeCloudZonesResponse
+                  type: array
+                  items:
+                        $ref: "#/components/schemas/ResourcesEdgeCloudZones"
           "400":
            description: |
             Client eror - the required querystring was not provided
@@ -394,7 +394,10 @@ paths:
             content:
               application/json:
                 schema:
-                  $ref: "#/components/schemas/EdgeHostedapplication"
+                  title: EdgeHostedApplicationEndpoints
+                  type: array
+                  items:
+                        $ref: "#/components/schemas/EdgeHostedapplication"
           "400":
            description: |
             Client eror - the required querystring was not provided
@@ -525,8 +528,8 @@ components:
           $ref: "#/components/schemas/EdgeCloudZoneName"
         edgeCloudProvider:
           $ref: "#/components/schemas/EdgeCloudProvider"
-        edgeCloudRegionId:
-          $ref: "#/components/schemas/EdgeCloudRegionName"
+        edgeCloudRegion:
+          $ref: "#/components/schemas/EdgeCloudRegion"
     ResourcesapplicationEndpoint:
       type: object
       description: Information about the application endpoint, including URI, FQDN, IP addresses, and port.
@@ -564,8 +567,8 @@ components:
           $ref: "#/components/schemas/EdgeCloudZoneName"
         edgeCloudProvider:
           $ref: "#/components/schemas/EdgeCloudProvider"
-        edgeCloudRegionId:
-          $ref: "#/components/schemas/EdgeCloudRegionName"
+        edgeCloudRegion:
+          $ref: "#/components/schemas/EdgeCloudRegion"
         status:
           description: Status of the Edge cloud zone (default is 'unknown')
           type: string
@@ -580,10 +583,7 @@ components:
       type: object
       description: A region with its ID and name
       properties:
-        edgeCloudRegionId:
-          type: string
-          description: The ID of the region
-        edgeCloudRegionName:
+        edgeCloudRegion:
           type: string
           description: The name of the region
 
@@ -611,7 +611,7 @@ components:
         The company name of the Edge Cloud Zone provider.
       type: string
 
-    EdgeCloudRegionName:
+    EdgeCloudRegion:
       description: |
         The common name of the closest Edge Cloud Zone to the user device.  
       type: string
@@ -641,8 +641,6 @@ components:
         one or more registered Application Endpoints.
       type: string
       format: uuid
-      readOnly: true
-      additionalProperties: false
 
     Device:
       description: |
@@ -672,8 +670,11 @@ components:
         
         applicationProfileId:
           $ref: "#/components/schemas/ApplicationProfileId"
+        edgeCloudRegion:
+          $ref: "#/components/schemas/EdgeCloudRegion"
       required:
         - applicationProfileId
+
         
     EdgeApplicationEndpointsDevice:
       description: |
@@ -701,15 +702,13 @@ components:
             ipv6Address:
              $ref: "#/components/schemas/DeviceIpv6Address"
         
-        applicationEndpointsIds:
-          type: array
-          items:
+        applicationEndpointsId:
             $ref: "#/components/schemas/ApplicationEndpointsId"
-        edgeCloudRegionName:
-          $ref: "#/components/schemas/EdgeCloudRegionName"
+        edgeCloudRegion:
+          $ref: "#/components/schemas/EdgeCloudRegion"
 
       required:
-        - applicationEndpointsIds
+        - applicationEndpointsId
 
     PhoneNumber:
       description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, prefixed with '+'.
@@ -782,38 +781,7 @@ components:
         - links
       additionalProperties: false
 
-  ######################################################
-  #  PARAMETERS
-  #######################################################
-  parameters:
-    applicationProfileId:
-      name: applicationProfileId
-      description: Application Profile identifier
-      in: query
-      required: false
-      schema:
-        type: string
-    region:
-      name: region
-      description: Edge Cloud region ID
-      in: query
-      required: false
-      schema:
-        type: string
-    applicationEndpointsId:
-      name: applicationEndpointsIds
-      description: applicationEndpointsId is a pointer
-        to the Application Endpoints (IP address,
-        FQDN etc.) previously registered for a
-        given application.
-      in: query
-      required: true
-      schema:
-        type: array
-        items:
-          $ref: "#/components/schemas/ApplicationEndpointsId"
-      style: pipeDelimited
-      explode: false
+
 
   ######################################################
   #  RESPONSES
