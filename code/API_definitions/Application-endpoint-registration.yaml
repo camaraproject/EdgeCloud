@@ -10,7 +10,7 @@ info:
 
     # Introduction
 
-    The API registers the Edge Application Endpoint.
+    The API registers the Edge Application Endpoints.
     This information can be used for various use cases like optimal endpoint
     discovery to help end users connect to the most optimal instance of the
     application which is distributed across various Edge Cloud Zones.
