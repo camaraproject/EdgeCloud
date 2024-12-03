@@ -900,7 +900,7 @@ components:
           description: Event details payload described in each CAMARA
             API and referenced by its type
           allOf:
-          - $ref: '#/components/schemas/TrafficInfluenceNotification'
+            - $ref: '#/components/schemas/TrafficInfluenceNotification'
         time:
           $ref: "#/components/schemas/DateTime"
     NotificationSink:
