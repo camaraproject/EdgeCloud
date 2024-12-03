@@ -293,11 +293,12 @@ info:
     \
     **Notification:**
     Developers can specify a callback URL on which notifications
-    regarding the requested intent can be received. For example to be notified
-    when the requested optimal routing is active. It is also provided back
-    the identificator for the selected EAS instace ("selected_appInstanceId")
-    from which the Client Application can retrive the destination IP address
-    of its backend server, to properly configure the service data flow. This
+    regarding the requested intent can be received. The notification will be
+    sent as a CloudEvent compliant message. For example to be notified when the
+    requested optimal routing is active. It is also provided back the
+    identificator for the selected EAS instace ("selected_appInstanceId")
+    from which the Client Application can retrive the destination IP address of
+    its backend server, to properly configure the service data flow. This
     information can be retrived using the CAMARA API: [Edge
     Application Management](https://github.com/camaraproject/EdgeCloud/blob\
     /main/code/API_definitions/Edge-Application-Management.yaml).
@@ -681,6 +682,11 @@ components:
               to the TrafficInfluence resource
             'traffic-influence:traffic-influences:update': Grants update
               access to the TrafficInfluence resource
+    notificationsBearerAuth:
+      description: Bearer authentication for notifications
+      type: http
+      scheme: bearer
+      bearerFormat: "{$request.body#sinkCredential.credentialType}"
   parameters:
     x-correlator:
       name: x-correlator
@@ -698,9 +704,8 @@ components:
   #########################################################################
   callbacks:
     onTrafficInfluenceChanged:
-      # when data is sent, it will be sent to the `callbackUrl` provided
-      # when making the subscription PLUS the suffix `/event`
-      '{$request.body.notificationUri}/event':
+      # when data is sent, it will be sent to the callback url provided
+      '{$request.body.notificationSink.sink}':
         post:
           tags:
             - Traffic Influence CALLBACK Operation
@@ -709,16 +714,18 @@ components:
           description: Creating, modifying or delating a Traffic Influece
            resourece is an asycronous task. For this reason a notification
            channel via callback to a specified URL is provided.
-          operationId: postTrafficInfluence
+          operationId: trafficInfluenceCloudEvent
           parameters:
             - $ref: '#/components/parameters/x-correlator'
+          security:
+          - notificationsBearerAuth: []
           requestBody:
             description: subscription payload which contains the updated
              traffic influence instance
             content:
-              application/json:
+              application/cloudevents+json:
                 schema:
-                  $ref: '#/components/schemas/TrafficInfluenceNotification'
+                  $ref: '#/components/schemas/CloudEvent'
           responses:
             '202':
               description: Your server implementation should return this HTTP
@@ -820,6 +827,8 @@ components:
           readOnly: true
         state:
           readOnly: true
+        notificationSink:
+          $ref: '#/components/schemas/NotificationSink'
     PostTrafficInfluenceDevice:
       description: iherits from TrafficInfluence restricting the access
         (readonly) to "trafficInfluenceID" and "state", to be used by the API
@@ -833,6 +842,8 @@ components:
           readOnly: true
         state:
           readOnly: true
+        notificationSink:
+          $ref: '#/components/schemas/NotificationSink'
     PatchTrafficInfluence:
       description: inherits from TrafficInfluence and restricts the access to
        certain parameters.
@@ -848,6 +859,75 @@ components:
           readOnly: true
         state:
           readOnly: true
+        notificationSink:
+          $ref: '#/components/schemas/NotificationSink'
+    CloudEvent:
+      description: The notification callback
+      required:
+        - id
+        - source
+        - specversion
+        - type
+        - time
+      properties:
+        id:
+          type: string
+          description: identifier of this event, that must be unique in the source context.
+          minLength: 1
+        source:
+          $ref: '#/components/schemas/Source'
+        type:
+          type: string
+          description: 'type of event as defined in each CAMARA API'
+          example: 'org.camaraproject.iot.dta-status-changed-event'
+          minLength: 25
+        specversion:
+          type: string
+          description: Version of the specification to which this event conforms (must be 1.0 if it conforms to cloudevents 1.0.2 version)
+          enum:
+            - "1.0"
+        datacontenttype:
+          type: string
+          description: 'media-type that describes the event payload encoding, must be "application/json" for CAMARA APIs'
+          enum:
+            - application/json
+        data:
+          type: object
+          description: Event details payload described in each CAMARA API and referenced by its type
+          allOf:
+          - $ref: '#/components/schemas/TrafficInfluenceNotification'
+        time:
+          $ref: "#/components/schemas/DateTime"
+    NotificationSink:
+      description: ""
+      type: object
+      required:
+        - sink
+      properties:
+        sink:
+          description: 'https callback address where the notification must be POST-ed'
+          type: string
+        sinkCredentials:
+          description: Sink credential provides authorization information necessary to enable delivery of events to a target
+          type: object
+          properties:
+            credentialtype:
+              type: string
+              description: Type of the credential - MUST be set to ACCESSTOKEN for now
+              enum:
+                - "ACCESSTOKEN"
+            accessToken:
+              type: string
+              description: Access Token granting access to the POST operation to create notification
+            accessTokenExpireUtc:
+              type: string
+              format: date-time
+              description: An absolute UTC instant at which the access token shall be considered expired.
+            accessTokenType:
+              type: string
+              description: Type of access token - MUST be set to bearer for now
+              enum:
+                - "bearer"
     TrafficInfluenceNotification:
       type: object
       description: Notifican channel for changes in the TrafficInfluence
@@ -859,6 +939,28 @@ components:
       properties:
         selected_appInstanceId:
           $ref: '#/components/schemas/AppInstanceId'
+    DateTime:
+      type: string
+      format: date-time
+      description: |
+        Timestamp of when the occurrence happened. Must adhere to RFC 3339. 
+        WARN: This optional field in CloudEvents specification is required in CAMARA APIs implementation.
+      example: '2018-04-05T17:31:00Z'
+    Source:
+      type: string
+      format: uri-reference
+      minLength: 1
+      description: |
+        Identifies the context in which an event happened - be a non-empty `URI-reference` like:
+        - URI with a DNS authority:
+          * https://github.com/cloudevents
+          * mailto:cncf-wg-serverless@lists.cncf.io
+        - Universally-unique URN with a UUID:
+          * urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66
+        - Application-specific identifier:
+          * /cloudevents/spec/pull/123
+          * 1-555-123-4567
+      example: "https://notificationSendServer12.supertelco.com"
     ########################################################################
     #                                     Types                            #
     ########################################################################
