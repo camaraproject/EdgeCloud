@@ -718,7 +718,7 @@ components:
           parameters:
             - $ref: '#/components/parameters/x-correlator'
           security:
-          - notificationsBearerAuth: []
+            - notificationsBearerAuth: []
           requestBody:
             description: subscription payload which contains the updated
              traffic influence instance
@@ -872,7 +872,8 @@ components:
       properties:
         id:
           type: string
-          description: identifier of this event, that must be unique in the source context.
+          description: identifier of this event, that must be unique in the
+            source context.
           minLength: 1
         source:
           $ref: '#/components/schemas/Source'
@@ -883,17 +884,21 @@ components:
           minLength: 25
         specversion:
           type: string
-          description: Version of the specification to which this event conforms (must be 1.0 if it conforms to cloudevents 1.0.2 version)
+          description: Version of the specification to which this event
+            conforms (must be 1.0 if it conforms to cloudevents 1.0.2
+            version)
           enum:
             - "1.0"
         datacontenttype:
           type: string
-          description: 'media-type that describes the event payload encoding, must be "application/json" for CAMARA APIs'
+          description: 'media-type that describes the event payload
+          encoding, must be "application/json" for CAMARA APIs'
           enum:
             - application/json
         data:
           type: object
-          description: Event details payload described in each CAMARA API and referenced by its type
+          description: Event details payload described in each CAMARA
+            API and referenced by its type
           allOf:
           - $ref: '#/components/schemas/TrafficInfluenceNotification'
         time:
@@ -905,27 +910,33 @@ components:
         - sink
       properties:
         sink:
-          description: 'https callback address where the notification must be POST-ed'
+          description: 'https callback address where the notification
+            must be POST-ed'
           type: string
         sinkCredentials:
-          description: Sink credential provides authorization information necessary to enable delivery of events to a target
+          description: Sink credential provides authorization information
+            necessary to enable delivery of events to a target
           type: object
           properties:
             credentialtype:
               type: string
-              description: Type of the credential - MUST be set to ACCESSTOKEN for now
+              description: Type of the credential - MUST be set to
+                ACCESSTOKEN for now
               enum:
                 - "ACCESSTOKEN"
             accessToken:
               type: string
-              description: Access Token granting access to the POST operation to create notification
+              description: Access Token granting access to the POST
+                operation to create notification
             accessTokenExpireUtc:
               type: string
               format: date-time
-              description: An absolute UTC instant at which the access token shall be considered expired.
+              description: An absolute UTC instant at which the access
+                token shall be considered expired.
             accessTokenType:
               type: string
-              description: Type of access token - MUST be set to bearer for now
+              description: Type of access token - MUST be set to bearer
+                for now
               enum:
                 - "bearer"
     TrafficInfluenceNotification:
@@ -943,15 +954,17 @@ components:
       type: string
       format: date-time
       description: |
-        Timestamp of when the occurrence happened. Must adhere to RFC 3339. 
-        WARN: This optional field in CloudEvents specification is required in CAMARA APIs implementation.
+        Timestamp of when the occurrence happened. Must adhere to RFC 3339.
+        WARN: This optional field in CloudEvents specification is required
+        in CAMARA APIs implementation.
       example: '2018-04-05T17:31:00Z'
     Source:
       type: string
       format: uri-reference
       minLength: 1
       description: |
-        Identifies the context in which an event happened - be a non-empty `URI-reference` like:
+        Identifies the context in which an event happened - be a non-empty
+        `URI-reference` like:
         - URI with a DNS authority:
           * https://github.com/cloudevents
           * mailto:cncf-wg-serverless@lists.cncf.io
