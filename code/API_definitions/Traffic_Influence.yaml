@@ -619,24 +619,15 @@ paths:
         - Traffic Influence API write
       summary: Delete an existing TrafficInfluence resource
       description: invoked by the API Consumer to stop influencing the traffic,
-       deleting a TrafficInfluence resource previously created.
+       deleting a TrafficInfluence resource previously created. The notification
+       will be sent via Cloud Event with the information already available in
+       the TrafficInfluence resource identified by "trafficInfluenceID".
       operationId: deleteTrafficInfluence
       security:
         - oAuth2:
             - 'traffic-influence:traffic-influences:delete'
       parameters:
         - $ref: '#/components/parameters/x-correlator'
-        - name: callbackUrl
-          in: query
-          required: false
-          description: |
-            the location where updated data will be sent.  Must be network
-            accessible
-            by the source server
-          schema:
-            type: string
-            format: uri
-            example: https://my-notification-server.com
       responses:
         '202':
           $ref: '#/components/responses/OkDeletionInProgress'
