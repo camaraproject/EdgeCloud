@@ -23,7 +23,7 @@ info:
     network path is shorter. A network operator's EdgeCloud may comprise
     multiple Edge Cloud Zones, each in a discrete location to bring latency
     benefits to end users across a country.\
-    The operator can help developers know which of the Edge Cloud Zones will
+    The operator can help developers knowing which of the Edge Cloud Zones will
     bring the optimal performance for a given end user and application\.
     The Traffic Influence API (TI API) provides the optimal routing from the
     user Device (e.g. a Smartphone) to the optimal EAS instance in a specific
@@ -48,9 +48,10 @@ info:
     Device moves in a different geographical location where a more suitable EAS
     instance is available, the TI API can be invoked again to influence the
     Device connectivity to get the optimal routing also in the new location.
-    It is important to notice that it is a task of the TI API Consumer to
-    detect the changes in the Device location and to invoke the TI API
-    consequently.\
+    It is important to notice that the  service data flow is not automatically
+    optimised when the user moves in a specific area, it is a task of the TI API
+    Consumer to detect the changes in the Device location and to invoke the
+    TI API consequently.\
     The generic architecture for the Service can foresee some Cloud instances of
     the Application, one or more Edge Instances of the Application. The TI API
     Consumer invokes the TI API creating a "TrafficInfluence" resource
@@ -63,21 +64,24 @@ info:
     port and protocol. Invoking the TI API for each user, many
     "TrafficInfluence" resources are created for each user to provide the
     requested routing for a set of users. If the TI API is invoked to provide
-    the optimal routing for an application, for any user in a specific
-    geographical area, for example, and then the TI API is invoked, for the same
-    application, in the same geographical area but just for certain users (one
-    API call for each user), then just the traffic flow those selected users
-    will be optimised.\
-    The same approach is used for the geographical locations where the influence
+    the optimal routing for any user and later it is required to provide the
+    optimal access only for selected users, the previous intent/resource must
+    be deleted.\
+    The same approach is used for the geographical areas where the influence
     of the traffic must be applied. Invoking the TI API without specifying a
     geographical area, activates the optimal routing toward the closest EAS
-    instance. Invoking the TI API specifying a geographical area activates
-    the optimal routing only if the user is in that geographical area. The flow
-    is optimised to reach the EAS instance located closest to that geographical
-    area. In a different geographical area the user will not have the traffic
-    flow optimised.\
+    instance in any geographical location. This intent must be deleted if it is
+    required to provide the optimal access only in selected areas. Invoking the
+    TI API specifying a geographical area activates the optimal routing only if
+    the user is in that geographical area. The flow is optimised to reach the
+    EAS instance located closest to that geographical area. In a different
+    geographical area the user will not have the traffic flow optimised.\
     To activate the optimal routing in selected geographical areas, the TI API
-    must be invoked for each geographical area.\
+    must be invoked for each geographical area.\ Anyway it is importat to
+    understand that the traffic optimization strongly depends on the user's
+    geographical location so it is important for the TI API Consumer to always
+    verify the position of the user invoking the TI API for that user if it
+    moves changing its location.
     The API API can also be used to optimise a specific traffic flow identified
     by a source port and a destination port and protocol. To optimise the flow
     from more source ports or destination ports or protocols, the TI API must be
@@ -131,22 +135,49 @@ info:
     a TI API invocation is required. The optimal routing is provided only for
     the requested Devices.
     ## Authentication and Authorization
-    CAMARA guidelines defines a set of authorization flows which can grant API
-    clients access to the API functionality, as outlined in the document
-    [CAMARA-API-access-and-user-consent.md](https:\
-    //github.com/camaraproject/IdentityAndConsentManagement/blob/main/\
-    documentation/CAMARA-API-access-and-user-consent.md).
+    The "Camara Security and Interoperability Profile" provides details on how
+    a client requests an access token. Please refer to Identify and Consent
+    Management (https://github.com/camaraproject/IdentityAndConsentManagement/)
+    for the released version of the Profile.\
+    \
     Which specific authorization flows are to be used will be determined during
     onboarding process, happening between the API Client and the Telco Operator
     exposing the API, taking into account the declared purpose for accessing the
     API, while also being subject to the prevailing legal framework dictated by
     local legislation.\
+    \
     It is important to remark that in cases where personal user data is
     processed by the API, and users can exercise their rights through mechanisms
     such as opt-in and/or opt-out, the use of 3-legged access tokens becomes
     mandatory. This measure ensures that the API remains in strict compliance
     with user privacy preferences and regulatory obligations, upholding the
-    principles of transparency and user-centric data control.
+    principles of transparency and user-centric data control.\
+    \
+    Note that endpoints not exchanging sensitive data use OAuth2 with Client
+    Credential while endpoint exchanging sensitive data use OpenId Connect.
+    # Identifying the phone number from the access token
+    This specification defines the "phoneNumber" field as optional in API
+    requests because using a 3-legged access token the phone number can be
+    uniquely identified by the token.
+    ## Handling of phone number information:
+    ### Optional phone number object for 3-legged tokens:
+    When using a 3-legged access token, the phone number associated with the
+    access token must be considered as the phone number for the API request.
+    This means that the "phoneNumber" paramenter is not required in the request,
+    and if it is included it must identify the same phone number.
+    ### Validation mechanism:
+    - The server will extract the phone number identification from the access
+    token, if available.
+    - If the API request additionally includes a "phoneNumber" parameter when
+    using a 3-legged access token, the API will validate that the phone number
+    identifier provided matches the one associated with the access token.
+    - If there is a mismatch, the API will respond with a
+    403 `INVALID_TOKEN_CONTEXT` error, indicating that the device information
+    in the request does not match the token.
+    ### Error handling for unidentifiable devices:
+    - If the "phoneNumber" parameter is not included in the request and the
+    phone number information cannot be derived from the 3-legged access token,
+    the server will return a 422 `UNIDENTIFIABLE_DEVICE` error.
     ## API Documentation
     ## Details
     The usage of the TI API is based on the management of a "TrafficInfluence"
@@ -257,15 +288,17 @@ info:
     Devices. "publicPort" can be used to identify the device. "publicPort" can
     be also used to identify the flow to be influenced. If the flow to be
     influenced is from a different public port, "sourceTrafficFilters" can be
-    used.\
+    used. Note: if phone number is used, the value of this optional parameter
+    must match the value of the phone number retrieved from the access token.\
     \
     **Notification:**
     Developers can specify a callback URL on which notifications
-    regarding the requested intent can be received. For example to be notified
-    when the requested optimal routing is active. It is also provided back
-    the identificator for the selected EAS instace ("selected_appInstanceId")
-    from which the Client Application can retrive the destination IP address
-    of its backend server, to properly configure the service data flow. This
+    regarding the requested intent can be received. The notification will be
+    sent as a CloudEvent compliant message. For example to be notified when the
+    requested optimal routing is active. It is also provided back the
+    identificator for the selected EAS instace ("selected_appInstanceId")
+    from which the Client Application can retrive the destination IP address of
+    its backend server, to properly configure the service data flow. This
     information can be retrived using the CAMARA API: [Edge
     Application Management](https://github.com/camaraproject/EdgeCloud/blob\
     /main/code/API_definitions/Edge-Application-Management.yaml).
@@ -304,7 +337,7 @@ paths:
   /traffic-influences:
     get:
       security:
-        - openId:
+        - oAuth2:
             - 'traffic-influence:traffic-influences:read'
       parameters:
         - $ref: '#/components/parameters/x-correlator'
@@ -313,7 +346,8 @@ paths:
           schema:
             $ref: "#/components/schemas/AppId"
           description: Used to select traffic influence resources filtered by
-           appId
+           appId. For privacy reasons, if a resource is related to a user, the
+           paramentr Device is not exchanged.
       tags:
         - Traffic Influence API read
       summary: Retries existing TrafficInfluence Resources
@@ -333,20 +367,29 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TrafficInfluence"
+        "400":
+          $ref: "#/components/responses/Generic400"
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
+        "409":
+          $ref: "#/components/responses/Generic409"
+        "415":
+          $ref: "#/components/responses/Generic415"
+        "429":
+          $ref: "#/components/responses/Generic429"
         '500':
-          $ref: "#/components/responses/GenericError"
+          $ref: '#/components/responses/GenericError'
         "503":
           $ref: "#/components/responses/Generic503"
         '504':
-          $ref: "#/components/responses/BackendConnTimeout"
+          $ref: '#/components/responses/BackendConnTimeout'
     post:
       tags:
         - Traffic Influence API write
-      summary: Creates a new TrafficInfluence resource
+      summary: Creates a new TrafficInfluence resource influencing the
+        traffic toward local instances of the Application for any user.
       description: Takes as input an object containing the intents from the API
         Consumer and creates a TrafficInfluence resourse accordingly. The
         trafficInfluenceID parameter, that is part of the object, must not be
@@ -358,7 +401,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/x-correlator'
       security:
-        - openId:
+        - oAuth2:
             - 'traffic-influence:traffic-influences:write'
       requestBody:
         description: Describes the request body
@@ -367,6 +410,70 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PostTrafficInfluence'
+      responses:
+        '201':
+          description: TrafficInfluence resource created, the related object is
+           returned with the resource ID (trafficInfluenceID) and status (state)
+           valorised.
+          headers:
+            x-correlator:
+              $ref: '#/components/headers/x-correlator'
+            Location:
+              description: Link to the created traffic influence resource
+              schema:
+                type: string
+                description: Link to the created traffic influence resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrafficInfluence'
+        "400":
+          $ref: "#/components/responses/Generic400"
+        "401":
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
+        "409":
+          $ref: "#/components/responses/Generic409"
+        "415":
+          $ref: "#/components/responses/Generic415"
+        "429":
+          $ref: "#/components/responses/Generic429"
+        '500':
+          $ref: '#/components/responses/GenericError'
+        "503":
+          $ref: "#/components/responses/Generic503"
+        '504':
+          $ref: '#/components/responses/BackendConnTimeout'
+      callbacks:
+        onTrafficInfluenceChanged:
+          $ref: "#/components/callbacks/onTrafficInfluenceChanged"
+  /traffic-influence-devices:
+    post:
+      tags:
+        - Traffic Influence API write
+      summary: Creates a new TrafficInfluence resource influencing the
+        traffic toward local instances of the Application for a specific user.
+      description: Takes as input an object containing the intents from the API
+        Consumer and creates a TrafficInfluence resourse accordingly. The
+        trafficInfluenceID parameter, that is part of the object, must not be
+        valorized when creating a new resource. For this reason the
+        trafficInfluenceID parameter must be avoided in the object, anyway it
+        will be ignored by the API Producer. It is automatically generated by
+        the system and returned in the response.
+      operationId: postTrafficInfluenceDevice
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+      security:
+        - openId:
+            - 'traffic-influence:traffic-influence-devices:write'
+      requestBody:
+        description: Describes the request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostTrafficInfluenceDevice'
       responses:
         '201':
           description: TrafficInfluence resource created, the related object is
@@ -415,12 +522,13 @@ paths:
       summary: Reads a specific TrafficInfluence resource identified by the
        trafficInfluenceID value.
       description: Returns a specific TrafficInfluence resources owned by the
-       same API Consumer.
+       same API Consumer. For privacy reasons, if a resource is related to a
+       user, the parameter Device is not exchanged.
       operationId: getAllTrafficInfluences
       parameters:
         - $ref: '#/components/parameters/x-correlator'
       security:
-        - openId:
+        - oAuth2:
             - 'traffic-influence:traffic-influences:read'
       responses:
         '200':
@@ -432,23 +540,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TrafficInfluence'
-        '404':
-          $ref: '#/components/responses/ResNotFound'
-        '500':
-          $ref: '#/components/responses/GenericError'
-        '504':
-          $ref: '#/components/responses/BackendConnTimeout'
+        "400":
+          $ref: "#/components/responses/Generic400"
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
+        '404':
+          $ref: '#/components/responses/ResNotFound'
+        '500':
+          $ref: '#/components/responses/GenericError'
         "503":
           $ref: "#/components/responses/Generic503"
+        '504':
+          $ref: '#/components/responses/BackendConnTimeout'
     patch:
       tags:
         - Traffic Influence API write
       summary: updates a specific TrafficInfluence resource, identified by the
-       trafficInfluenceID value.
+       trafficInfluenceID value. If used for a specific user, the Device
+       parameter can not be modified.
       description: The resource identified by the trafficInfluenceID value can
        be modified. Before the PATCH can be invoked the status (state) of the
        resource must be "active". If not an errore code 409 (DENIED_WAIT) is
@@ -457,7 +568,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/x-correlator'
       security:
-        - openId:
+        - oAuth2:
             - 'traffic-influence:traffic-influences:update'
       requestBody:
         description: Describes the request body
@@ -484,18 +595,22 @@ paths:
               $ref: '#/components/headers/x-correlator'
         "400":
           $ref: "#/components/responses/Generic400"
-        '404':
-          $ref: '#/components/responses/ResNotFound'
-        '500':
-          $ref: '#/components/responses/GenericError'
-        '504':
-          $ref: '#/components/responses/BackendConnTimeout'
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
+        "409":
+          $ref: "#/components/responses/Generic409"
+        "415":
+          $ref: "#/components/responses/Generic415"
+        "429":
+          $ref: "#/components/responses/Generic429"
+        '500':
+          $ref: '#/components/responses/GenericError'
         "503":
           $ref: "#/components/responses/Generic503"
+        '504':
+          $ref: '#/components/responses/BackendConnTimeout'
       callbacks:
         onTrafficInfluenceChanged:
           $ref: "#/components/callbacks/onTrafficInfluenceChanged"
@@ -504,37 +619,32 @@ paths:
         - Traffic Influence API write
       summary: Delete an existing TrafficInfluence resource
       description: invoked by the API Consumer to stop influencing the traffic,
-       deleting a TrafficInfluence resource previously created.
+       deleting a TrafficInfluence resource previously created. The notification
+       will be sent via Cloud Event with the information already available in
+       the TrafficInfluence resource identified by "trafficInfluenceID".
       operationId: deleteTrafficInfluence
       security:
-        - openId:
+        - oAuth2:
             - 'traffic-influence:traffic-influences:delete'
       parameters:
         - $ref: '#/components/parameters/x-correlator'
-        - name: callbackUrl
-          in: query
-          required: false
-          description: |
-            the location where updated data will be sent.  Must be network
-            accessible
-            by the source server
-          schema:
-            type: string
-            format: uri
-            example: https://my-notification-server.com
       responses:
         '202':
           $ref: '#/components/responses/OkDeletionInProgress'
-        '404':
-          $ref: '#/components/responses/ResNotFound'
-        '504':
-          $ref: '#/components/responses/BackendConnTimeout'
+        "400":
+          $ref: "#/components/responses/Generic400"
         "401":
           $ref: "#/components/responses/Generic401"
         "403":
           $ref: "#/components/responses/Generic403"
+        '404':
+          $ref: '#/components/responses/ResNotFound'
+        '500':
+          $ref: '#/components/responses/GenericError'
         "503":
           $ref: "#/components/responses/Generic503"
+        '504':
+          $ref: '#/components/responses/BackendConnTimeout'
       callbacks:
         onTrafficInfluenceChanged:
           $ref: "#/components/callbacks/onTrafficInfluenceChanged"
@@ -544,10 +654,30 @@ paths:
 components:
   securitySchemes:
     openId:
-      description: to support Consent Management
+      description: to support Consent Management, via 3-legged authentication,
+        when sensitive data are exchanged.
       type: openIdConnect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
-
+    oAuth2:
+      type: oauth2
+      description: for endpoints not exchanging sensitive data.
+      flows:
+        clientCredentials:
+          tokenUrl: 'https://example.com/oauth/token'
+          scopes:
+            'traffic-influence:traffic-influences:write': Grants write access
+              to the TrafficInfluence resource
+            'traffic-influence:traffic-influences:delete': Grants delete
+              access to the TrafficInfluence resource
+            'traffic-influence:traffic-influences:read': Grants read access
+              to the TrafficInfluence resource
+            'traffic-influence:traffic-influences:update': Grants update
+              access to the TrafficInfluence resource
+    notificationsBearerAuth:
+      description: Bearer authentication for notifications
+      type: http
+      scheme: bearer
+      bearerFormat: "{$request.body#sinkCredential.credentialType}"
   parameters:
     x-correlator:
       name: x-correlator
@@ -565,9 +695,8 @@ components:
   #########################################################################
   callbacks:
     onTrafficInfluenceChanged:
-      # when data is sent, it will be sent to the `callbackUrl` provided
-      # when making the subscription PLUS the suffix `/event`
-      '{$request.body.notificationUri}/event':
+      # when data is sent, it will be sent to the callback url provided
+      '{$request.body.notificationSink.sink}':
         post:
           tags:
             - Traffic Influence CALLBACK Operation
@@ -576,16 +705,18 @@ components:
           description: Creating, modifying or delating a Traffic Influece
            resourece is an asycronous task. For this reason a notification
            channel via callback to a specified URL is provided.
-          operationId: postTrafficInfluence
+          operationId: trafficInfluenceCloudEvent
           parameters:
             - $ref: '#/components/parameters/x-correlator'
+          security:
+            - notificationsBearerAuth: []
           requestBody:
             description: subscription payload which contains the updated
              traffic influence instance
             content:
-              application/json:
+              application/cloudevents+json:
                 schema:
-                  $ref: '#/components/schemas/TrafficInfluenceNotification'
+                  $ref: '#/components/schemas/CloudEvent'
           responses:
             '202':
               description: Your server implementation should return this HTTP
@@ -605,14 +736,14 @@ components:
   schemas:
     TrafficInfluence:
       description: Resource conteining the informations to influence the
-       traffic from the device to the EAS
+       traffic toward local instances of the Application, for any user.
       type: object
       properties:
         trafficInfluenceID:
           type: string
           description: Identifier for the Traffic Influence resource. This
-           parameter is returned by the API and must be used to update it
-           (e.g., adding new users or deleting it).
+           parameter is returned by the API and it is used to update it
+           (e.g., modify or delete the TrafficInfluence resource).
         apiConsumerId:
           type: string
           description: Unique Identifier of the TI API Consumer.
@@ -624,8 +755,6 @@ components:
           $ref: '#/components/schemas/EdgeCloudRegion'
         edgeCloudZoneId:
           $ref: '#/components/schemas/EdgeCloudZoneId'
-        device:
-          $ref: '#/components/schemas/Device'
         state:
           type: string
           description: it reports the state of the TrafficInfluence resource.
@@ -678,10 +807,38 @@ components:
       required:
         - apiConsumerId
         - appId
+    PostTrafficInfluence:
+      description: iherits from TrafficInfluence restricting the access
+        (readonly) to "trafficInfluenceID" and "state", to be used by the API
+        Consumer to create a TrafficInfluece resource for any user.
+      allOf:
+        - $ref: "#/components/schemas/TrafficInfluence"
+      properties:
+        trafficInfluenceID:
+          readOnly: true
+        state:
+          readOnly: true
+        notificationSink:
+          $ref: '#/components/schemas/NotificationSink'
+    PostTrafficInfluenceDevice:
+      description: iherits from TrafficInfluence restricting the access
+        (readonly) to "trafficInfluenceID" and "state", to be used by the API
+        Consumer to create a TrafficInfluece resource for a specific user.
+      allOf:
+        - $ref: "#/components/schemas/TrafficInfluence"
+      properties:
+        device:
+          $ref: '#/components/schemas/Device'
+        trafficInfluenceID:
+          readOnly: true
+        state:
+          readOnly: true
+        notificationSink:
+          $ref: '#/components/schemas/NotificationSink'
     PatchTrafficInfluence:
       description: inherits from TrafficInfluence and restricts the access to
        certain parameters.
-       Only some paramter can be indeed modified with the PATCH operation.
+       Only some parameter can be indeed modified with the PATCH operation.
       allOf:
         - $ref: "#/components/schemas/TrafficInfluence"
       properties:
@@ -693,14 +850,86 @@ components:
           readOnly: true
         state:
           readOnly: true
-    PostTrafficInfluence:
-      allOf:
-        - $ref: "#/components/schemas/TrafficInfluence"
+        notificationSink:
+          $ref: '#/components/schemas/NotificationSink'
+    CloudEvent:
+      description: The notification callback
+      required:
+        - id
+        - source
+        - specversion
+        - type
+        - time
       properties:
-        trafficInfluenceID:
-          readOnly: true
-        state:
-          readOnly: true
+        id:
+          type: string
+          description: identifier of this event, that must be unique in the
+            source context.
+          minLength: 1
+        source:
+          $ref: '#/components/schemas/Source'
+        type:
+          type: string
+          description: 'type of event as defined in each CAMARA API'
+          example: 'org.camaraproject.iot.dta-status-changed-event'
+          minLength: 25
+        specversion:
+          type: string
+          description: Version of the specification to which this event
+            conforms (must be 1.0 if it conforms to cloudevents 1.0.2
+            version)
+          enum:
+            - "1.0"
+        datacontenttype:
+          type: string
+          description: 'media-type that describes the event payload
+          encoding, must be "application/json" for CAMARA APIs'
+          enum:
+            - application/json
+        data:
+          type: object
+          description: Event details payload described in each CAMARA
+            API and referenced by its type
+          allOf:
+            - $ref: '#/components/schemas/TrafficInfluenceNotification'
+        time:
+          $ref: "#/components/schemas/DateTime"
+    NotificationSink:
+      description: ""
+      type: object
+      required:
+        - sink
+      properties:
+        sink:
+          description: 'https callback address where the notification
+            must be POST-ed'
+          type: string
+        sinkCredentials:
+          description: Sink credential provides authorization information
+            necessary to enable delivery of events to a target
+          type: object
+          properties:
+            credentialtype:
+              type: string
+              description: Type of the credential - MUST be set to
+                ACCESSTOKEN for now
+              enum:
+                - "ACCESSTOKEN"
+            accessToken:
+              type: string
+              description: Access Token granting access to the POST
+                operation to create notification
+            accessTokenExpireUtc:
+              type: string
+              format: date-time
+              description: An absolute UTC instant at which the access
+                token shall be considered expired.
+            accessTokenType:
+              type: string
+              description: Type of access token - MUST be set to bearer
+                for now
+              enum:
+                - "bearer"
     TrafficInfluenceNotification:
       type: object
       description: Notifican channel for changes in the TrafficInfluence
@@ -712,6 +941,30 @@ components:
       properties:
         selected_appInstanceId:
           $ref: '#/components/schemas/AppInstanceId'
+    DateTime:
+      type: string
+      format: date-time
+      description: |
+        Timestamp of when the occurrence happened. Must adhere to RFC 3339.
+        WARN: This optional field in CloudEvents specification is required
+        in CAMARA APIs implementation.
+      example: '2018-04-05T17:31:00Z'
+    Source:
+      type: string
+      format: uri-reference
+      minLength: 1
+      description: |
+        Identifies the context in which an event happened - be a non-empty
+        `URI-reference` like:
+        - URI with a DNS authority:
+          * https://github.com/cloudevents
+          * mailto:cncf-wg-serverless@lists.cncf.io
+        - Universally-unique URN with a UUID:
+          * urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66
+        - Application-specific identifier:
+          * /cloudevents/spec/pull/123
+          * 1-555-123-4567
+      example: "https://notificationSendServer12.supertelco.com"
     ########################################################################
     #                                     Types                            #
     ########################################################################
@@ -968,8 +1221,8 @@ components:
               value:
                 status: 403
                 code: INVALID_TOKEN_CONTEXT
-                message: Phone number cannot be deducted from access token
-                 context
+                message: the phoneNumber parameter doesn't match the value from
+                 the access token context
     Generic404:
       description: The specified resource was not found
       headers:
@@ -1024,6 +1277,77 @@ components:
                  can be modified when it is fully implemented and activated.
                  Please wait for the resource status (state) to be "active"
                  before trying to update it.
+    Generic415:
+      description: Unsupported Media Type
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_415_UNSUPPORTED_MEDIA_TYPE:
+              description: Payload format of the request is in an unsupported
+               format by the Server.
+              value:
+                status: 415
+                code: UNSUPPORTED_MEDIA_TYPE
+                message: The server refuses to accept the request because the
+                 payload format is in an unsupported format.
+    Generic422:
+      description: Unprocessable Content
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_422_DEVICE_IDENTIFIERS_MISMATCH:
+              description: Inconsistency between device identifiers not pointing
+               to the same device
+              value:
+                status: 422
+                code: DEVICE_IDENTIFIERS_MISMATCH
+                message: Provided device identifiers are not consistent.
+            GENERIC_422_DEVICE_NOT_APPLICABLE:
+              description: Service is not available for the provided device
+              value:
+                status: 422
+                code: DEVICE_NOT_APPLICABLE
+                message: The service is not available for the provided device.
+            GENERIC_422_UNIDENTIFIABLE_DEVICE:
+              description: phone number not available neither from "phoneNumber"
+               or from the access token.
+              value:
+                status: 422
+                code: UNIDENTIFIABLE_DEVICE
+                message: phone number not defined
+    Generic429:
+      description: Too Many Requests
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_429_QUOTA_EXCEEDED:
+              description: Request is rejected due to exceeding a business quota
+               limit.
+              value:
+                status: 429
+                code: QUOTA_EXCEEDED
+                message: Either out of resource quota or reaching rate limiting.
+            GENERIC_429_TOO_MANY_REQUESTS:
+              description: API Server request limit is overpassed
+              value:
+                status: 429
+                code: TOO_MANY_REQUESTS
+                message: Either out of resource quota or reaching rate limiting.
     Generic500:
       description: Server error
       headers:
