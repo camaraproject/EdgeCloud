@@ -479,7 +479,10 @@ paths:
             $ref: '#/components/schemas/EdgeCloudRegion'
       responses:
         '200':
-          description: Information of Application Instances
+          description: |
+            List of application instances. Returns an empty list if no
+            instances were found or none match the specified query
+            parameters.
           headers:
             x-correlator:
               $ref: "#/components/headers/x-correlator"
