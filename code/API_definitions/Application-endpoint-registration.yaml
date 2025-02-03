@@ -23,7 +23,7 @@ info:
 
     * **Application Endpoint**:
 
-    The Endpoint on which the application is running.
+    The Endpoint on which the application is accessible.
     It can be a URI, FQDN, IPv4, or IPv6 address with a port number.
 
     # API functionality
@@ -123,7 +123,7 @@ paths:
               type: array
               minItems: 1
               items:
-                $ref: "#/components/schemas/ApplicationEndpointRequest"
+                $ref: "#/components/schemas/ApplicationEndpointInfo"
       responses:
         "200":
           description: Returns an applicationEndpointsId
@@ -257,7 +257,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: "#/components/schemas/ApplicationEndpointRequest"
+                $ref: "#/components/schemas/ApplicationEndpointInfo"
       responses:
         "204":
           description: Updates Application Endpoint Information
@@ -335,7 +335,7 @@ components:
         type: string
 
   schemas:
-    ApplicationEndpointRequest:
+    ApplicationEndpointInfo:
       description: Application instance represented
         by the application Endpoint definition
       type: object
@@ -380,7 +380,7 @@ components:
             Application Endpoint Information
           type: array
           items:
-            $ref: "#/components/schemas/ApplicationEndpointRequest"
+            $ref: "#/components/schemas/ApplicationEndpointInfo"
           minItems: 0
     ResourcesApplicationEndpoint:
       type: object
