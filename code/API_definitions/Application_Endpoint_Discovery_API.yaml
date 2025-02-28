@@ -27,7 +27,7 @@ info:
     experience.
     
     After identifying the nearest application endpoint through the API,
-    users can:
+    API consumers can:
     * Connect their application client directly to the chosen application
     endpoint, enhancing the responsiveness of the service.
     * If no suitable endpoints are available, the
