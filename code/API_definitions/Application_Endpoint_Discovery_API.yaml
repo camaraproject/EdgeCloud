@@ -9,7 +9,7 @@ info:
     # Overview
     The Application Endpoint Discovery API extends beyond the capabilities of the
     Simple Edge Discovery API by not only locating the nearest Edge Cloud Zone
-    but also directly linking to the application endpoints within those
+    but also providing direct links to your specified application's endpoints within those
     Edge Cloud Zones.
     This API intent enables immediate connection to the most relevant
     application endpoint, optimizing the application's interaction with
