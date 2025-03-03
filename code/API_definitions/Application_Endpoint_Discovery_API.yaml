@@ -95,14 +95,14 @@ servers:
         default: https://localhost:443
         description: API root.
       basePath:
-        default: application-endpoint-discovery/vwip
+        default: application-endpoint-discovery/wip
         description: Base path for the Application Endpoint Discovery.
 tags:
   - name: Application Endpoint Discovery
     description: |
       Find the closest App Instance Endpoint to the user device.
 paths:
-  /app-endpoints:
+  /retrieve-closest-app-endpoints:
     post:
       security:
         - openId:
