@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   title: Application Endpoint Discovery API
-  version: 0.1.0-wip
+  version: wip
   description: |
     # Connect to the Optimal Application Endpoint
     ---
@@ -47,7 +47,8 @@ info:
     * `Phone-Number` : The device's phone number in international E.164 format.
     * `Network-Access-Identifier`: A unique identifier provided by the network
     operator.
-In addition the following application-specific identifiers must be provided
+    
+    In addition the following application-specific identifiers must be provided
     * `ApplicationEndpointsID`: A unique identifier for the registered application endpoint.
     * `AppId` : a unique identifier for the application
     If the API is accessed directly from a device within the operator's network,
