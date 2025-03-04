@@ -113,10 +113,10 @@ paths:
           in: header
           required: false
           description: |
-            When the API Consumer includes the "X-Correlator" header in the
+            When the API Consumer includes the "x-correlator" header in the
             request, the API provider must include it in the response with
             the same value that was used in the request. Otherwise, it is
-            optional to include the "X-Correlator" header in the response with
+            optional to include the "x-correlator" header in the response with
              any valid value. Recommendation is to use UUID for values.
           schema:
             type: string
@@ -129,8 +129,9 @@ paths:
       responses:
         "200":
           description: |
-            Successful response, returning the closest App Instance Endpoint
-            Zone to the user device identified in the request body.
+            Successful response, returning the closest App Instance Endpoints to the user device identified in the request body.
+            The response will include the App Instance with the minimum to the end user device identified in the request.
+            There can be multiple application instances returned in the response and the API consumer can choose the one that best suits their needs.
           headers:
              x-correlator:
               $ref: "#/components/headers/x-correlator"
