@@ -49,7 +49,7 @@ info:
     operator.
     
     In addition the following application-specific identifiers must be provided
-    * `ApplicationEndpointsID`: A unique identifier for the registered application endpoint.
+    * `ApplicationEndpointsId`: A unique identifier for the registered application endpoint.
     * `AppId` : a unique identifier for the application
     If the API is accessed directly from a device within the operator's network,
     initial requests may be made without explicit device identifiers. However,
