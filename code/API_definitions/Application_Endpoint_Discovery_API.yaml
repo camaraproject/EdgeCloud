@@ -14,18 +14,15 @@ info:
     This API intent enables immediate connection to the most relevant
     application endpoint, optimizing the application's interaction with
     edge computing resources.
-
     # Introduction
     Operators often host multiple Edge Cloud Zones across various territories.
     Connecting an application directly to the optimal Edge Cloud Zone
     endpoint may minimize latency.
-    
     Unlike the Simple Edge Discovery API, which only provides the zone location,
     this API provides the actual endpoints within the nearest
     zone. This approach ensures that developers can instantly integrate these
     endpoints into their applications, improving the user
     experience.
-    
     After identifying the nearest application endpoint through the API,
     API consumers can:
     * Connect their application client directly to the chosen application
@@ -34,8 +31,7 @@ info:
     developer can use the API EdgeApplicationManagement in order to
     instantiate a new instance.
     Edge Cloud Zone, optimizing their service distribution based on real-time
-    network geography.
-    
+    network geography. 
     # Quick Start
     This API can be utilized by both client applications on user devices and
     by servers. 
@@ -46,8 +42,7 @@ info:
     external IP discovery services.
     * `Phone-Number` : The device's phone number in international E.164 format.
     * `Network-Access-Identifier`: A unique identifier provided by the network
-    operator.
-    
+    operator.  
     In addition the following application-specific identifiers must be provided
     * `ApplicationEndpointsId`: A unique identifier for the registered application endpoint.
     * `AppId` : a unique identifier for the application
@@ -102,13 +97,13 @@ tags:
     description: |
       Find the closest App Instance Endpoint to the user device.
 paths:
-  /retrieve-closest-app-endpoints:
-    post:
-      security:
+ /retrieve-closest-app-endpoints:
+   post:
+    security:
         - openId:
             - application-endpoint-discovery:app-endpoints:read
-      operationId: getAppEndpoints
-      parameters:
+    operationId: getAppEndpoints
+    parameters:
         - name: x-correlator
           in: header
           required: false
@@ -121,45 +116,45 @@ paths:
           schema:
             type: string
             format: uuid
-      requestBody:
+    requestBody:
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Device"
-      responses:
-        "200":
-          description: |
+    responses:
+      "200":
+        description: |
             Successful response, returning the closest App Instance Endpoints to the user device identified in the request body.
             The response will include the App Instance with the minimum to the end user device identified in the request.
             There can be multiple application instances returned in the response and the API consumer can choose the one that best suits their needs.
-          headers:
+        headers:
              x-correlator:
               $ref: "#/components/headers/x-correlator"
-          content:
-              application/json:
-                schema:
-                  title: EdgeHostedApplicationEndpoints
-                  type: array
-                  items:
-                        $ref: "#/components/schemas/EdgeHostedapplication"
-        "400":
-          $ref: "#/components/responses/Generic400"
-        "401":
-          $ref: "#/components/responses/Generic401"
-        "403":
-          $ref: "#/components/responses/Generic403"
-        "404":
-          $ref: "#/components/responses/Generic404"
-        "422":
-          $ref: "#/components/responses/Generic422"
-        "429":
-          $ref: "#/components/responses/Generic429"
-      tags:
+        content:
+          application/json:
+           schema:
+            title: EdgeHostedApplicationEndpoints
+            type: array
+            items:
+                $ref: "#/components/schemas/EdgeHostedapplication"
+      "400":
+        $ref: "#/components/responses/Generic400"
+      "401":
+        $ref: "#/components/responses/Generic401"
+      "403":
+        $ref: "#/components/responses/Generic403"
+      "404":
+        $ref: "#/components/responses/Generic404"
+      "422":
+        $ref: "#/components/responses/Generic422"
+      "429":
+        $ref: "#/components/responses/Generic429"
+    tags:
         - Endpoint Discovery
-      summary: |
+    summary: |
         Returns the Endpoint of the closest App Instance to user device
         identified in the request.
-      description: |
+    description: |
         On receiving this request, the network will return the name
         of the App Instance with the shortest network path to the end user
         device identified in the request.
@@ -172,7 +167,7 @@ components:
   headers:
     x-correlator:
       description: |
-       When the API Consumer includes the "X-Correlator" header in the request,
+       When the API Consumer includes the "x-correlator" header in the request,
         the API provider must include it in the response with the same value t
         hat was used in the request. Otherwise, it is optional to include the
         "X-Correlator" header in the response with any valid value.
@@ -181,7 +176,6 @@ components:
       schema:
         type: string
         format: uuid
-  
   schemas:
     Device:
       description: |
