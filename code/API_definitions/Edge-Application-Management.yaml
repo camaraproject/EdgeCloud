@@ -370,49 +370,46 @@ paths:
         - Application
       summary: Instantiation of an Application
       description: |
-        Ask the Edge Cloud Platform to instantiate an application to one
-        or several Edge Cloud Zones with an Application as an input and an
-        Application Instance as the output.
-      operationId: createAppInstance
+        A bulk request consisting of one or more application deployment
+        requests to deploy an application to a target Edge Cloud Zone
+        or Cluster. If the overall request is accepted, each individual
+        request is handled independently, and the response will be an
+        array of deployment responses, each with their own individual
+        status codes. The array of deploy responses will be the same
+        size as the input request array, and location of each response
+        in the array will match the location of the corresponding
+        request in the input array.
+      operationId: createAppInstances
       parameters:
         - $ref: '#/components/parameters/x-correlator'
       requestBody:
         description: |
-          The Application ID and the array of Edge Cloud Zones to deploy
-          it to.
+          An array of deployment requests indicating where to
+          deploy an application.
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - appId
-                - appZones
-              properties:
-                appId:
-                  $ref: '#/components/schemas/AppId'
-                appZones:
-                  $ref: '#/components/schemas/AppZones'
+              type: array
+              items:
+                $ref: '#/components/schemas/AppInstanceDeployRequest'
+              minItems: 1
         required: true
       responses:
         '202':
-          description: Application instantiation accepted
+          description: |
+            An array of responses corresponding to the input array of
+            requests. The location in the array of each response
+            corresponds to a request from the same location in the array
+            of requests.
           headers:
             x-correlator:
               $ref: "#/components/headers/x-correlator"
-            Location:
-              description: Contains the URI of the newly created application.
-              required: true
-              schema:
-                type: string
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  appInstances:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AppInstanceInfo'
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppInstanceDeployResponse'
                 minItems: 1
         '400':
           $ref: '#/components/responses/400'
@@ -420,17 +417,8 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
-        '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorInfo'
-              example:
-                status: 409
-                code: CONFLICT
-                message: "Application already instantiated in the given
-                  Edge Cloud Zone or Edge Cloud Region"
+        '404':
+          $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
         '501':
@@ -724,6 +712,54 @@ components:
         Edge Cloud Platform generates this identifier when the
         Application is submitted.
 
+    AppInstanceDeployRequest:
+      description: |
+        A request to deploy an application instance of the specified
+        appId. Either the EdgeCloudZoneId or the KubernetesClusterRef
+        must be specified.
+      type: object
+      required:
+        - appId
+        - name
+      properties:
+        appId:
+          $ref: '#/components/schemas/AppId'
+        name:
+          $ref: '#/components/schemas/AppInstanceName'
+        edgeCloudZoneId:
+          $ref: '#/components/schemas/EdgeCloudZoneId'
+        kubernetesClusterRef:
+          $ref: '#/components/schemas/KubernetesClusterRef'
+
+    AppInstanceDeployResponse:
+      description: |
+        Response information for a given AppInstanceDeployRequest.
+        A 202 accepted code indicates a successful response, and the
+        appInstanceInfo must be set. All other response codes indicate
+        an error with the message providing detailed information,
+        and the appInstanceInfo may be omitted unless it has been
+        created and left in an error state.
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: integer
+          description: |
+            HTTP status code describing the result of deploying
+            this instance. Code 202 indicates the deployment
+            is accepted and in progress. Code 400 indicates a
+            badly formed request. Code 409 indicates an
+            instance with the name already exists. Other codes
+            may be used to indicate some form of error.
+        message:
+          type: string
+          description: |
+            Message providing further details about the result
+            of the request.
+        appInstanceInfo:
+          $ref: '#/components/schemas/AppInstanceInfo'
+
     AppInstanceId:
       type: string
       format: uuid
@@ -736,9 +772,21 @@ components:
     AppInstanceInfo:
       description: Information about the application instance.
       type: object
+      required:
+        - name
+        - appId
+        - appInstanceId
+        - appProvider
+        - edgeCloudZoneId
       properties:
+        name:
+          $ref: '#/components/schemas/AppInstanceName'
+        appId:
+          $ref: '#/components/schemas/AppId'
         appInstanceId:
           $ref: '#/components/schemas/AppInstanceId'
+        appProvider:
+          $ref: '#/components/schemas/AppProvider'
         status:
           description: Status of the application instance (default is 'unknown')
           type: string
@@ -773,25 +821,13 @@ components:
           minItems: 1
         kubernetesClusterRef:
           $ref: '#/components/schemas/KubernetesClusterRef'
-        edgeCloudZone:
-          $ref: '#/components/schemas/EdgeCloudZone'
+        edgeCloudZoneId:
+          $ref: '#/components/schemas/EdgeCloudZoneId'
 
-    AppZones:
-      description: |
-        Collection of Edge Cloud Zones and/or Kubernetes cluster reference
-        where the Application Provider wants to instantiate the application.
-      type: array
-      items:
-        type: object
-        properties:
-          kubernetesClusterRef:
-            $ref: '#/components/schemas/KubernetesClusterRef'
-          EdgeCloudZone:
-            $ref: '#/components/schemas/EdgeCloudZone'
-      required:
-        - EdgeCloudZone
-      minItems: 1
-      additionalProperties: false
+    AppInstanceName:
+      type: string
+      pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
+      description: Name of the App instance, scoped to the AppProvider
 
     AppManifest:
       description: |
