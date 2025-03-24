@@ -7,10 +7,10 @@ info:
     # Connect to the Optimal Application Endpoint
     ---
     # Overview
-    The Application Endpoint Discovery API extends beyond the capabilities of the
-    Simple Edge Discovery API by not only locating the nearest Edge Cloud Zone
-    but also providing direct links to your specified application's endpoints within those
-    Edge Cloud Zones.
+    The Application Endpoint Discovery API extends beyond the capabilities of
+    the Simple Edge Discovery API by not only locating the nearest
+    Edge Cloud Zone but also providing direct links to your specified
+    application's endpoints within those Edge Cloud Zones.
     This API intent enables immediate connection to the most relevant
     application endpoint, optimizing the application's interaction with
     edge computing resources.
@@ -18,10 +18,10 @@ info:
     Operators often host multiple Edge Cloud Zones across various territories.
     Connecting an application directly to the optimal Edge Cloud Zone
     endpoint may minimize latency.
-    Unlike the Simple Edge Discovery API, which only provides the zone location,
-    this API provides the actual endpoints within the nearest
-    zone. This approach ensures that developers can instantly integrate these
-    endpoints into their applications, improving the user
+    Unlike the Simple Edge Discovery API, which only provides
+    the zone location, this API provides the actual endpoints within
+    the nearest zone. This approach ensures that developers can instantly
+    integrate these endpoints into their applications, improving the user
     experience.
     After identifying the nearest application endpoint through the API,
     API consumers can:
@@ -31,7 +31,7 @@ info:
     developer can use the API EdgeApplicationManagement in order to
     instantiate a new instance.
     Edge Cloud Zone, optimizing their service distribution based on real-time
-    network geography. 
+    network geography.
     # Quick Start
     This API can be utilized by both client applications on user devices and
     by servers. 
@@ -42,9 +42,10 @@ info:
     external IP discovery services.
     * `Phone-Number` : The device's phone number in international E.164 format.
     * `Network-Access-Identifier`: A unique identifier provided by the network
-    operator.  
+    operator.
     In addition the following application-specific identifiers must be provided
-    * `ApplicationEndpointsId`: A unique identifier for the registered application endpoint.
+    * `ApplicationEndpointsId`: A unique identifier for the registered application
+    endpoint.
     * `AppId` : a unique identifier for the application
     If the API is accessed directly from a device within the operator's network,
     initial requests may be made without explicit device identifiers. However,
@@ -54,25 +55,52 @@ info:
 
     # Authorization and authentication
 
-    The "Camara Security and Interoperability Profile" provides details of how an API consumer requests an access token. Please refer to Identity and Consent Management (https://github.com/camaraproject/IdentityAndConsentManagement/) for the released version of the profile.
+    The "Camara Security and Interoperability Profile" provides details of how
+    an API consumer requests an access token. Please refer to
+    Identity and Consent Management
+    (https://github.com/camaraproject/IdentityAndConsentManagement/)
+    for the released version of the profile.
 
-    The specific authorization flows to be used will be agreed upon during the onboarding process, happening between the API consumer and the API provider, taking into account the declared purpose for accessing the API, whilst also being subject to the prevailing legal framework dictated by local legislation.
+    The specific authorization flows to be used will be agreed upon during the
+    onboarding process, happening between the API consumer and the
+    API provider, taking into account the declared purpose for accessing the
+    API, whilst also being subject to the prevailing legal framework dictated
+    by local legislation.
 
-    In cases where personal data is processed by the API and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of three-legged access tokens is mandatory. This ensures that the API remains in compliance with privacy regulations, upholding the principles of transparency and user-centric privacy-by-design.
+    In cases where personal data is processed by the API and users can exercise
+    their rights through mechanisms such as opt-in and/or opt-out, the use of
+    three-legged access tokens is mandatory. This ensures that the API remains
+    in compliance with privacy regulations, upholding the principles of
+    transparency and user-centric privacy-by-design.
 
     # Identifying the device from the access token
 
-    This API requires the API consumer to identify a device as the subject of the API as follows:
-    - When the API is invoked using a two-legged access token, the subject will be identified from the optional `device` object, which therefore MUST be provided.
+    This API requires the API consumer to identify a device as the subject of
+    the API as follows:
+    - When the API is invoked using a two-legged access token, the subject will
+    be identified from the optional `device` object, which
+    therefore MUST be provided.
 
-    - When a three-legged access token is used however, this optional identifier MUST NOT be provided, as the subject will be uniquely identified from the access token.
+    - When a three-legged access token is used however, this optional
+    identifier MUST NOT be provided, as the subject will be uniquely
+    identified from the access token.
 
-    This approach simplifies API usage for API consumers using a three-legged access token to invoke the API by relying on the information that is associated with the access token and was identified during the authentication process.
+    This approach simplifies API usage for API consumers using a three-legged
+    access token to invoke the API by relying on the information that is
+    associated with the access token and was identified during the
+    authentication process.
 
     ## Error handling:
-    - If the subject cannot be identified from the access token and the optional `device` object is not included in the request, then the server will return an error with the `422 MISSING_IDENTIFIER` error code.
+    - If the subject cannot be identified from the access token and the
+    optional
+    `device` object is not included in the request, then the server will return
+    an error with the `422 MISSING_IDENTIFIER` error code.
 
-    - If the subject can be identified from the access token and the optional `device` object is also included in the request, then the server will return an error with the `422 UNNECESSARY_IDENTIFIER` error code. This will be the case even if the same device is identified by these two methods, as the server is unable to make this comparison.
+    - If the subject can be identified from the access token and the optional
+    `device` object is also included in the request, then the server will
+    return an error with the `422 UNNECESSARY_IDENTIFIER` error code.
+    This will be the case even if the same device is identified by
+    these two methods, as the server is unable to make this comparison.
 
     ---
   contact:
@@ -93,9 +121,9 @@ servers:
         default: application-endpoint-discovery/wip
         description: Base path for the Application Endpoint Discovery.
 tags:
-  - name: Application Endpoint Discovery
-    description: |
-      Find the closest App Instance Endpoint to the user device.
+    - name: Application Endpoint Discovery
+      description: |
+        Find the closest App Instance Endpoint to the user device.
 paths:
  /retrieve-closest-app-endpoints:
    post:
@@ -123,19 +151,22 @@ paths:
                 $ref: "#/components/schemas/Device"
     responses:
       "200":
-        description: |
-            Successful response, returning the closest App Instance Endpoints to the user device identified in the request body.
-            The response will include the App Instance with the minimum to the end user device identified in the request.
-            There can be multiple application instances returned in the response and the API consumer can choose the one that best suits their needs.
-        headers:
+          description: |
+           Successful response, returning the closest App Instance Endpoints
+           to the user device identified in the request body. The response
+           will include the App Instance with the minimum to the end user
+           device identified in the request. There can be multiple application
+           instances returned in the response and the API consumer can choose 
+           the one that best suits their needs.
+          headers:
              x-correlator:
               $ref: "#/components/headers/x-correlator"
-        content:
-          application/json:
-           schema:
-            title: EdgeHostedApplicationEndpoints
-            type: array
-            items:
+          content:
+           application/json:
+            schema:
+             title: EdgeHostedApplicationEndpoints
+             type: array
+             items:
                 $ref: "#/components/schemas/EdgeHostedapplication"
       "400":
         $ref: "#/components/responses/Generic400"
@@ -168,8 +199,8 @@ components:
     x-correlator:
       description: |
        When the API Consumer includes the "x-correlator" header in the request,
-        the API provider must include it in the response with the same value t
-        hat was used in the request. Otherwise, it is optional to include the
+        the API provider must include it in the response with the same value 
+        that was used in the request. Otherwise, it is optional to include the
         "X-Correlator" header in the response with any valid value.
         Recommendation is to use UUID for values.
       required: false
@@ -179,16 +210,21 @@ components:
   schemas:
     Device:
       description: |
-        End-user equipment able to connect to a mobile network. Examples of devices include smartphones or IoT sensors/actuators.
+        End-user equipment able to connect to a mobile network. Examples of
+        devices include smartphones or IoT sensors/actuators.
 
-        The developer can choose to provide the below specified device identifiers:
+        The developer can choose to provide the below specified
+        device identifiers:
 
         * `ipv4Address`
         * `ipv6Address`
         * `phoneNumber`
         * `networkAccessIdentifier`
 
-        NOTE: the MNO might support only a subset of these options. The API invoker can provide multiple identifiers to be compatible across different MNOs. In this case the identifiers MUST belong to the same device.
+        NOTE: the MNO might support only a subset of these options. The API
+        invoker can provide multiple identifiers to be compatible across
+        different MNOs. In this case the identifiers MUST belong to
+        the same device.
       type: object
       properties:
         device:
@@ -211,7 +247,7 @@ components:
     ApplicationEndpointsId:
       description: |
         A system-defined string identifier representing
-        one or more registered Application Endpoints. 
+        one or more registered Application Endpoints.
       type: string
       format: uuid
       example: "4d596ac1-7822-4927-a3c5-d72e1f922c94"
@@ -283,7 +319,8 @@ components:
     
     ResourcesapplicationEndpoint:
       type: object
-      description: Information about the application endpoint, including URI, FQDN, IP addresses, and port.
+      description: Information about the application endpoint, including
+       URI, FQDN, IP addresses, and port.
       properties:
         uri:
           $ref: "#/components/schemas/Uri"
@@ -386,9 +423,12 @@ components:
               value:
                 status: 400
                 code: INVALID_ARGUMENT
-                message: Client specified an invalid argument, request body or query param.
+                message: Client specified an invalid argument, request body or
+                 query param.
             GENERIC_400_OUT_OF_RANGE:
-              description: Out of Range. Specific Syntax Exception used when a given field has a pre-defined range or a invalid filter criteria combination is requested
+              description: Out of Range. Specific Syntax Exception used when a
+               given field has a pre-defined range or a invalid filter criteria
+               combination is requested
               value:
                 status: 400
                 code: OUT_OF_RANGE
@@ -418,9 +458,11 @@ components:
               value:
                 status: 401
                 code: UNAUTHENTICATED
-                message: Request not authenticated due to missing, invalid, or expired credentials.
+                message: Request not authenticated due to missing, invalid,
+                 or expired credentials.
             GENERIC_401_AUTHENTICATION_REQUIRED:
-              description: New authentication is needed, authentication is no longer valid
+              description: New authentication is needed, authentication
+               is no longer valid
               value:
                 status: 401
                 code: AUTHENTICATION_REQUIRED
@@ -446,13 +488,16 @@ components:
                       - INVALID_TOKEN_CONTEXT
           examples:
             GENERIC_403_PERMISSION_DENIED:
-              description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
+              description: Permission denied. OAuth2 token access does not have
+               the required scope or when the user fails operational security
               value:
                 status: 403
                 code: PERMISSION_DENIED
-                message: Client does not have sufficient permissions to perform this action.
+                message: Client does not have sufficient permissions to
+                 perform this action.
             GENERIC_403_INVALID_TOKEN_CONTEXT:
-              description: Reflect some inconsistency between information in some field of the API and the related OAuth2 Token
+              description: Reflect some inconsistency between information in
+               some field of the API and the related OAuth2 Token
               value:
                 status: 403
                 code: INVALID_TOKEN_CONTEXT
@@ -500,7 +545,8 @@ components:
             $ref: "#/components/schemas/ErrorInfo"
           examples:
             GENERIC_422_IDENTIFIER_MISMATCH:
-              description: Inconsistency between device identifiers not pointing to the same device
+              description: Inconsistency between device identifiers
+               not pointing to the same device
               value:
                 status: 422
                 code: IDENTIFIER_MISMATCH
@@ -513,8 +559,9 @@ components:
                 message: The Service is not available for the provided device.
             GENERIC_422_MISSING_IDENTIFIER:
               description:
-                An identifier is not included in the request and the device or phone
-                number identificationinformation cannot be derived from the 3-legged access token
+                An identifier is not included in the request and
+                the device or phone number identificationinformation cannot
+                be derived from the 3-legged access token
               value:
                 status: 422
                 code: MISSING_IDENTIFIER
@@ -540,13 +587,15 @@ components:
                       - TOO_MANY_REQUESTS
           examples:
             GENERIC_429_QUOTA_EXCEEDED:
-              description: Request is rejected due to exceeding a business quota limit
+              description: Request is rejected due to exceeding
+               a business quota limit
               value:
                 status: 429
                 code: QUOTA_EXCEEDED
                 message: Out of resource quota.
             GENERIC_429_TOO_MANY_REQUESTS:
-              description: Access to the API has been temporarily blocked due to rate or spike arrest limits being reached
+              description: Access to the API has been temporarily
+               blocked due to rate or spike arrest limits being reached
               value:
                 status: 429
                 code: TOO_MANY_REQUESTS
