@@ -34,7 +34,7 @@ info:
     network geography.
     # Quick Start
     This API can be utilized by both client applications on user devices and
-    by servers. 
+    by application services. 
     For accurate service localization, the API requires device-specific
     identifiers such as:
     * `IP-Address`: Public IP address of the user device, which can be fetched
