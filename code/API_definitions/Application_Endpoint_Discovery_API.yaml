@@ -33,8 +33,8 @@ info:
     Edge Cloud Zone, optimizing their service distribution based on real-time
     network geography.
     # Quick Start
-    This API can be utilized by both client applications on user devices and
-    by application services. 
+    This API can be leveraged by both client applications on user devices and
+    backend application services.
     For accurate service localization, the API requires device-specific
     identifiers such as:
     * `IP-Address`: Public IP address of the user device, which can be fetched
