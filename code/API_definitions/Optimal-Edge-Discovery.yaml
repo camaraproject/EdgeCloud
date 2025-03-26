@@ -6,21 +6,17 @@ openapi: 3.0.3
 info:
   contact:
     email: sp-edc@lists.camaraproject.org
-  title: Edge Discovery API
+  title: Optimal Edge Discovery API
   version: 0.9.2
   description: |
     # Introduction
     ---
-    The Edge Discovery API is designed to help users discover the most optimal
+    The Optimal Edge Discovery API is designed to help users discover the most optimal
     edge cloud zones for their applications. This API allows users to find the
-    optimal regions and zones for their edge cloud applications, discover optimal
-    edge cloud zones for deployed applications, and find the optimal application
-    endpoints for clients to connect to.
+    optimal regions and zones for their edge cloud applications.
 
     ## Features
     - Discover regions and zones to deploy edge cloud applications.
-    - Discover optimal application endpoints for client connections for 
-      deployed applications.
 
     ## Usage
     Users can utilize this API to enhance the performance and connectivity of
@@ -33,10 +29,6 @@ info:
     - **Edge Cloud Zone Discovery**:  To find the optimal edge cloud 
         zones to deploy application to minimize latency for users in a specific 
         region. This can be achieved using the `GET /edge-cloud-zones` API.
-
-    - **Application Endpoint Discovery**: A client application needs to find the 
-        optimal endpoints to connect to for the optimal performance and reliability.
-        This can be achieved using the `POST /application-endpoints` API.
   
     # Identifying the device
 
@@ -365,91 +357,7 @@ paths:
           - Discovery
         summary: Discover optimal edge cloud zones for deployed applications
         description: Returns a list of optimal edge cloud zones where you can register your deployed application. You can choose to search without passing any of the inputs parameters or a combination of Application Profile and device information.
-  /application-endpoints:
-      post:
-        operationId: get-application-endpoints
-        parameters:
-        - name: x-correlator
-          in: header
-          required: false
-          description: |
-            When the API Consumer includes the "x-correlator" header in the
-            request, the API provider must include it in the response with
-            the same value that was used in the request. Otherwise, it is
-            optional to include the "x-correlator" header in the response with
-            any valid value. Recommendation is to use UUID for values.
-          schema:
-            type: string
-        requestBody:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EdgeApplicationEndpointsDevice"
-        responses:
-          '200':
-            description: Find optimal Application Endpoints for clients to connect to
-            headers:
-             x-correlator:
-              $ref: "#/components/headers/x-correlator"
-            content:
-              application/json:
-                schema:
-                  title: EdgeHostedApplicationEndpoints
-                  type: array
-                  items:
-                        $ref: "#/components/schemas/EdgeHostedapplication"
-          "400":
-           description: |
-            Client eror - the required querystring was not provided
-           headers:
-            x-correlator:
-             $ref: "#/components/headers/x-correlator"
-           content:
-             application/json:
-              schema:
-               $ref: "#/components/schemas/ErrorInfo"
-              examples:
-               InvalidQuerystring:
-                summary: Invalid querystring
-                description: The 'filter' querystring parameter is
-                  missing or does not have a value of 'closest'
-                value:
-                 status: 400
-                 code: INVALID_QUERYSTRING
-                 message: "Querystring must be provided: filter=closest"
-          "401":
-            $ref: "#/components/responses/Generic401"
-          "403":
-            $ref: "#/components/responses/Generic403"
-          "404":
-            $ref: "#/components/responses/Generic404"
-          "406":
-            $ref: "#/components/responses/Generic406"
-          "422":
-            $ref: "#/components/responses/Generic422"
-          "429":
-            $ref: "#/components/responses/Generic429"
-          "500":
-            $ref: "#/components/responses/Generic500"
-          "501":
-            $ref: "#/components/responses/Generic501"
-          "502":
-            $ref: "#/components/responses/Generic502"
-          "503":
-            $ref: "#/components/responses/Generic503"
-          "504":
-            $ref: "#/components/responses/Generic504"
-
-        tags:
-        - Discovery
-        summary: Find optimal Application Endpoints for clients to connect to
-        description: |
-          Returns a list of optimal Application Endpoints that client devices can connect to. 
-          You can search using a single application endpoint id or a list of application 
-          endpoint ids or combination of application endpoint ids along with device information.
-          Edge cloud region name can also be used as another filter to find the optimal 
-          application endpoints.
-
+  
 components:
   ######################################################
   #  OAUTH
@@ -499,62 +407,6 @@ components:
         applicationProfileId:
           type: string
           format: uuid
-
-    EdgeHostedapplication:
-      description: Edge hosted application represented
-        by application Endpoint definition
-      type: object
-      properties:
-        applicationEndpointsId:
-          $ref: "#/components/schemas/ApplicationEndpointsId"
-        applicationEndpoint:
-          $ref: "#/components/schemas/ResourcesapplicationEndpoint"
-        applicationServerProviderName:
-          type: string
-          description: Unique ID representing the Edge
-            Application Provider
-        applicationId:
-          type: string
-          description: Unique ID representing the Edge Application
-        applicationDescription:
-          type: string
-          description: Description of the application Endpoint
-          additionalProperties: false
-        applicationProfileId:
-          $ref: "#/components/schemas/ApplicationProfileId"
-        edgeCloudZoneId:
-          $ref: "#/components/schemas/EdgeCloudZoneId"
-        edgeCloudZoneName:
-          $ref: "#/components/schemas/EdgeCloudZoneName"
-        edgeCloudProvider:
-          $ref: "#/components/schemas/EdgeCloudProvider"
-        edgeCloudRegion:
-          $ref: "#/components/schemas/EdgeCloudRegion"
-    ResourcesapplicationEndpoint:
-      type: object
-      description: Information about the application endpoint, including URI, FQDN, IP addresses, and port.
-      properties:
-        uri:
-          type: string
-          description: URI of application Endpoint if available
-          format: uri
-        fqdn:
-          type: string
-          description: FQDN of application Endpoint if available
-        ipv4Address:
-          type: string
-          description: IPv4 Address of application Endpoint if available
-          format: ipv4
-        ipv6Address:
-          type: string
-          description: IPv6 Address of application Endpoint if available
-          format: ipv6
-        port:
-          type: integer
-          description: |
-            Port information of application Endpoint
-            if IPv4 or IPv6 is mentioned
-      additionalProperties: false
 
     ResourcesEdgeCloudZones:
       type: object
@@ -635,13 +487,6 @@ components:
         type: string
         description: Friendly Code to describe the error
 
-    ApplicationEndpointsId:
-      description: |
-        A system-defined string identifier representing
-        one or more registered Application Endpoints.
-      type: string
-      format: uuid
-
     Device:
       description: |
         End-user equipment able to connect to a mobile network. Examples of devices include smartphones or IoT sensors/actuators.
@@ -674,41 +519,6 @@ components:
           $ref: "#/components/schemas/EdgeCloudRegion"
       required:
         - applicationProfileId
-
-        
-    EdgeApplicationEndpointsDevice:
-      description: |
-        End-user equipment able to connect to a mobile network. Examples of devices include smartphones or IoT sensors/actuators.
-
-        The developer can choose to provide the below specified device identifiers:
-
-        * `ipv4Address`
-        * `ipv6Address`
-        * `phoneNumber`
-        * `networkAccessIdentifier`
-
-        NOTE: the MNO might support only a subset of these options. The API invoker can provide multiple identifiers to be compatible across different MNOs. In this case the identifiers MUST belong to the same device.
-      type: object
-      properties:
-        device:
-          type: object
-          properties:
-            phoneNumber:
-             $ref: "#/components/schemas/PhoneNumber"
-            networkAccessIdentifier:
-             $ref: "#/components/schemas/NetworkAccessIdentifier"
-            ipv4Address:
-             $ref: "#/components/schemas/DeviceIpv4Addr"
-            ipv6Address:
-             $ref: "#/components/schemas/DeviceIpv6Address"
-        
-        applicationEndpointsId:
-            $ref: "#/components/schemas/ApplicationEndpointsId"
-        edgeCloudRegion:
-          $ref: "#/components/schemas/EdgeCloudRegion"
-
-      required:
-        - applicationEndpointsId
 
     PhoneNumber:
       description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, prefixed with '+'.
