@@ -28,7 +28,7 @@ info:
 
     # API functionality
 
-    The API provides 5 operations:
+    The API provides the following operations:
     - POST registerApplicationEndpoints: Registers the Application Endpoints
                     of a deployed application to a specified edge cloud zone.
     - GET getAllRegisteredApplicationEndpoints: Returns endpoint information for
