@@ -44,14 +44,14 @@ info:
     * `Network-Access-Identifier`: A unique identifier provided by the network
     operator.
     In addition the following application-specific identifiers must be provided
-    * `ApplicationEndpointsId`: A unique identifier for the registered application
-    endpoint.
+    * `ApplicationEndpointsId`: A unique identifier for the registered
+    application endpoint.
     * `AppId` : a unique identifier for the application
-    If the API is accessed directly from a device within the operator's network,
-    initial requests may be made without explicit device identifiers. However,
-    if this results in a `404 Not Found` error, subsequent requests should
-    include one of the identifiers to ensure accurate localization of the nearest
-    endpoint.
+    If the API is accessed directly from a device within the operator's
+    network, initial requests may be made without explicit device identifiers.
+    However,if this results in a `404 Not Found` error, subsequent requests
+    should include one of the identifiers to ensure accurate localization of
+    the nearest endpoint.
 
     # Authorization and authentication
 
