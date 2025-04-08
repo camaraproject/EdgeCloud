@@ -44,14 +44,14 @@ info:
     * `Network-Access-Identifier`: A unique identifier provided by the network
     operator.
     In addition the following application-specific identifiers must be provided
-    * `ApplicationEndpointsId`: A unique identifier for the registered application
-    endpoint.
+    * `ApplicationEndpointsId`: A unique identifier for the registered
+    application endpoint.
     * `AppId` : a unique identifier for the application
     If the API is accessed directly from a device within the operator's network,
     initial requests may be made without explicit device identifiers. However,
     if this results in a `404 Not Found` error, subsequent requests should
-    include one of the identifiers to ensure accurate localization of the nearest
-    endpoint.
+    include one of the identifiers to ensure accurate localization of the
+    nearest endpoint.
 
     # Authorization and authentication
 
@@ -121,17 +121,17 @@ servers:
         default: application-endpoint-discovery/wip
         description: Base path for the Application Endpoint Discovery.
 tags:
-    - name: Application Endpoint Discovery
-      description: |
-        Find the closest App Instance Endpoint to the user device.
+  - name: Application Endpoint Discovery
+    description: |
+      Find the closest App Instance Endpoint to the user device.
 paths:
- /retrieve-closest-app-endpoints:
-   post:
-    security:
+  /retrieve-closest-app-endpoints:
+    post:
+      security:
         - openId:
             - application-endpoint-discovery:app-endpoints:read
-    operationId: getAppEndpoints
-    parameters:
+      operationId: getAppEndpoints
+      parameters:
         - name: x-correlator
           in: header
           required: false
@@ -144,48 +144,48 @@ paths:
           schema:
             type: string
             format: uuid
-    requestBody:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Device"
-    responses:
-      "200":
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Device"
+      responses:
+        "200":
           description: |
            Successful response, returning the closest App Instance Endpoints
            to the user device identified in the request body. The response
            will include the App Instance with the minimum to the end user
            device identified in the request. There can be multiple application
-           instances returned in the response and the API consumer can choose 
+           instances returned in the response and the API consumer can choose
            the one that best suits their needs.
           headers:
-             x-correlator:
+            x-correlator:
               $ref: "#/components/headers/x-correlator"
           content:
-           application/json:
-            schema:
-             title: EdgeHostedApplicationEndpoints
-             type: array
-             items:
-                $ref: "#/components/schemas/EdgeHostedapplication"
-      "400":
-        $ref: "#/components/responses/Generic400"
-      "401":
-        $ref: "#/components/responses/Generic401"
-      "403":
-        $ref: "#/components/responses/Generic403"
-      "404":
-        $ref: "#/components/responses/Generic404"
-      "422":
-        $ref: "#/components/responses/Generic422"
-      "429":
-        $ref: "#/components/responses/Generic429"
-    tags:
+            application/json:
+              schema:
+                title: EdgeHostedApplicationEndpoints
+                type: array
+                items:
+                  $ref: "#/components/schemas/EdgeHostedapplication"
+        "400":
+          $ref: "#/components/responses/Generic400"
+        "401":
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
+        "404":
+          $ref: "#/components/responses/Generic404"
+        "422":
+          $ref: "#/components/responses/Generic422"
+        "429":
+          $ref: "#/components/responses/Generic429"
+      tags:
         - Endpoint Discovery
-    summary: |
+      summary: |
         Returns the Endpoint of the closest App Instance to user device
         identified in the request.
-    description: |
+      description: |
         On receiving this request, the network will return the name
         of the App Instance with the shortest network path to the end user
         device identified in the request.
@@ -199,7 +199,7 @@ components:
     x-correlator:
       description: |
        When the API Consumer includes the "x-correlator" header in the request,
-        the API provider must include it in the response with the same value 
+        the API provider must include it in the response with the same value
         that was used in the request. Otherwise, it is optional to include the
         "X-Correlator" header in the response with any valid value.
         Recommendation is to use UUID for values.
@@ -231,19 +231,17 @@ components:
           type: object
           properties:
             phoneNumber:
-             $ref: "#/components/schemas/PhoneNumber"
+              $ref: "#/components/schemas/PhoneNumber"
             networkAccessIdentifier:
-             $ref: "#/components/schemas/NetworkAccessIdentifier"
+              $ref: "#/components/schemas/NetworkAccessIdentifier"
             ipv4Address:
-             $ref: "#/components/schemas/Ipv4Addr"
+              $ref: "#/components/schemas/Ipv4Addr"
             ipv6Address:
-             $ref: "#/components/schemas/Ipv6Addr"
-        
+              $ref: "#/components/schemas/Ipv6Addr"
         applicationEndpointsId:
-            $ref: "#/components/schemas/ApplicationEndpointsId"
+          $ref: "#/components/schemas/ApplicationEndpointsId"
         appId:
-            $ref: "#/components/schemas/AppId"
-    
+          $ref: "#/components/schemas/AppId"
     ApplicationEndpointsId:
       description: |
         A system-defined string identifier representing
@@ -259,7 +257,7 @@ components:
         with the application.
         This GUID will have been previously provided by the
         Edge Cloud Zone provider.
-    
+
     EdgeHostedapplication:
       description: Edge hosted application represented
         by application Endpoint definition
@@ -316,7 +314,6 @@ components:
       type: string
       format: uuid
       example: "123e4567-e89b-12d3-a456-426614174000"
-    
     ResourcesapplicationEndpoint:
       type: object
       description: Information about the application endpoint, including
@@ -396,7 +393,6 @@ components:
        operator.
       type: string
       example: "123456789@domain.com"
-  
   responses:
     Generic400:
       description: Bad Request
