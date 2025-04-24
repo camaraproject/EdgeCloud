@@ -698,11 +698,11 @@ components:
                API Server does not accept the media type (`Accept-*` header)
                indicated by API client
               value:
-               status: 406
-               code: NOT_ACCEPTABLE
-               message: |
-                The server cannot produce a response matching the content
-                requested by the client through `Accept-*` headers.
+                status: 406
+                code: NOT_ACCEPTABLE
+                message: |
+                 The server cannot produce a response matching the content
+                 requested by the client through `Accept-*` headers.
         headers:
           x-correlator:
             $ref: "#/components/headers/x-correlator"
