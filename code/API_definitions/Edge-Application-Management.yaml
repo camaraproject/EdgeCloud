@@ -74,6 +74,14 @@ info:
     * __deleteAppInstance__ - Removes a given application instance from an Edge
     Cloud Zone.
 
+    __Application Deployment Management__
+    * __createAppDeployment__ - Requests the Edge Cloud Provider to create and
+    maintain application instances to multiple Edge Cloud Zones.
+    * __getAppDeployments__ - Retrieves a list of deployments for a given
+    application.
+    * __deleteAppDeployment__ - Terminates a specific application deployment,
+    removing all associated instances within the specified Edge Cloud Zone.
+
     __Edge Cloud information__
     *  __getEdgeCloudZones__ List of the operators Edge Cloud Zones and their
     status, ordering the results by location and filtering by status
@@ -124,6 +132,11 @@ info:
     * __Application Instance__ - Is an instance (VM or Container based) running
     in an Edge Cloud Zone. The Edge Cloud Platform generates a unique ID
     for each instance.
+    * __Application Deployment__ - A specification that defines the requirements
+    for the Edge Cloud Provider to create and maintain application instances
+    across multiple Edge Cloud Zones. The deployment ensures that the
+    application is instantiated and managed consistently across the specified
+    zones, meeting the defined requirements.
     * __Edge Cloud__ - Cloud-like capabilities located at the network edge
     including, from the Application Provider's perspective, access to
     elastically allocated compute, data storage and network resources,
@@ -543,6 +556,173 @@ paths:
           $ref: '#/components/responses/500'
         '503':
           $ref: '#/components/responses/503'
+
+  /deployments:
+    post:
+      security:
+        - openId:
+            - edge-application-management:deployments:write
+      tags:
+        - Application
+      summary: Deployment of an Application
+      description: |
+        Ask the Edge Cloud Platform to instantiate an application to several
+        Edge Cloud Zones.
+      operationId: createAppDeployment
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+      requestBody:
+        description: |
+          Information about the application and where to deploy it.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - appDeploymentName
+                - appId
+                - edgeCloudZones
+              properties:
+                appDeploymentName:
+                  $ref: '#/components/schemas/AppDeploymentName'
+                appId:
+                  $ref: '#/components/schemas/AppId'
+                edgeCloudZones:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/EdgeCloudZoneId'
+        required: true
+      responses:
+        '202':
+          description: Application deployment accepted
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+            Location:
+              description: Contains the URI of the newly created application.
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appDeploymentId:
+                    $ref: '#/components/schemas/AppDeploymentId'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                status: 409
+                code: CONFLICT
+                message: "Deployment already exists"
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    get:
+      security:
+        - openId:
+            - edge-application-management:deployments:read
+      tags:
+        - Application
+      summary: Retrieve a list of Application Deployment for a given App
+      description: |
+        Ask the Edge Cloud Provider the information of the Deployments for a
+        given application
+      operationId: getAppDeployments
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+        - name: appId
+          description: |
+            A globally unique identifier associated with
+            the application.
+            Edge Cloud Provider generates this identifier when the
+            application is submitted.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/AppId'
+      responses:
+        '200':
+          description: |
+            List of application deployments. Returns an empty list if no
+            deployments were found or none match the specified query
+            parameters.
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppDeploymentInfo'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+  /deployments/{appDeploymentId}:
+    delete:
+      security:
+        - openId:
+            - edge-application-management:deployments:delete
+      tags:
+        - Application
+      summary: Terminate an Application Deployment
+      description: |
+        Delete a deployment terminating all related instances of an application within
+        an Edge Cloud Zone
+      operationId: deleteAppDeployment
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+        - name: appDeploymentId
+          in: path
+          description: |
+            Identificator of the specific application deployment
+            that will be terminated
+          required: true
+          schema:
+            $ref: "#/components/schemas/AppDeploymentId"
+      responses:
+        '204':
+          description: |
+            Request accepted to be processed. It applies for async
+            deletion process
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+
   /clusters:
     get:
       security:
@@ -730,6 +910,38 @@ components:
         Edge Cloud Platform generates this identifier when the
         instantiation in the Edge Cloud Zone is successful.
 
+    AppDeploymentId:
+      type: string
+      format: uuid
+      description: |
+        A globally unique identifier associated with a existing deployment
+        of an application. Edge Cloud Platform generates this identifier when
+        the instantiation in the Edge Cloud Zone is successful.
+
+    AppDeploymentInfo:
+      type: object
+      required:
+        - appDeploymentName
+        - appDeploymentId
+        - appId
+        - edgeCloudZones
+        - appInstances
+      properties:
+        appDeploymentName:
+          $ref: '#/components/schemas/AppDeploymentName'
+        appDeploymentId:
+          $ref: '#/components/schemas/AppDeploymentId'
+        appId:
+          $ref: '#/components/schemas/AppId'
+        edgeCloudZones:
+          type: array
+          items:
+            $ref: '#/components/schemas/EdgeCloudZoneId'
+        appInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/AppInstanceId'
+
     AppInstanceInfo:
       description: Information about the application instance.
       type: object
@@ -789,6 +1001,11 @@ components:
       type: string
       pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
       description: Name of the App instance, scoped to the AppProvider
+
+    AppDeploymentName:
+      type: string
+      pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
+      description: Name of the App Deployment, scoped to the AppProvider
 
     AppManifest:
       description: |
