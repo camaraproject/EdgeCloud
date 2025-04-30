@@ -217,7 +217,7 @@ servers:
   - url: "{apiRoot}:{port}/optimal-edge-discovery/vwip"
     description: Local host API
     variables:
-      port:
+      apiRoot:
         enum:
           - "3333"
         default: "3333"
