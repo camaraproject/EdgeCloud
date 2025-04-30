@@ -217,9 +217,10 @@ servers:
   - url: "{apiRoot}:{port}/optimal-edge-discovery/vwip"
     variables:
       apiRoot:
-        enum:
-          - "3333"
-        default: "3333"
+        default: https://localhost:9091
+        description: |
+          API root, defined by the service provider, e.g.
+          `api.example.com` or `api.example.com/somepath`
   - url: "https://edge.example.com:{port}/v1"
     description: Production API
     variables:
