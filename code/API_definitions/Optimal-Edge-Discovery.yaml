@@ -214,7 +214,7 @@ security:
 #                                     Servers                              #
 ############################################################################
 servers:
-  - url: "http://localhost:{port}/v1"
+  - url: "{apiRoot}:{port}/optimal-edge-discovery/vwip"
     description: Local host API
     variables:
       port:
