@@ -221,14 +221,6 @@ servers:
         description: |
           API root, defined by the service provider, e.g.
           `api.example.com` or `api.example.com/somepath`
-  - url: "https://edge.example.com:{port}/v1"
-    description: Production API
-    variables:
-      port:
-        enum:
-          - "443"
-          - "8443"
-        default: "443"
 ############################################################################
 #                                     Tags                                 #
 ############################################################################
