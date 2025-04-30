@@ -289,17 +289,16 @@ paths:
       parameters:
         - name: x-correlator
           in: header
+          required: false
+          description: |
+            When the API Consumer includes the "x-correlator" header in the
+            request, the API provider must include it in the response with
+            the same value that was used in the request. Otherwise, it is
+            optional to include the "x-correlator" header in the response with
+             any valid value. Recommendation is to use UUID for values.
           schema:
             type: string
-            description: |
-              A unique identifier for the request, which can be used for
-              troubleshooting purposes. When the API Consumer includes the
-              "x-correlator" header in the request, the API provider must
-              include it in the response with the same value that was used in
-              the request. Otherwise, it is optional to include the
-              "x-correlator" header in the response with any valid value.
-              Recommendation is to use UUID for values.
-
+            pattern: ^[a-zA-Z0-9-]{0,55}$
       requestBody:
         required: false
         content:
