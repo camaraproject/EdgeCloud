@@ -283,7 +283,7 @@ paths:
       description: |
         This is a helper API to get all the regions. The response identifies the
         regions where edge cloud zones are available.
-  /edge-cloud-zones:
+  /retrieve-optimal-edge-cloud-zones:
     post:
       operationId: get-edgeCloudZone
       parameters:
