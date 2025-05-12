@@ -30,7 +30,7 @@ info:
     - **Edge Cloud Zone Discovery**:  To find the optimal edge cloud
         zones to deploy application to minimize latency for users in a specific
         region. This can be achieved using the
-        `GET retrieve-optimal-edge-cloud-zones:` API.
+        `POST /retrieve-optimal-edge-cloud-zones:` API.
 
     # Identifying the device
 
