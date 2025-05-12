@@ -1,0 +1,734 @@
+---
+openapi: 3.0.3
+############################################################################
+#                                     API info                             #
+############################################################################
+info:
+  contact:
+    email: sp-edc@lists.camaraproject.org
+  title: Optimal Edge Discovery API
+  version: wip
+  description: |
+    # Introduction
+    ---
+    The Optimal Edge Discovery API is designed to help users discover the most
+    optimal edge cloud zones for their applications. This API allows users to
+    find the optimal regions and zones for their edge cloud applications.
+
+    ## Features
+    - Discover regions and zones to deploy edge cloud applications.
+
+    ## Usage
+    Users can utilize this API to enhance the performance and connectivity of
+    their applications by selecting the most suitable edge cloud zones and
+    application endpoints.
+
+    These APIs may be called either by an application client hosted on a device
+    attached to the operator network (i.e. phone, tablet) for following
+    scenarios:
+
+    - **Edge Cloud Zone Discovery**:  To find the optimal edge cloud
+        zones to deploy application to minimize latency for users in a specific
+        region. This can be achieved using the
+        `POST /retrieve-optimal-edge-cloud-zones:` API.
+
+    # Identifying the device
+
+    The API returns the closest Edge Cloud Zone to a given device, so that
+    device needs to be identifiable by the network. This can be achieved either
+    by passing a device identifier in the request header, or, from the 3-legged
+    access token where implemented by the operator.
+
+    ## Passing a device identifier in the request header
+
+    * If you call the API from a server, you must explicitly pass one or
+    more device identifiers in the HTTP request header:
+      * `IPv4-Address` or `IPv6-Address`. This is the public IP address of the
+      user device: this
+      can be obtained by an application hosted on that device calling a
+      public IP address API (e.g. GET https://api.ipify.org?format=json)
+      * If you provide an `IPv4-Address` or `IPv6-Address`: for certain
+      operators you may be required to also provide a `Public-port` header.
+      * `Phone-Number` . The international E.164 format (starting with country
+      code), e.g. +4407123123456
+      * `Network-Access-Identifier` (where available from the API host operator)
+
+    * If you call the API from a device attached to the operator network, then
+    you can attempt the request without passing device identifier(s) parameters
+    in the request header. If that returns a 422 `UNIDENTIFIABLE_DEVICE`
+    error then retry the request but this time include a device identifier.
+
+    NOTE1: the network operator might support only a subset of these options.
+    The API invoker can provide multiple identifiers to be compatible across
+    different network operators. In this case the identifiers MUST belong to the
+    same device.
+
+    NOTE2: for the Commonalities release v0.4, we are enforcing that the
+    `networkAccessIdentifier` is only part of the schema for future-proofing,
+    and CAMARA does not currently allow its use. After the CAMARA meta-release
+    work is concluded and the relevant issues are resolved, its use will need
+    to be explicitly documented in the guidelines.
+
+      ## Identifying a device from the access token
+
+    This specification defines the `device` identifying headers as optional in
+    API requests, specifically in cases where the API is accessed using a
+    3-legged access token and the device can be uniquely identified by the
+    token. This approach simplifies API usage for API consumers by relying
+    on the device information associated with the access token used to invoke
+    the API.
+
+    ### Handling of device information:
+
+    #### Optional device identifying headers for 3-legged tokens:
+
+    - When using a 3-legged access token, the device associated with the access
+      token must be considered as the device for the API request. This means
+      that a device  identifying header  is not required in the request, and if
+      included it must identify the same device, therefore **it is recommended
+      NOT to include it in these scenarios** to simplify the API usage and
+      avoid additional validations.
+
+    #### Validation mechanism:
+
+    - The server will extract the device identification from the access token,
+    if available.
+    - If the API request additionally includes a `device`  identifying header
+      when using a 3-legged access token, the API will validate that the device
+      identifier provided matches the one associated with the access token.
+    - If there is a mismatch, the API will respond with a
+      403 `INVALID_TOKEN_CONTEXT` error, indicating that the device information
+      in the request does not match the token.
+
+    #### Error handling for unidentifiable devices:
+
+    - If the `device`  identifying header is not included in the request and
+    the device information cannot be derived from the 3-legged access token,
+    nor inferred by the operator if the request is made directly from the
+    client, the server will return a 422 `UNIDENTIFIABLE_DEVICE` error.
+
+    #### Restrictions for tokens without an associated authenticated
+    identifier:
+
+    - For scenarios which do not have a single device identifier associated to
+      the token during the authentication flow, e.g. 2-legged access tokens, a
+      `device` identifying header MUST be provided in the API request. This
+      ensures that the device identification is explicit and valid for each API
+      call made with these tokens.
+
+    # Responses
+
+    ## Success
+
+    A JSON object is returned containing an array with a single member object.
+    This contains identifiers for the closest Edge Cloud Zone. The HTTP status
+    code will be`200 OK`. An example response:
+
+    ```
+    [
+      {
+        "edgeCloudZoneId": "4gt555-6457-7890-d4he-1dc79f44gb66",
+        "edgeCloudZoneName": "example zone name",
+        "edgeCloudProvider": "example zone provider"
+      }
+    ]
+    ```
+    * `edgeCloudZoneId` is a UUID for the Edge Cloud Zone.
+    * `edgeCloudZoneName` is the common name of the closest Edge Cloud Zone to
+    the user device.
+    * `edgeCloudProvider` is the name of the operator or cloud provider of
+    the Edge Cloud Zone.
+
+    ## Errors
+
+    If the authentication token is not valid, a `401 UNAUTHENTICATED` error is
+    returned.
+
+    If the mobile subscription parameters contain a formatting error, a `400
+    INVALID_ARGUMENT` error is returned.
+
+    If the mobile subscription cannot be identified from the provided
+    parameters, a `404 NOT_FOUND` error is returned.
+
+    Any more general service failures will result in an error in the `5xx`range
+    with an explanation.
+
+    # Notes for Optimal Edge Discovery API publishers
+
+    If an `IPv4-Address` or `IPv6-Address` header parameter is provided then
+    the operator should
+    assume the request is coming from a developer's server rather than a device
+    attached to the network. In which case the developer server is expected to
+    have been provided with the device public IP address (e.g. by the
+    application client on that device signalling it back to the server).
+
+    If neither an `IPv4-Address`/`IPv6-Address` parameter, nor any other device
+    identifier,  is
+    provided in the API request header then the operator should assume the
+    request is from a device attached to their network, and attempt to use the
+    public IP source address to determine which packet gateway issued it (and
+    hence the closest edge to that gateway).
+
+    If no `IPv4-Address`/`IPv6-Address` header parameter is provided, but
+    another device identifier(s) is provided, then the operator should assume
+    the request is coming from a device attached to their network and should
+    make use of one or both of the public IP source address (from the IP packet
+    header) and the device identifier(s) provided in the HTTPS request header.
+
+    Should your implementation require the `Port` value to be passed in addition
+    to the `IP-Address`, please make that explicit in the documentation, and
+    utilise the `GENERIC_400_MISSING_PORT` error if the `Port` header is
+    omitted.
+
+    # Authorization and authentication
+
+    The "Camara Security and Interoperability Profile" provides details on how a
+    client requests an access token. Please refer to Identify and Consent
+    Management (https://github.com/camaraproject/IdentityAndConsentManagement/)
+    for the released version of the Profile.
+
+    Which specific authorization flows are to be used will be determined during
+    onboarding process, happening between the API Client and the Telco Operator
+    exposing the API, taking into account the declared purpose for accessing
+    the API, while also being subject to the prevailing legal framework
+    dictated by local legislation.
+
+    It is important to remark that in cases where personal user data is
+    processed by the API, and users can exercise their rights through
+    mechanisms such as opt-in and/or opt-out, the use of 3-legged access tokens
+    becomes mandatory. This measure ensures that the API remains in strict
+    compliance with user privacy preferences and regulatory obligations,
+    upholding the principles of transparency and user-centric data control.
+    ---
+
+  license:
+    name: Apache-2.0
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
+
+############################################################################
+#                                     Security                             #
+############################################################################
+security:
+  - oAuth2:
+      - "edge:discovery:read"
+############################################################################
+#                                     Servers                              #
+############################################################################
+servers:
+  - url: "{apiRoot}:{port}/optimal-edge-discovery/vwip"
+    variables:
+      apiRoot:
+        default: https://localhost:9091
+        description: |
+          API root, defined by the service provider, e.g.
+          `api.example.com` or `api.example.com/somepath`
+############################################################################
+#                                     Tags                                 #
+############################################################################
+tags:
+  - name: Regions
+    description: |
+      Get all Region IDs and Names for edge cloud zones
+  - name: Discovery
+    description: |
+      Discover the regions and zones in the edge cloud
+      application, find optimal edge cloud zones for
+      your deployed applications, and optimal
+      Application Endpoints for your clients to connect to.
+############################################################################
+#                                     Paths                                #
+############################################################################
+paths:
+  /regions:
+    get:
+      summary: Fetch all Regions
+      operationId: get-regions
+      parameters:
+        - name: x-correlator
+          in: header
+          required: false
+          description: |
+            When the API Consumer includes the "x-correlator" header in the
+            request, the API provider must include it in the response with
+            the same value that was used in the request. Otherwise, it is
+            optional to include the "x-correlator" header in the response with
+              any valid value. Recommendation is to use UUID for values.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns Edge Cloud Regions
+          content:
+            application/json:
+              schema:
+                title: GetEdgeCloudRegionsResponse
+                type: array
+                items:
+                  $ref: "#/components/schemas/EdgeCloudRegions"
+        "400":
+          $ref: "#/components/responses/Generic400"
+        "401":
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
+        "404":
+          $ref: "#/components/responses/Generic404"
+        "406":
+          $ref: "#/components/responses/Generic406"
+        "422":
+          $ref: "#/components/responses/Generic422"
+        "429":
+          $ref: "#/components/responses/Generic429"
+      tags:
+        - Regions
+      description: |
+        This is a helper API to get all the regions. The response identifies the
+        regions where edge cloud zones are available.
+  /retrieve-optimal-edge-cloud-zones:
+    post:
+      operationId: get-edgeCloudZone
+      parameters:
+        - name: x-correlator
+          in: header
+          required: false
+          description: |
+            When the API Consumer includes the "x-correlator" header in the
+            request, the API provider must include it in the response with
+            the same value that was used in the request. Otherwise, it is
+            optional to include the "x-correlator" header in the response with
+             any valid value. Recommendation is to use UUID for values.
+          schema:
+            type: string
+            pattern: ^[a-zA-Z0-9-]{0,55}$
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Device"
+
+      responses:
+        "200":
+          description: returns optimal edge cloud zone matching query
+            parameters
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+          content:
+            application/json:
+              schema:
+                title: EdgeCloudZonesResponse
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResourcesEdgeCloudZones"
+        "400":
+          $ref: "#/components/responses/Generic400"
+        "401":
+          $ref: "#/components/responses/Generic401"
+        "403":
+          $ref: "#/components/responses/Generic403"
+        "404":
+          $ref: "#/components/responses/Generic404"
+        "406":
+          $ref: "#/components/responses/Generic406"
+        "422":
+          $ref: "#/components/responses/Generic422"
+        "429":
+          $ref: "#/components/responses/Generic429"
+
+      tags:
+        - Discovery
+      summary: Discover optimal edge cloud zones for deployed applications
+      description: Returns a list of optimal edge cloud zones where you can
+         register your deployed application. You can choose to search without
+         passing any of the inputs parameters or a combination of Application
+         Profile and device information.
+
+components:
+  ######################################################
+  #  OAUTH
+  #######################################################
+  securitySchemes:
+    oAuth2:
+      type: oauth2
+      description: "This API uses OAuth 2 with the
+        implicit, password and client credentials grant flow"
+      flows:
+        implicit:
+          authorizationUrl: "https://example.com/oauth/authorize"
+          scopes:
+            "discovery:read": Grant read-only access to
+              discovery data
+        password:
+          tokenUrl: "https://example.com/oauth/token"
+          scopes:
+            "discovery:read": Grant read-only access to
+              discovery data
+        clientCredentials:
+          tokenUrl: "https://example.com/oauth/token"
+          scopes:
+            "discovery:read": Grant read-only access to
+              discovery data
+  ######################################################
+  #  RESOURCES
+  #######################################################
+  headers:
+    x-correlator:
+      description: |
+        When the API Consumer includes the "x-correlator" header in the request,
+         the API provider must include it in the response with the same value t
+         hat was used in the request. Otherwise, it is optional to include the
+         "x-correlator" header in the response with any valid value.
+         Recommendation is to use UUID for values.
+      required: false
+      schema:
+        type: string
+        pattern: ^[a-zA-Z0-9-]{0,55}$
+
+  schemas:
+    applicationProfile:
+      description: information about the application
+        which are required for decision making
+      type: object
+      properties:
+        applicationProfileId:
+          type: string
+          format: uuid
+
+    ResourcesEdgeCloudZones:
+      type: object
+      description: Edge cloud zone information for the
+        given application profile and device information
+      properties:
+        edgeCloudZoneId:
+          $ref: "#/components/schemas/EdgeCloudZoneId"
+        edgeCloudZoneName:
+          $ref: "#/components/schemas/EdgeCloudZoneName"
+        edgeCloudProvider:
+          $ref: "#/components/schemas/EdgeCloudProvider"
+        edgeCloudRegion:
+          $ref: "#/components/schemas/EdgeCloudRegion"
+        status:
+          description: Status of the Edge cloud zone (default is 'unknown')
+          type: string
+          enum:
+            - active
+            - inactive
+            - unknown
+          default: unknown
+      additionalProperties: false
+
+    EdgeCloudRegions:
+      type: object
+      description: A region with its ID and name
+      properties:
+        edgeCloudRegion:
+          type: string
+          description: The name of the region
+
+    ApplicationProfileId:
+      type: string
+      format: uuid
+      description: reference id associated to application profile
+
+    EdgeCloudZoneId:
+      description: |
+        Operator-issued UUID for the Edge Cloud Zone.
+      type: string
+      format: uuid
+      additionalProperties: false
+
+    EdgeCloudZoneName:
+      description: |
+        The name of the operator or cloud provider of the Edge Cloud Zone.
+
+      type: string
+      additionalProperties: false
+
+    EdgeCloudProvider:
+      description: |
+        The company name of the Edge Cloud Zone provider.
+      type: string
+
+    EdgeCloudRegion:
+      description: |
+        The common name of the closest Edge Cloud Zone to the user device.
+      type: string
+      example: "us-west-1"
+
+    ErrorInfo:
+      type: object
+      description: Error information
+      required:
+        - status
+        - code
+        - message
+      properties:
+        message:
+          type: string
+          description: A human readable description of what the event represents
+        status:
+          type: integer
+          description: HTTP response status code
+        code:
+          type: string
+          description: Friendly Code to describe the error
+
+    Device:
+      description: |
+        End-user equipment able to connect to a mobile network. Examples of
+        devices include smartphones or IoT sensors/actuators.
+
+        The developer can choose to provide the below specified device
+        identifiers:
+
+        * `ipv4Address`
+        * `ipv6Address`
+        * `phoneNumber`
+        * `networkAccessIdentifier`
+
+        NOTE: the MNO might support only a subset of these options. The API
+        invoker can provide multiple identifiers to be compatible across
+        different MNOs. In this case the identifiers MUST belong to the
+        same device.
+      type: object
+      properties:
+        device:
+          type: object
+          properties:
+            phoneNumber:
+              $ref: "#/components/schemas/PhoneNumber"
+            networkAccessIdentifier:
+              $ref: "#/components/schemas/NetworkAccessIdentifier"
+            ipv4Address:
+              $ref: "#/components/schemas/DeviceIpv4Addr"
+            ipv6Address:
+              $ref: "#/components/schemas/DeviceIpv6Address"
+
+        applicationProfileId:
+          $ref: "#/components/schemas/ApplicationProfileId"
+        edgeCloudRegion:
+          $ref: "#/components/schemas/EdgeCloudRegion"
+      required:
+        - applicationProfileId
+
+    PhoneNumber:
+      description: A public identifier addressing a telephone subscription.
+       In mobile networks it corresponds to the MSISDN (Mobile Station
+       International Subscriber Directory Number). In order to be globally
+       unique it has to be formatted in international format, according to
+       E.164 standard, prefixed with '+'.
+      type: string
+      pattern: '^\+[1-9][0-9]{4,14}$'
+      example: "+123456789"
+
+    NetworkAccessIdentifier:
+      description: A public identifier addressing a subscription in a mobile
+       network. In 3GPP terminology, it corresponds to the GPSI formatted with
+       the External Identifier ({Local Identifier}@{Domain Identifier}). Unlike
+       the telephone number, the network access identifier is not subjected to
+       portability ruling in force, and is individually managed by each
+       operator.
+      type: string
+      example: "123456789@domain.com"
+
+    DeviceIpv4Addr:
+      type: object
+      description: |
+        The device should be identified by either the public (observed) IP
+        address and port as seen by the application server, or the private
+        (local) and any public (observed) IP addresses in use by the device
+        (this information can be obtained by various means, for example from
+        some DNS servers).
+
+        If the allocated and observed IP addresses are the same (i.e. NAT is
+        not in use) then  the same address should be specified for both
+        publicAddress and privateAddress.
+
+        If NAT64 is in use, the device should be identified by its publicAddress
+        and publicPort, or separately by its allocated IPv6 address (field
+        ipv6Address of the Device object)
+
+        In all cases, publicAddress must be specified, along with at least one
+        of either privateAddress or publicPort, dependent upon which is known.
+        In general, mobile devices cannot be identified by their public IPv4
+        address alone.
+      properties:
+        publicAddress:
+          $ref: "#/components/schemas/SingleIpv4Addr"
+        privateAddress:
+          $ref: "#/components/schemas/SingleIpv4Addr"
+        publicPort:
+          $ref: "#/components/schemas/Port"
+      anyOf:
+        - required: [publicAddress, privateAddress]
+        - required: [publicAddress, publicPort]
+      example:
+        publicAddress: "84.125.93.10"
+        publicPort: 59765
+
+    SingleIpv4Addr:
+      description: A single IPv4 address with no subnet mask
+      type: string
+      format: ipv4
+      example: "84.125.93.10"
+
+    Port:
+      description: TCP or UDP port number
+      type: integer
+      minimum: 0
+      maximum: 65535
+
+    DeviceIpv6Address:
+      description: |
+        The device should be identified by the observed IPv6 address, or by any
+        single IPv6 address from within the subnet allocated to the device
+        (e.g. adding ::0 to the /64 prefix).
+      type: string
+      format: ipv6
+      example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
+
+    TypesError:
+      type: object
+      description: types Error//added desc
+      properties:
+        code:
+          type: string
+          description: code //added desc
+        message:
+          type: string
+          description: message //added desc
+
+      required:
+        - code
+        - message
+        - links
+      additionalProperties: false
+
+  ######################################################
+  #  RESPONSES
+  #######################################################
+  responses:
+    Generic400:
+      description: Invalid argument
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_400_INVALID_ARGUMENT:
+              description: Invalid Argument
+              value:
+                status: 400
+                code: INVALID_ARGUMENT
+                message: "Invalid argument"
+
+    Generic401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_401_UNAUTHORIZED:
+              description: Authorization information is missing or invalid
+              value:
+                status: 401
+                code: UNAUTHORIZED
+                message: "Invalid credentials"
+        headers:
+          x-correlator:
+            $ref: "#/components/headers/x-correlator"
+
+    Generic403:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_403_PERMISSION_DENIED:
+              description: Permission denied
+              value:
+                status: 403
+                code: PERMISSION_DENIED
+                message: "Insufficient permissions"
+            GENERIC_403_INVALID_TOKEN_CONTEXT:
+              description: Token context is invalid
+              value:
+                status: 403
+                code: INVALID_TOKEN_CONTEXT
+                message: "{{field}} is not consistent with access token"
+        headers:
+          x-correlator:
+            $ref: "#/components/headers/x-correlator"
+
+    Generic404:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_404_NOT_FOUND:
+              description: Resource not found
+              value:
+                status: 404
+                code: NOT_FOUND
+                message: "Resource not found"
+        headers:
+          x-correlator:
+            $ref: "#/components/headers/x-correlator"
+    Generic406:
+      description: Not Acceptable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_406_NOT_ACCEPTABLE:
+              description: |
+               API Server does not accept the media type (`Accept-*` header)
+               indicated by API client
+              value:
+                status: 406
+                code: NOT_ACCEPTABLE
+                message: |
+                 The server cannot produce a response matching the content
+                 requested by the client through `Accept-*` headers.
+        headers:
+          x-correlator:
+            $ref: "#/components/headers/x-correlator"
+    Generic422:
+      description: Unprocessable Content
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_422_DEVICE_IDENTIFIERS_MISMATCH:
+              description: Device identifiers mismatch
+              value:
+                status: 422
+                code: DEVICE_IDENTIFIERS_MISMATCH
+                message: "Device identifiers are inconsistent"
+        headers:
+          x-correlator:
+            $ref: "#/components/headers/x-correlator"
+
+    Generic429:
+      description: Too Many Requests
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_429_TOO_MANY_REQUESTS:
+              description: Too many requests
+              value:
+                status: 429
+                code: TOO_MANY_REQUESTS
+                message: "Rate limit exceeded"
+        headers:
+          x-correlator:
+            $ref: "#/components/headers/x-correlator"
