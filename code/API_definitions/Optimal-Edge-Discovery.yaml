@@ -29,7 +29,8 @@ info:
 
     - **Edge Cloud Zone Discovery**:  To find the optimal edge cloud
         zones to deploy application to minimize latency for users in a specific
-        region. This can be achieved using the `GET /edge-cloud-zones` API.
+        region. This can be achieved using the
+        `GET retrieve-optimal-edge-cloud-zones:` API.
 
     # Identifying the device
 
@@ -152,7 +153,7 @@ info:
     Any more general service failures will result in an error in the `5xx`range
     with an explanation.
 
-    # Notes for Simple Edge Discovery API publishers
+    # Notes for Optimal Edge Discovery API publishers
 
     If an `IPv4-Address` or `IPv6-Address` header parameter is provided then
     the operator should
