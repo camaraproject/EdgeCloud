@@ -108,18 +108,17 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
+  x-camara-commonalities: 0.5
 externalDocs:
-  description: Product documentation at CAMARA.
+  description: Product documentation at CAMARA
   url: https://github.com/camaraproject/EdgeCloud
 servers:
-  - url: "{apiRoot}/{basePath}"
+  - url: "{apiRoot}/application-endpoint-discovery/vwip"
     variables:
       apiRoot:
         default: https://localhost:443
         description: API root.
-      basePath:
-        default: application-endpoint-discovery/wip
-        description: Base path for the Application Endpoint Discovery.
+
 tags:
   - name: Application Endpoint Discovery
     description: |
@@ -130,7 +129,7 @@ paths:
       security:
         - openId:
             - application-endpoint-discovery:app-endpoints:read
-      operationId: getAppEndpoints
+      operationId: getClosestAppEndpoint
       parameters:
         - name: x-correlator
           in: header
@@ -148,7 +147,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Device"
+              $ref: "#/components/schemas/EndpointDiscoveryInfo"
       responses:
         "200":
           description: |
@@ -181,7 +180,7 @@ paths:
         "429":
           $ref: "#/components/responses/Generic429"
       tags:
-        - Endpoint Discovery
+        - Application Endpoint Discovery
       summary: |
         Returns the Endpoint of the closest App Instance to user device
         identified in the request.
@@ -221,27 +220,125 @@ components:
         * `phoneNumber`
         * `networkAccessIdentifier`
 
-        NOTE: the MNO might support only a subset of these options. The API
-        invoker can provide multiple identifiers to be compatible across
-        different MNOs. In this case the identifiers MUST belong to
-        the same device.
+        NOTE1: the network operator might support only a subset of these
+        options. The API invoker can provide multiple identifiers to be
+        compatible across different network operators. In this case the
+        identifiers MUST belong to the same device.
+
+        NOTE2: as for this Commonalities release, we are enforcing that
+        the networkAccessIdentifier is only part of the schema for
+        future-proofing, and CAMARA does not currently allow its use.
+        After the CAMARA meta-release work is concluded and the relevant
+        issues are resolved, its use will need to be explicitly documented
+        in the guidelines.
       type: object
       properties:
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+        networkAccessIdentifier:
+          $ref: "#/components/schemas/NetworkAccessIdentifier"
+        ipv4Address:
+          $ref: "#/components/schemas/DeviceIpv4Addr"
+        ipv6Address:
+          $ref: "#/components/schemas/SingleIpv6Addr"
+      minProperties: 1
+
+    PhoneNumber:
+      description: |
+        A public identifier addressing a telephone subscription. In mobile
+        networks it corresponds to the MSISDN (Mobile Station International
+        Subscriber Directory Number). In order to be globally unique it has
+        to be formatted in international format, according to E.164
+        standard, prefixed with '+'.
+      type: string
+      pattern: '^\+[1-9][0-9]{4,14}$'
+      example: "+123456789"
+
+    NetworkAccessIdentifier:
+      description: |
+        A public identifier addressing a subscription in a mobile network.
+        In 3GPP terminology, it corresponds to the GPSI formatted with the
+        External Identifier ({Local Identifier}@{Domain Identifier}). Unlike
+        the telephone number, the network access identifier is not subjected
+        to portability ruling in force, and is individually managed by each
+        operator.
+      type: string
+      example: "123456789@domain.com"
+
+    DeviceIpv4Addr:
+      type: object
+      description: |
+        The device should be identified by either the public (observed) IP
+        address and port as seen by the application server, or the private
+        (local) and any public (observed) IP addresses in use by the device
+        (this information can be obtained by various means, for example from
+        some DNS servers).
+
+        If the allocated and observed IP addresses are the same (i.e. NAT is
+        not in use) then  the same address should be specified for both
+        publicAddress and privateAddress.
+
+        If NAT64 is in use, the device should be identified by its
+        publicAddress and publicPort, or separately by its allocated IPv6
+        address (field ipv6Address of the Device object)
+
+        In all cases, publicAddress must be specified, along with at least
+        one of either privateAddress or publicPort, dependent upon which is
+        known. In general, mobile devices cannot be identified by their
+        public IPv4 address alone.
+      properties:
+        publicAddress:
+          $ref: "#/components/schemas/SingleIpv4Addr"
+        privateAddress:
+          $ref: "#/components/schemas/SingleIpv4Addr"
+        publicPort:
+          $ref: "#/components/schemas/Port"
+      anyOf:
+        - required: [publicAddress, privateAddress]
+        - required: [publicAddress, publicPort]
+      example:
+        publicAddress: "84.125.93.10"
+        publicPort: 59765
+
+    SingleIpv4Addr:
+      description: A single IPv4 address with no subnet mask
+      type: string
+      format: ipv4
+      example: "84.125.93.10"
+
+    Port:
+      description: TCP or UDP port number
+      type: integer
+      minimum: 0
+      maximum: 65535
+
+    SingleIpv6Addr:
+      description: |
+        The device should be identified by the observed IPv6 address, or by
+        any single IPv6 address from within the subnet allocated to the
+        device (e.g. adding ::0 to the /64 prefix).
+      type: string
+      format: ipv6
+      example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
+
+    EndpointDiscoveryInfo:
+      description: |
+        Element to retrieve the closest application endpoint for the
+        requested device.
+      type: object
+      anyOf:
+        - required:
+          - applicationEndpointsId
+        - required:
+          - appId
+      properties:
         device:
-          type: object
-          properties:
-            phoneNumber:
-              $ref: "#/components/schemas/PhoneNumber"
-            networkAccessIdentifier:
-              $ref: "#/components/schemas/NetworkAccessIdentifier"
-            ipv4Address:
-              $ref: "#/components/schemas/Ipv4Addr"
-            ipv6Address:
-              $ref: "#/components/schemas/Ipv6Addr"
+          $ref: "#/components/schemas/Device"
         applicationEndpointsId:
           $ref: "#/components/schemas/ApplicationEndpointsId"
         appId:
           $ref: "#/components/schemas/AppId"
+
     ApplicationEndpointsId:
       description: |
         A system-defined string identifier representing
@@ -369,30 +466,6 @@ components:
         IP of the device. A single IPv6 address, following IETF 5952
         format, may be specified like 2001:db8:85a3:8d3:1319:8a2e:370:7344
       example: "2001:db8:85a3::8a2e:370:7334"
-    Port:
-      type: integer
-      description: Port to stablish the connection
-      minimum: 0
-    PhoneNumber:
-      description: |
-        A public identifier addressing a telephone subscription.
-        In mobile networks it corresponds to the MSISDN (Mobile Station
-        International Subscriber Directory Number). In order to be globally
-        unique it has to be formatted in international format, according
-        to E.164 standard, prefixed with '+'.
-      type: string
-      pattern: '^\+[1-9][0-9]{4,14}$'
-      example: "+123456789"
-    NetworkAccessIdentifier:
-      description: |
-       A public identifier addressing a subscription in a mobile
-       network. In 3GPP terminology, it corresponds to the GPSI formatted with
-       the External Identifier ({Local Identifier}@{Domain Identifier}). Unlike
-       the telephone number, the network access identifier is not subjected to
-       portability ruling in force, and is individually managed by each
-       operator.
-      type: string
-      example: "123456789@domain.com"
   responses:
     Generic400:
       description: Bad Request
