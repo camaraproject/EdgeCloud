@@ -149,6 +149,15 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/EndpointDiscoveryInfo"
+            examples:
+              Identify Device By 3-Legged Access Token and AppId:
+                $ref: '#/components/examples/IdentifyDeviceBy3LeggedTokenAppId'
+              Identify Device By Phone Number and AppId:
+                $ref: '#/components/examples/IdentifyDeviceByPhoneNumberAppId'
+              Identify Device By IP Address and ApplicationEndpointsId:
+                $ref: '#/components/examples/IdentifyDeviceByIPAddressAppEndpointsId'
+              Identify Device By Multiple Identifiers and AppId:
+                $ref: '#/components/examples/IdentifyDeviceByMultipleIdentifiersAppId'
       responses:
         "200":
           description: |
@@ -355,6 +364,7 @@ components:
         with the application.
         This GUID will have been previously provided by the
         Edge Cloud Zone provider.
+      example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 
     EdgeHostedapplication:
       description: Edge hosted application represented
@@ -364,7 +374,7 @@ components:
         applicationEndpointsId:
           $ref: "#/components/schemas/ApplicationEndpointsId"
         applicationEndpoint:
-          $ref: "#/components/schemas/ResourcesapplicationEndpoint"
+          $ref: "#/components/schemas/ResourcesApplicationEndpoint"
         applicationServerProviderName:
           type: string
           description: Unique ID representing the Edge
@@ -439,7 +449,7 @@ components:
       type: string
       format: uuid
       example: "123e4567-e89b-12d3-a456-426614174000"
-    ResourcesapplicationEndpoint:
+    ResourcesApplicationEndpoint:
       type: object
       description: Information about the application endpoint, including
        URI, FQDN, IP addresses, and port.
@@ -723,3 +733,35 @@ components:
                 status: 429
                 code: TOO_MANY_REQUESTS
                 message: Rate limit reached.
+  examples:
+    IdentifyDeviceBy3LeggedTokenAppId:
+      description: Empty JSON when device is identified by access token
+      value:
+        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+    IdentifyDeviceByPhoneNumberAppId:
+      description: Identifying device by phone number
+      value:
+        device:
+          phoneNumber: "+123456789"
+        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+    IdentifyDeviceByIPAddressAppEndpointsId:
+      description: Identifying device by IP address
+      value:
+        device:
+          ipv4Address:
+            publicAddress: "84.125.93.10"
+            publicPort: 59765
+        applicationEndpointsId: "4d596ac1-7822-4927-a3c5-d72e1f922c94"
+
+    IdentifyDeviceByMultipleIdentifiersAppId:
+      description: Identifying device by multiple device identifiers
+      value:
+        device:
+          phoneNumber: "+123456789"
+          ipv4Address:
+            publicAddress: "84.125.93.10"
+            publicPort: 59765
+          networkAccessIdentifier: "123456789@domain.com"
+        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
