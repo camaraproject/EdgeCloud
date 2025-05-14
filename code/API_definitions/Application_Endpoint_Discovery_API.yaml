@@ -108,18 +108,17 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
+  x-camara-commonalities: 0.5
 externalDocs:
-  description: Product documentation at CAMARA.
+  description: Product documentation at CAMARA
   url: https://github.com/camaraproject/EdgeCloud
 servers:
-  - url: "{apiRoot}/{basePath}"
+  - url: "{apiRoot}/application-endpoint-discovery/vwip"
     variables:
       apiRoot:
         default: https://localhost:443
         description: API root.
-      basePath:
-        default: application-endpoint-discovery/wip
-        description: Base path for the Application Endpoint Discovery.
+
 tags:
   - name: Application Endpoint Discovery
     description: |
@@ -130,7 +129,7 @@ paths:
       security:
         - openId:
             - application-endpoint-discovery:app-endpoints:read
-      operationId: getAppEndpoints
+      operationId: getClosestAppEndpoint
       parameters:
         - name: x-correlator
           in: header
@@ -143,12 +142,22 @@ paths:
              any valid value. Recommendation is to use UUID for values.
           schema:
             type: string
-            format: uuid
+            pattern: ^[a-zA-Z0-9-]{0,55}$
+            example: "b4333c46-49c0-4f62-80d7-f0ef930f1c46"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Device"
+              $ref: "#/components/schemas/EndpointDiscoveryInfo"
+            examples:
+              Identify Device By 3-Legged Access Token and AppId:
+                $ref: '#/components/examples/IdentifyDeviceBy3LeggedTokenAppId'
+              Identify Device By Phone Number and AppId:
+                $ref: '#/components/examples/IdentifyDeviceByPhoneNumberAppId'
+              Identify Device By IP Address and ApplicationEndpointsId:
+                $ref: '#/components/examples/IdentifyDeviceByIPAddressAppEndpointsId'
+              Identify Device By Multiple Identifiers and AppId:
+                $ref: '#/components/examples/IdentifyDeviceByMultipleIdentifiersAppId'
       responses:
         "200":
           description: |
@@ -181,7 +190,7 @@ paths:
         "429":
           $ref: "#/components/responses/Generic429"
       tags:
-        - Endpoint Discovery
+        - Application Endpoint Discovery
       summary: |
         Returns the Endpoint of the closest App Instance to user device
         identified in the request.
@@ -206,7 +215,7 @@ components:
       required: false
       schema:
         type: string
-        format: uuid
+        pattern: ^[a-zA-Z0-9-]{0,55}$
   schemas:
     Device:
       description: |
@@ -221,27 +230,125 @@ components:
         * `phoneNumber`
         * `networkAccessIdentifier`
 
-        NOTE: the MNO might support only a subset of these options. The API
-        invoker can provide multiple identifiers to be compatible across
-        different MNOs. In this case the identifiers MUST belong to
-        the same device.
+        NOTE1: the network operator might support only a subset of these
+        options. The API invoker can provide multiple identifiers to be
+        compatible across different network operators. In this case the
+        identifiers MUST belong to the same device.
+
+        NOTE2: as for this Commonalities release, we are enforcing that
+        the networkAccessIdentifier is only part of the schema for
+        future-proofing, and CAMARA does not currently allow its use.
+        After the CAMARA meta-release work is concluded and the relevant
+        issues are resolved, its use will need to be explicitly documented
+        in the guidelines.
       type: object
       properties:
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+        networkAccessIdentifier:
+          $ref: "#/components/schemas/NetworkAccessIdentifier"
+        ipv4Address:
+          $ref: "#/components/schemas/DeviceIpv4Addr"
+        ipv6Address:
+          $ref: "#/components/schemas/SingleIpv6Addr"
+      minProperties: 1
+
+    PhoneNumber:
+      description: |
+        A public identifier addressing a telephone subscription. In mobile
+        networks it corresponds to the MSISDN (Mobile Station International
+        Subscriber Directory Number). In order to be globally unique it has
+        to be formatted in international format, according to E.164
+        standard, prefixed with '+'.
+      type: string
+      pattern: '^\+[1-9][0-9]{4,14}$'
+      example: "+123456789"
+
+    NetworkAccessIdentifier:
+      description: |
+        A public identifier addressing a subscription in a mobile network.
+        In 3GPP terminology, it corresponds to the GPSI formatted with the
+        External Identifier ({Local Identifier}@{Domain Identifier}). Unlike
+        the telephone number, the network access identifier is not subjected
+        to portability ruling in force, and is individually managed by each
+        operator.
+      type: string
+      example: "123456789@domain.com"
+
+    DeviceIpv4Addr:
+      type: object
+      description: |
+        The device should be identified by either the public (observed) IP
+        address and port as seen by the application server, or the private
+        (local) and any public (observed) IP addresses in use by the device
+        (this information can be obtained by various means, for example from
+        some DNS servers).
+
+        If the allocated and observed IP addresses are the same (i.e. NAT is
+        not in use) then  the same address should be specified for both
+        publicAddress and privateAddress.
+
+        If NAT64 is in use, the device should be identified by its
+        publicAddress and publicPort, or separately by its allocated IPv6
+        address (field ipv6Address of the Device object)
+
+        In all cases, publicAddress must be specified, along with at least
+        one of either privateAddress or publicPort, dependent upon which is
+        known. In general, mobile devices cannot be identified by their
+        public IPv4 address alone.
+      properties:
+        publicAddress:
+          $ref: "#/components/schemas/SingleIpv4Addr"
+        privateAddress:
+          $ref: "#/components/schemas/SingleIpv4Addr"
+        publicPort:
+          $ref: "#/components/schemas/Port"
+      anyOf:
+        - required: [publicAddress, privateAddress]
+        - required: [publicAddress, publicPort]
+      example:
+        publicAddress: "84.125.93.10"
+        publicPort: 59765
+
+    SingleIpv4Addr:
+      description: A single IPv4 address with no subnet mask
+      type: string
+      format: ipv4
+      example: "84.125.93.10"
+
+    Port:
+      description: TCP or UDP port number
+      type: integer
+      minimum: 0
+      maximum: 65535
+
+    SingleIpv6Addr:
+      description: |
+        The device should be identified by the observed IPv6 address, or by
+        any single IPv6 address from within the subnet allocated to the
+        device (e.g. adding ::0 to the /64 prefix).
+      type: string
+      format: ipv6
+      example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
+
+    EndpointDiscoveryInfo:
+      description: |
+        Element to retrieve the closest application endpoint for the
+        requested device.
+      type: object
+      anyOf:
+        - required:
+          - applicationEndpointsId
+        - required:
+          - appId
+      properties:
         device:
-          type: object
-          properties:
-            phoneNumber:
-              $ref: "#/components/schemas/PhoneNumber"
-            networkAccessIdentifier:
-              $ref: "#/components/schemas/NetworkAccessIdentifier"
-            ipv4Address:
-              $ref: "#/components/schemas/Ipv4Addr"
-            ipv6Address:
-              $ref: "#/components/schemas/Ipv6Addr"
+          $ref: "#/components/schemas/Device"
         applicationEndpointsId:
           $ref: "#/components/schemas/ApplicationEndpointsId"
         appId:
           $ref: "#/components/schemas/AppId"
+
     ApplicationEndpointsId:
       description: |
         A system-defined string identifier representing
@@ -257,6 +364,7 @@ components:
         with the application.
         This GUID will have been previously provided by the
         Edge Cloud Zone provider.
+      example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 
     EdgeHostedapplication:
       description: Edge hosted application represented
@@ -266,7 +374,7 @@ components:
         applicationEndpointsId:
           $ref: "#/components/schemas/ApplicationEndpointsId"
         applicationEndpoint:
-          $ref: "#/components/schemas/ResourcesapplicationEndpoint"
+          $ref: "#/components/schemas/ResourcesApplicationEndpoint"
         applicationServerProviderName:
           type: string
           description: Unique ID representing the Edge
@@ -279,10 +387,28 @@ components:
           additionalProperties: false
         applicationProfileId:
           $ref: "#/components/schemas/ApplicationProfileId"
+        edgeCloudZone:
+          $ref: "#/components/schemas/EdgeCloudZone"
+
+    EdgeCloudZone:
+      type: object
+      description: |
+        An Edge Cloud Zone, uniquely identified by a
+        combination of the value of the Edge Cloud Zone Id object
+        and the value of the Edge Cloud Provider
+        object. This value is used to identify an Edge Cloud zone
+        between Edge Clouds from different Edge Cloud Providers.
+      required:
+        - edgeCloudZoneId
+        - edgeCloudZoneName
+        - edgeCloudProvider
+      properties:
         edgeCloudZoneId:
           $ref: "#/components/schemas/EdgeCloudZoneId"
         edgeCloudZoneName:
           $ref: "#/components/schemas/EdgeCloudZoneName"
+        edgeCloudZoneStatus:
+          $ref: "#/components/schemas/EdgeCloudZoneStatus"
         edgeCloudProvider:
           $ref: "#/components/schemas/EdgeCloudProvider"
         edgeCloudRegion:
@@ -299,6 +425,15 @@ components:
       type: string
       example: "us-west-1"
 
+    EdgeCloudZoneStatus:
+      description: Status of the Edge Cloud Zone (default is 'unknown')
+      type: string
+      enum:
+        - active
+        - inactive
+        - unknown
+      default: unknown
+
     EdgeCloudProvider:
       description: The provider of the Edge Cloud.
       type: string
@@ -314,7 +449,7 @@ components:
       type: string
       format: uuid
       example: "123e4567-e89b-12d3-a456-426614174000"
-    ResourcesapplicationEndpoint:
+    ResourcesApplicationEndpoint:
       type: object
       description: Information about the application endpoint, including
        URI, FQDN, IP addresses, and port.
@@ -369,30 +504,6 @@ components:
         IP of the device. A single IPv6 address, following IETF 5952
         format, may be specified like 2001:db8:85a3:8d3:1319:8a2e:370:7344
       example: "2001:db8:85a3::8a2e:370:7334"
-    Port:
-      type: integer
-      description: Port to stablish the connection
-      minimum: 0
-    PhoneNumber:
-      description: |
-        A public identifier addressing a telephone subscription.
-        In mobile networks it corresponds to the MSISDN (Mobile Station
-        International Subscriber Directory Number). In order to be globally
-        unique it has to be formatted in international format, according
-        to E.164 standard, prefixed with '+'.
-      type: string
-      pattern: '^\+[1-9][0-9]{4,14}$'
-      example: "+123456789"
-    NetworkAccessIdentifier:
-      description: |
-       A public identifier addressing a subscription in a mobile
-       network. In 3GPP terminology, it corresponds to the GPSI formatted with
-       the External Identifier ({Local Identifier}@{Domain Identifier}). Unlike
-       the telephone number, the network access identifier is not subjected to
-       portability ruling in force, and is individually managed by each
-       operator.
-      type: string
-      example: "123456789@domain.com"
   responses:
     Generic400:
       description: Bad Request
@@ -420,11 +531,12 @@ components:
                 status: 400
                 code: INVALID_ARGUMENT
                 message: Client specified an invalid argument, request body or
-                 query param.
+                  query param.
             GENERIC_400_OUT_OF_RANGE:
-              description: Out of Range. Specific Syntax Exception used when a
-               given field has a pre-defined range or a invalid filter criteria
-               combination is requested
+              description: |
+                Out of Range. Specific Syntax Exception used when a
+                given field has a pre-defined range or a invalid filter criteria
+                combination is requested
               value:
                 status: 400
                 code: OUT_OF_RANGE
@@ -447,22 +559,16 @@ components:
                   code:
                     enum:
                       - UNAUTHENTICATED
-                      - AUTHENTICATION_REQUIRED
           examples:
             GENERIC_401_UNAUTHENTICATED:
-              description: Request cannot be authenticated
+              description: |
+                Request cannot be authenticated and a new authentication
+                is required
               value:
                 status: 401
                 code: UNAUTHENTICATED
                 message: Request not authenticated due to missing, invalid,
-                 or expired credentials.
-            GENERIC_401_AUTHENTICATION_REQUIRED:
-              description: New authentication is needed, authentication
-               is no longer valid
-              value:
-                status: 401
-                code: AUTHENTICATION_REQUIRED
-                message: New authentication is required.
+                  or expired credentials. A new authentication is required.
     Generic403:
       description: Forbidden
       headers:
@@ -484,16 +590,18 @@ components:
                       - INVALID_TOKEN_CONTEXT
           examples:
             GENERIC_403_PERMISSION_DENIED:
-              description: Permission denied. OAuth2 token access does not have
-               the required scope or when the user fails operational security
+              description: |
+                Permission denied. OAuth2 token access does not have the
+                required scope or when the user fails operational security
               value:
                 status: 403
                 code: PERMISSION_DENIED
                 message: Client does not have sufficient permissions to
                  perform this action.
             GENERIC_403_INVALID_TOKEN_CONTEXT:
-              description: Reflect some inconsistency between information in
-               some field of the API and the related OAuth2 Token
+              description: |
+                Reflect some inconsistency between information in
+                some field of the API and the related OAuth2 Token
               value:
                 status: 403
                 code: INVALID_TOKEN_CONTEXT
@@ -538,30 +646,59 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorInfo"
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 422
+                  code:
+                    enum:
+                      - IDENTIFIER_MISMATCH
+                      - SERVICE_NOT_APPLICABLE
+                      - MISSING_IDENTIFIER
+                      - UNSUPPORTED_IDENTIFIER
+                      - UNNECESSARY_IDENTIFIER
           examples:
             GENERIC_422_IDENTIFIER_MISMATCH:
-              description: Inconsistency between device identifiers
-               not pointing to the same device
+              description: |
+                Inconsistency between identifiers not pointing to
+                the same device
               value:
                 status: 422
                 code: IDENTIFIER_MISMATCH
                 message: Provided identifiers are not consistent.
             GENERIC_422_SERVICE_NOT_APPLICABLE:
-              description: Service is not available for the provided device
+              description: Service not applicable for the provided identifier
               value:
                 status: 422
                 code: SERVICE_NOT_APPLICABLE
-                message: The Service is not available for the provided device.
+                message: The service is not available for the provided identifier.
             GENERIC_422_MISSING_IDENTIFIER:
-              description:
-                An identifier is not included in the request and
-                the device or phone number identificationinformation cannot
-                be derived from the 3-legged access token
+              description: |
+                An identifier is not included in the request and the device or phone
+                number identification cannot be derived from the 3-legged access
+                token
               value:
                 status: 422
                 code: MISSING_IDENTIFIER
                 message: The device cannot be identified.
+            GENERIC_422_UNSUPPORTED_IDENTIFIER:
+              description: |
+                None of the provided identifiers is supported by the implementation
+              value:
+                status: 422
+                code: UNSUPPORTED_IDENTIFIER
+                message: The identifier provided is not supported.
+            GENERIC_422_UNNECESSARY_IDENTIFIER:
+              description: |
+                An explicit identifier is provided when a device or phone
+                number has already been identified from the access token
+              value:
+                status: 422
+                code: UNNECESSARY_IDENTIFIER
+                message: The device is already identified by the access token.
     Generic429:
       description: Too Many Requests
       headers:
@@ -583,16 +720,48 @@ components:
                       - TOO_MANY_REQUESTS
           examples:
             GENERIC_429_QUOTA_EXCEEDED:
-              description: Request is rejected due to exceeding
-               a business quota limit
+              description: Request is rejected due to exceeding a business quota limit
               value:
                 status: 429
                 code: QUOTA_EXCEEDED
                 message: Out of resource quota.
             GENERIC_429_TOO_MANY_REQUESTS:
-              description: Access to the API has been temporarily
-               blocked due to rate or spike arrest limits being reached
+              description: |
+                Access to the API has been temporarily blocked due to rate or spike
+                arrest limits being reached
               value:
                 status: 429
                 code: TOO_MANY_REQUESTS
                 message: Rate limit reached.
+  examples:
+    IdentifyDeviceBy3LeggedTokenAppId:
+      description: Empty JSON when device is identified by access token
+      value:
+        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+    IdentifyDeviceByPhoneNumberAppId:
+      description: Identifying device by phone number
+      value:
+        device:
+          phoneNumber: "+123456789"
+        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+    IdentifyDeviceByIPAddressAppEndpointsId:
+      description: Identifying device by IP address
+      value:
+        device:
+          ipv4Address:
+            publicAddress: "84.125.93.10"
+            publicPort: 59765
+        applicationEndpointsId: "4d596ac1-7822-4927-a3c5-d72e1f922c94"
+
+    IdentifyDeviceByMultipleIdentifiersAppId:
+      description: Identifying device by multiple device identifiers
+      value:
+        device:
+          phoneNumber: "+123456789"
+          ipv4Address:
+            publicAddress: "84.125.93.10"
+            publicPort: 59765
+          networkAccessIdentifier: "123456789@domain.com"
+        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
