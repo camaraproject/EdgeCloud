@@ -377,10 +377,28 @@ components:
           additionalProperties: false
         applicationProfileId:
           $ref: "#/components/schemas/ApplicationProfileId"
+        edgeCloudZone:
+          $ref: "#/components/schemas/EdgeCloudZone"
+
+    EdgeCloudZone:
+      type: object
+      description: |
+        An Edge Cloud Zone, uniquely identified by a
+        combination of the value of the Edge Cloud Zone Id object
+        and the value of the Edge Cloud Provider
+        object. This value is used to identify an Edge Cloud zone
+        between Edge Clouds from different Edge Cloud Providers.
+      required:
+        - edgeCloudZoneId
+        - edgeCloudZoneName
+        - edgeCloudProvider
+      properties:
         edgeCloudZoneId:
           $ref: "#/components/schemas/EdgeCloudZoneId"
         edgeCloudZoneName:
           $ref: "#/components/schemas/EdgeCloudZoneName"
+        edgeCloudZoneStatus:
+          $ref: "#/components/schemas/EdgeCloudZoneStatus"
         edgeCloudProvider:
           $ref: "#/components/schemas/EdgeCloudProvider"
         edgeCloudRegion:
@@ -396,6 +414,15 @@ components:
       description: The region where the Edge Cloud Zone is located.
       type: string
       example: "us-west-1"
+
+    EdgeCloudZoneStatus:
+      description: Status of the Edge Cloud Zone (default is 'unknown')
+      type: string
+      enum:
+        - active
+        - inactive
+        - unknown
+      default: unknown
 
     EdgeCloudProvider:
       description: The provider of the Edge Cloud.
