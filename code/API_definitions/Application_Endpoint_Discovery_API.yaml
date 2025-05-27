@@ -421,8 +421,11 @@ components:
       example: "123e4567-e89b-12d3-a456-426614174000"
 
     EdgeCloudRegion:
-      description: The region where the Edge Cloud Zone is located.
+      description: |
+        The EdgeCloudProvider's name for the region where the Edge Cloud
+        Zone is located.
       type: string
+      pattern: ^[A-Za-z0-9]([A-Za-z0-9-]{0,53}[A-Za-z0-9])?$
       example: "us-west-1"
 
     EdgeCloudZoneStatus:
@@ -437,11 +440,13 @@ components:
     EdgeCloudProvider:
       description: The provider of the Edge Cloud.
       type: string
+      pattern: ^[A-Za-z0-9]([A-Za-z0-9-]{0,53}[A-Za-z0-9])?$
       example: "Provider A"
 
     EdgeCloudZoneName:
       description: The name of the Edge Cloud Zone.
       type: string
+      pattern: ^[A-Za-z0-9]([A-Za-z0-9-]{0,53}[A-Za-z0-9])?$
       example: "Zone A"
 
     ApplicationProfileId:
