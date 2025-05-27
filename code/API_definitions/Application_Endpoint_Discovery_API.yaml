@@ -10,7 +10,7 @@ info:
     The Application Endpoint Discovery API extends beyond the capabilities of
     the Simple Edge Discovery API by not only locating the nearest
     Edge Cloud Zone but also providing direct link to your specified
-    application's endpoint within such Edge Cloud Zone.
+    application's endpoint within that Edge Cloud Zone.
     * `Application Endpoint`: an application server IP address or FQDN
     published by the Edge Cloud Zone provider.
 
