@@ -9,9 +9,12 @@ info:
     # Overview
     The Application Endpoint Discovery API extends beyond the capabilities of
     the Simple Edge Discovery API by not only locating the nearest
-    Edge Cloud Zone but also providing direct links to your specified
-    application's endpoints within those Edge Cloud Zones.
-    This API intent enables immediate connection to the most relevant
+    Edge Cloud Zone but also providing direct link to your specified
+    application's endpoint within such Edge Cloud Zone.
+    * `Application Endpoint`: an application server IP address or FQDN
+    published by the Edge Cloud Zone provider.
+
+    This API intent enables immediate connection to the closest
     application endpoint, optimizing the application's interaction with
     edge computing resources.
     # Introduction
@@ -19,19 +22,17 @@ info:
     Connecting an application directly to the optimal Edge Cloud Zone
     endpoint may minimize latency.
     Unlike the Simple Edge Discovery API, which only provides
-    the zone location, this API provides the actual endpoints within
+    the zone location, this API provides the actual endpoint within
     the nearest zone. This approach ensures that developers can instantly
-    integrate these endpoints into their applications, improving the user
+    integrate this endpoint into their applications, improving the user
     experience.
     After identifying the nearest application endpoint through the API,
     API consumers can:
     * Connect their application client directly to the chosen application
     endpoint, enhancing the responsiveness of the service.
     * If no suitable endpoints are available, the
-    developer can use the API EdgeApplicationManagement in order to
+    developer can use the Edge Application Management API in order to
     instantiate a new instance.
-    Edge Cloud Zone, optimizing their service distribution based on real-time
-    network geography.
     # Quick Start
     This API can be leveraged by both client applications on user devices and
     backend application services.
@@ -122,13 +123,13 @@ servers:
 tags:
   - name: Application Endpoint Discovery
     description: |
-      Find the closest App Instance Endpoint to the user device.
+      Find the closest Application Instance Endpoint to the user device.
 paths:
-  /retrieve-closest-app-endpoints:
+  /retrieve-closest-app-endpoint:
     post:
       security:
         - openId:
-            - application-endpoint-discovery:app-endpoints:read
+            - application-endpoint-discovery:app-endpoint:read
       operationId: getClosestAppEndpoint
       parameters:
         - name: x-correlator
@@ -173,10 +174,10 @@ paths:
           content:
             application/json:
               schema:
-                title: EdgeHostedApplicationEndpoints
-                type: array
-                items:
-                  $ref: "#/components/schemas/EdgeHostedapplication"
+                $ref: "#/components/schemas/EdgeHostedApplication"
+              examples:
+                EdgeHostedApplicationExample:
+                  $ref: "#/components/examples/EdgeHostedApplicationExample"
         "400":
           $ref: "#/components/responses/Generic400"
         "401":
@@ -192,10 +193,10 @@ paths:
       tags:
         - Application Endpoint Discovery
       summary: |
-        Returns the Endpoint of the closest App Instance to user device
+        Returns the Endpoint of the closest Application Instance to user device
         identified in the request.
       description: |
-        On receiving this request, the network will return the name
+        On receiving this request, the network will return the endpoint
         of the App Instance with the shortest network path to the end user
         device identified in the request.
 components:
@@ -366,10 +367,17 @@ components:
         Edge Cloud Zone provider.
       example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 
-    EdgeHostedapplication:
+    EdgeHostedApplication:
       description: Edge hosted application represented
         by application Endpoint definition
       type: object
+      required:
+        - applicationEndpoint
+      anyOf:
+        - required:
+          - applicationEndpointsId
+        - required:
+          - appId
       properties:
         applicationEndpointsId:
           $ref: "#/components/schemas/ApplicationEndpointsId"
@@ -381,7 +389,7 @@ components:
             Application Provider
         appId:
           $ref: "#/components/schemas/AppId"
-        applicationDescription:
+        applicationEndpointDescription:
           type: string
           description: Description of the application Endpoint
           additionalProperties: false
@@ -454,10 +462,12 @@ components:
       type: string
       format: uuid
       example: "123e4567-e89b-12d3-a456-426614174000"
+
     ResourcesApplicationEndpoint:
       type: object
-      description: Information about the application endpoint, including
-       URI, FQDN, IP addresses, and port.
+      description: |
+        An application server IP address:port or FQDN published by
+        the Edge Cloud Zone provider.
       properties:
         uri:
           $ref: "#/components/schemas/Uri"
@@ -770,3 +780,22 @@ components:
             publicPort: 59765
           networkAccessIdentifier: "123456789@domain.com"
         appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+    EdgeHostedApplicationExample:
+      description: EdgeHostedApplication example included in response body
+      value:
+        applicationEndpoint:
+          uri: "https://example.com/resource"
+          fqdn: "example.com"
+          ipv4Address: "198.51.100.1"
+          port: "65535"
+        applicationServerProviderName: "Provider A"
+        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        applicationEndpointDescription: "Endpoint that connects to App A"
+        applicationProfileId: "123e4567-e89b-12d3-a456-426614174000"
+        edgeCloudZone:
+          edgeCloudZoneId: "123e4567-e89b-12d3-a456-426614174000"
+          edgeCloudZoneName: "Zone A"
+          edgeCloudZoneStatus: "unknown"
+          edgeCloudProvider: "Provider A"
+          edgeCloudRegion: "us-west-1"
