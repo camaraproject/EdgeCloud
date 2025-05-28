@@ -395,6 +395,8 @@ paths:
                   $ref: '#/components/schemas/EdgeCloudZoneId'
                 kubernetesClusterRef:
                   $ref: '#/components/schemas/KubernetesClusterRef'
+                notificationSink:
+                  $ref: '#/components/schemas/NotificationSink'
         required: true
       responses:
         '202':
@@ -434,6 +436,9 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
+      callbacks:
+        onAppStatusChange:
+          $ref: '#/components/callbacks/onAppStatusChange'
     get:
       security:
         - openId:
@@ -679,6 +684,40 @@ components:
       schema:
         type: string
         format: uuid
+  #########################################################################
+  #                             Events/Callbacks                          #
+  #########################################################################
+  callbacks:
+    onAppStatusChange:
+      '{$request.body.notificationSink.sink}':
+        post:
+          tags:
+            - App Instance CALLBACK Operation
+          summary: Provide a notification for a change in status
+           of the instantiated application
+          description: Instantiating an application is an asyncronous task. After the
+           application has been started, the server will return a callback
+           at the specified URL.
+          operationId: EdgeApplicationManagementCallback
+          parameters:
+            - $ref: '#/components/parameters/x-correlator'
+          security:
+            - notificationsBearerAuth: []
+          requestBody:
+            description: Body containing the status of the Application
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AppCallback'
+          responses:
+            '202':
+              description: Your server implementation should return this HTTP
+                status code if the data was received successfully
+              content: {}
+              headers:
+                x-correlator:
+                  $ref: '#/components/headers/x-correlator'
 
   schemas:
     AccessEndpoint:
@@ -965,6 +1004,20 @@ components:
       pattern: ^[A-Za-z][A-Za-z0-9_]{7,63}$
       description: Human readable name of the Application Provider.
 
+    AppCallback:
+      type: object
+      required:
+        - status
+        - appInstanceId
+      properties:
+        status:
+          type: string
+          enum: [Running, Failed]
+          description: Status of the application instance
+           (Running, Failed)
+        appInstanceId:
+          $ref: '#/components/schemas/AppInstanceId'
+
     ClusterInfo:
       description: Kubernetes cluster information
       required:
@@ -1162,6 +1215,44 @@ components:
                   - netdevice
                   - vfio-pci
                   - interface
+
+    NotificationSink:
+      description: ""
+      type: object
+      required:
+        - sink
+      properties:
+        sink:
+          description: 'https callback address where the notification
+            must be POST-ed'
+          type: string
+          format: uri
+        sinkCredentials:
+          description: Sink credential provides authorization information
+            necessary to enable delivery of events to a target
+          type: object
+          properties:
+            credentialtype:
+              type: string
+              description: Type of the credential - MUST be set to
+                ACCESSTOKEN for now
+              enum:
+                - "ACCESSTOKEN"
+            accessToken:
+              type: string
+              description: Access Token granting access to the POST
+                operation to create notification
+            accessTokenExpireUtc:
+              type: string
+              format: date-time
+              description: An absolute UTC instant at which the access
+                token shall be considered expired.
+            accessTokenType:
+              type: string
+              description: Type of access token - MUST be set to bearer
+                for now
+              enum:
+                - "bearer"
 
     AdditionalStorage:
       description: Additional storage for the application.
