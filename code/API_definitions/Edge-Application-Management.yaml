@@ -696,7 +696,7 @@ components:
           summary: Provide a notification for a change in status
            of the instantiated application
           description: Instantiating an application is an asyncronous task. After the
-           application has been started, the server will return a callback
+           application has been started, the server will return a callback response
            at the specified URL.
           operationId: EdgeApplicationManagementCallback
           parameters:
