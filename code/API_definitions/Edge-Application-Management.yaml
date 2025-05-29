@@ -814,6 +814,7 @@ components:
             - OVA
             - CONTAINER
             - HELM
+            - TOSCA
         operatingSystem:
           $ref: '#/components/schemas/OperatingSystem'
         appRepo:
