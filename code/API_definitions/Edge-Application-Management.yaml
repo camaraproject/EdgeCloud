@@ -437,8 +437,8 @@ paths:
         '503':
           $ref: '#/components/responses/503'
       callbacks:
-        onAppStatusChange:
-          $ref: '#/components/callbacks/onAppStatusChange'
+        onAppInstanceStatusChange:
+          $ref: '#/components/callbacks/onAppInstanceStatusChange'
     get:
       security:
         - openId:
@@ -688,7 +688,7 @@ components:
   #                             Events/Callbacks                          #
   #########################################################################
   callbacks:
-    onAppStatusChange:
+    onAppInstanceStatusChange:
       '{$request.body.notificationSink.sink}':
         post:
           tags:
@@ -709,7 +709,9 @@ components:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/AppCallback'
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AppInstanceInfo'
           responses:
             '202':
               description: Your server implementation should return this HTTP
@@ -1003,20 +1005,6 @@ components:
       type: string
       pattern: ^[A-Za-z][A-Za-z0-9_]{7,63}$
       description: Human readable name of the Application Provider.
-
-    AppCallback:
-      type: object
-      required:
-        - status
-        - appInstanceId
-      properties:
-        status:
-          type: string
-          enum: [Running, Failed]
-          description: Status of the application instance
-           (Running, Failed)
-        appInstanceId:
-          $ref: '#/components/schemas/AppInstanceId'
 
     ClusterInfo:
       description: Kubernetes cluster information
