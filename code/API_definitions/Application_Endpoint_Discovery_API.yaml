@@ -25,7 +25,7 @@ info:
     * Connect their application client directly to the chosen application
     endpoint(s), enhancing the responsiveness of the service.
     * If no suitable endpoints are available, the developer can use other APIs
-    to instaintiate new instance and/or register new application endpoints.
+    to instantiate new instance and/or register new application endpoints.
 
     The optimal endpoint(s) are calculated by the Edge Cloud Provider based on
     the following factor: shortest network path to the network-attached
@@ -42,7 +42,7 @@ info:
     port exposed by an application instance to allow connections from clients.
     - `Application Instance:` An instantiation of an Application running on
     an Edge Cloud Zone. It is assumed that for each application, a maximum of
-    one instance can run per Edge Cloud Zone.
+    one logical instance can run per Edge Cloud Zone.
     - `Device:` End-user equipment able to connect to a mobile network (i.e.
     smartphone, IoT sensor/actuator).
     - `Edge Cloud Zone:` Availability Zone in an Edge Cloud. It is the lowest
@@ -70,7 +70,7 @@ info:
       fetched via external IP discovery services.
       - `phoneNumber:` The device's phone number in international E.164 format.
       - `networkAccessIdentifier:` A unique identifier provided by the network
-    operator.
+    operator (where supported).
     - One of the following application identifiers:
       - `appId:` A unique identifier for an application onboarded on the Edge
     Cloud. It is used when the application has been onboarded using the Edge
@@ -80,24 +80,18 @@ info:
     using the Edge Application Management API, and available endpoints have been
     registered by the Edge Application Registration API.
 
-    If the API is accessed directly from a device within the operator's network,
-    initial requests may be made without explicit device identifiers (see
-    `Identifying the device from the access token` section). However, if this
-    results in a `404 Not Found` error, subsequent requests should include one of
-    the identifiers to ensure accurate localization of the nearest endpoint.
-
     ## Outputs
 
-    If successful, a JSON object is returned on 200 response containing the
-    following data:
+    If successful, a `200 OK ` response code is returned with a JSON object
+    containing the following data:
 
-    - `applicationEndpoints:` array containing at least one Application Endpoint
-    object including the following parameters:
+    - `applicationEndpoints:` An array containing at least one Application Endpoint
+    object. Each Application Endpoint object includes the following parameters:
       - `port:` TCP or UDP port number exposed by the application instance.
       - One of the following parameters which define the endpoint:
-        - `ipv4addresses:` List of IPv4 addresses exposed by the application
+        - `ipv4addresses:` Array of IPv4 addresses exposed by the application
         instance.
-        - `ipv6addresses:` List of IPv6 addresses exposed by the application
+        - `ipv6addresses:` Array of IPv6 addresses exposed by the application
         instance.
         - `fqdn:` Fully Qualified Domain Name exposed by the application instance.
       - `applicationEndpointDescription:` Optionally, a string that describes the
@@ -579,12 +573,12 @@ components:
         ipv4Addresses:
           type: array
           items:
-            $ref: "#/components/schemas/Ipv4Addr"
+            $ref: "#/components/schemas/Ipv4Address"
           minItems: 1
         ipv6Addresses:
           type: array
           items:
-            $ref: "#/components/schemas/Ipv6Addr"
+            $ref: "#/components/schemas/Ipv6Address"
           minItems: 1
         port:
           $ref: "#/components/schemas/Port"
@@ -598,13 +592,13 @@ components:
       type: string
       description: Fully Qualified Domain Name.
 
-    Ipv4Addr:
+    Ipv4Address:
       type: string
       description: |
         A single IPv4 address specified in dotted-quad form like 1.2.3.4.
       example: "198.51.100.1"
 
-    Ipv6Addr:
+    Ipv6Address:
       type: string
       description: |
         A single IPv6 address, following IETF 5952 format like
