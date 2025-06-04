@@ -267,9 +267,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EndpointDiscoveryResult"
-              examples:
-                EndpointDiscoveryResultExample:
-                  $ref: "#/components/examples/EndpointDiscoveryResultExample"
+
         "400":
           $ref: "#/components/responses/Generic400"
         "401":
@@ -473,6 +471,7 @@ components:
           - appId
       properties:
         applicationEndpoints:
+          description: Array of Application Endpoints.
           type: array
           items:
             $ref: "#/components/schemas/ApplicationEndpoint"
@@ -538,13 +537,13 @@ components:
       description: The provider of the Edge Cloud.
       type: string
       pattern: ^[A-Za-z0-9]([A-Za-z0-9-]{0,53}[A-Za-z0-9])?$
-      example: "Provider A"
+      example: "ProviderA"
 
     EdgeCloudZoneName:
       description: The name of the Edge Cloud Zone.
       type: string
       pattern: ^[A-Za-z0-9]([A-Za-z0-9-]{0,53}[A-Za-z0-9])?$
-      example: "Zone A"
+      example: "ZoneA"
 
     ApplicationProfileId:
       description: A unique identifier for the application profile.
@@ -571,11 +570,13 @@ components:
         fqdn:
           $ref: "#/components/schemas/Fqdn"
         ipv4Addresses:
+          description: Array of IPv4 addresses.
           type: array
           items:
             $ref: "#/components/schemas/Ipv4Address"
           minItems: 1
         ipv6Addresses:
+          description: Array of IPv6 addresses.
           type: array
           items:
             $ref: "#/components/schemas/Ipv6Address"
@@ -883,20 +884,3 @@ components:
             publicPort: 59765
           networkAccessIdentifier: "123456789@domain.com"
         appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-
-    EndpointDiscoveryResultExample:
-      description: EndpointDiscoveryResult example included in response body
-      value:
-        applicationEndpoints:
-          ipv4Addresses: ["198.51.100.1, 198.51.100.2"]
-          port: "65535"
-          edgeCloudZone:
-            edgeCloudZoneId: "123e4567-e89b-12d3-a456-426614174000"
-            edgeCloudZoneName: "Zone A"
-            edgeCloudZoneStatus: "unknown"
-            edgeCloudProvider: "Provider A"
-            edgeCloudRegion: "us-west-1"
-          applicationEndpointDescription: "Endpoint that connects to App A"
-        applicationServerProviderName: "Provider A"
-        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        applicationProfileId: "123e4567-e89b-12d3-a456-426614174000"
