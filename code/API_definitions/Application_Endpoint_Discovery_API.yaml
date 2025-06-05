@@ -428,10 +428,8 @@ components:
         identified device.
       type: object
       anyOf:
-        - required:
-          - applicationEndpointsId
-        - required:
-          - appId
+        - required: [applicationEndpointsId]
+        - required: [appId]
       properties:
         device:
           $ref: "#/components/schemas/Device"
@@ -465,10 +463,8 @@ components:
       required:
         - applicationEndpoints
       anyOf:
-        - required:
-          - applicationEndpointsId
-        - required:
-          - appId
+        - required: [applicationEndpointsId]
+        - required: [appId]
       properties:
         applicationEndpoints:
           description: Array of Application Endpoints.
@@ -560,12 +556,9 @@ components:
       required:
         - port
       anyOf:
-        - required:
-          - fqdn
-        - required:
-          - ipv4Addresses
-        - required:
-          - ipv6Addresses
+        - required: [fqdn]
+        - required: [ipv4Addresses]
+        - required: [ipv6Addresses]
       properties:
         fqdn:
           $ref: "#/components/schemas/Fqdn"
