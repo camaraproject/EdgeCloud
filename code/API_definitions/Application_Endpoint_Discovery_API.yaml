@@ -4,56 +4,173 @@ info:
   title: Application Endpoint Discovery API
   version: wip
   description: |
-    # Connect to the Optimal Application Endpoint
-    ---
-    # Overview
-    The Application Endpoint Discovery API extends beyond the capabilities of
-    the Simple Edge Discovery API by not only locating the nearest
-    Edge Cloud Zone but also providing direct links to your specified
-    application's endpoints within those Edge Cloud Zones.
-    This API intent enables immediate connection to the most relevant
-    application endpoint, optimizing the application's interaction with
-    edge computing resources.
+    The Application Endpoint Discovery API returns the optimal application
+    endpoint(s) that a given end-user's device can connect to.
+
     # Introduction
+
     Operators often host multiple Edge Cloud Zones across various territories.
-    Connecting an application directly to the optimal Edge Cloud Zone
-    endpoint may minimize latency.
-    Unlike the Simple Edge Discovery API, which only provides
-    the zone location, this API provides the actual endpoints within
-    the nearest zone. This approach ensures that developers can instantly
-    integrate these endpoints into their applications, improving the user
-    experience.
-    After identifying the nearest application endpoint through the API,
+    Connecting an application directly to the optimal application instance
+    endpoint in an Edge Cloud Zone may minimize latency.
+
+    The Application Endpoint Discovery API extends beyond the capabilities of
+    the Simple Edge Discovery API by not only locating the optimal
+    Edge Cloud Zone but also providing the direct link to the specified
+    application's endpoint within that Edge Cloud Zone. This approach ensures
+    that developers can instantly integrate this endpoint into their
+    applications, improving user experience.
+
+    After identifying the optimal application endpoint(s) through the API,
     API consumers can:
     * Connect their application client directly to the chosen application
-    endpoint, enhancing the responsiveness of the service.
-    * If no suitable endpoints are available, the
-    developer can use the API EdgeApplicationManagement in order to
-    instantiate a new instance.
-    Edge Cloud Zone, optimizing their service distribution based on real-time
-    network geography.
-    # Quick Start
-    This API can be leveraged by both client applications on user devices and
-    backend application services.
-    For accurate service localization, the API requires device-specific
-    identifiers such as:
-    * `IP-Address`: Public IP address of the user device, which can be fetched
-    via
-    external IP discovery services.
-    * `Phone-Number` : The device's phone number in international E.164 format.
-    * `Network-Access-Identifier`: A unique identifier provided by the network
-    operator.
-    In addition the following application-specific identifiers must be provided
-    * `ApplicationEndpointsId`: A unique identifier for the registered
-    application endpoint.
-    * `AppId` : a unique identifier for the application
-    If the API is accessed directly from a device within the operator's
-    network, initial requests may be made without explicit device identifiers.
-    However,if this results in a `404 Not Found` error, subsequent requests
-    should include one of the identifiers to ensure accurate localization of
-    the nearest endpoint.
+    endpoint(s), enhancing the responsiveness of the service.
+    * If no suitable endpoints are available, the developer can use other APIs
+    to instantiate new instance and/or register new application endpoints.
 
-    # Authorization and authentication
+    The optimal endpoint(s) are calculated by the Edge Cloud Provider based on
+    the following factor: shortest network path to the network-attached
+    device identified in the API request. Future releases of this API might
+    add other factors to obtain them.
+
+    # Relevant terms and definitions
+
+    - `Application Profile:` A profile which represents an application's
+    networking demands (latency, jitter, bandwidth rates).
+    - `Application Provider:` The provider of the application that is deployed
+    on the Edge Cloud.
+    - `Application Endpoint:` An application server IP address or FQDN, and
+    port exposed by an application instance to allow connections from clients.
+    - `Application Instance:` An instantiation of an Application running on
+    an Edge Cloud Zone. It is assumed that for each application, a maximum of
+    one logical instance can run per Edge Cloud Zone.
+    - `Device:` End-user equipment able to connect to a mobile network (i.e.
+    smartphone, IoT sensor/actuator).
+    - `Edge Cloud Zone:` Availability Zone in an Edge Cloud. It is the lowest
+    level of abstraction exposed to an Application Provider who wants to
+    deploy an Application on Edge Cloud. Availability Zones exist within
+    a Region.
+
+    # API Functionality
+
+    The API can be called either by an application client hosted on a device
+    attached to the operator network (i.e. phone, tablet), or by a server.
+
+    There is a single API service endpoint:
+
+    - `POST /retrieve-optimal-app-endpoints`
+
+    ## Inputs
+
+    The endpoint request body is a JSON object with the following parameters:
+    - `device:` End-user equipment able to connect to a mobile network. The
+    developer can choose to provide the below specified device identifiers:
+      - `ipv4Address:` Public IP address (IPv4) of the user device, which can be
+      fetched via external IP discovery services.
+      - `ipv6Address:` Public IP address (IPv6) of the user device, which can be
+      fetched via external IP discovery services.
+      - `phoneNumber:` The device's phone number in international E.164 format.
+      - `networkAccessIdentifier:` A unique identifier provided by the network
+    operator (where supported).
+    - One of the following application identifiers:
+      - `appId:` A unique identifier for an application onboarded on the Edge
+    Cloud. It is used when the application has been onboarded using the Edge
+    Application Management API.
+      - `applicationEndpointsId:` A unique identifier for the registered
+    application endpoint. It is used when the application has not been onboarded
+    using the Edge Application Management API, and available endpoints have been
+    registered by the Edge Application Registration API.
+
+    ## Outputs
+
+    If successful, a `200 OK ` response code is returned with a JSON object
+    containing the following data:
+
+    - `applicationEndpoints:` An array containing at least one Application Endpoint
+    object. Each Application Endpoint object includes the following parameters:
+      - `port:` TCP or UDP port number exposed by the application instance.
+      - One of the following parameters which define the endpoint:
+        - `ipv4addresses:` Array of IPv4 addresses exposed by the application
+        instance.
+        - `ipv6addresses:` Array of IPv6 addresses exposed by the application
+        instance.
+        - `fqdn:` Fully Qualified Domain Name exposed by the application instance.
+      - `applicationEndpointDescription:` Optionally, a string that describes the
+      application endpoint.
+      - `edgeCloudZone:` Optionally, object that identifies the Edge Cloud Zone
+      the application endpoint belongs to, including: `edgeCloudZoneId`,
+      `edgeCloudZoneName`, `edgeCloudZoneStatus`, `edgeCloudRegion`, and
+      `edgeCloudProvider`.
+    - One of the following application identifiers (the one provided on the request)
+      - `appId:` A unique identifier for an application onboarded on the Edge
+      Cloud. It is used when the application has been onboarded using the Edge
+      Application Management API.
+      - `applicationEndpointsId:` A unique identifier for the registered
+      application endpoint. It is used when the application has not been onboarded
+      using the Edge Application Management API, and available endpoints have been
+      registered by the Edge Application Registration API.
+    - `applicationServerProviderName:` Optionally, the Application Provider
+    identifier
+    - `applicationProfileId:` Optionally, the Application Profile identifier
+
+
+    ## Errors
+
+    - If the API call contains a formatting or other any other syntatic error,
+    a `400 INVALID_ARGUMENT` error is returned.
+    - If the API call cannot be authenticated due to missing, invalid, or
+    expired credentials, a `401 UNAUTHENTICATED` error is returned.
+    - If the API call has a valid access token that does not have the
+    required scope, then a `403 PERMISSION_DENIED` error is returned.
+    - If the API call has a valid access token that does not identify
+    a single device, then a `404 IDENTIFIER_NOT_FOUND` error is returned.
+    - If the API call has an `appId` that does not identify a valid
+    application on the Edge Cloud, a `404 NOT_FOUND` error is returned.
+    - If the API call has an `applicationEndpointsId` that does not identify
+    any registered endpoint on the Edge Cloud, a `404 NOT_FOUND` error
+    is returned.
+
+
+    # Identifying the device from the access token
+
+    This API requires the API consumer to identify a device as the subject of
+    the API as follows:
+
+    - When the API is invoked using a two-legged access token, the subject will
+    be identified from the optional `device` object, which therefore MUST be
+    provided.
+    - When a three-legged access token is used however, this optional
+    identifier MUST NOT be provided, as the subject will be uniquely
+    identified from the access token.
+
+    This approach simplifies API usage for API consumers using a three-legged
+    access token to invoke the API by relying on the information that is
+    associated with the access token and was identified during the
+    authentication process.
+
+    ## Error handling:
+
+    - If the subject cannot be identified from the access token and the
+    optional `device` object is not included in the request, then the server
+    will return an error with the `422 MISSING_IDENTIFIER` error code.
+    - If the subject can be identified from the access token and the optional
+    `device` object is also included in the request, then the server will
+    return an error with the `422 UNNECESSARY_IDENTIFIER` error code.
+    This will be the case even if the same device is identified by
+    these two methods, as the server is unable to make this comparison.
+    - If the subject  cannot be identified from the access token and the
+    optional `device` object only includes device identifiers not supported
+    by the implementation, then the server will return an error with the
+    `422 UNSUPPORTED_IDENTIFIER` error  code.
+    - If the service is not applicable for the subject that is identified
+    from the access token or the optional `device` object, then the server
+    will return an error code with the `422 SERVICE_NOT_APPLICABLE` error
+    code.
+    - If the subject cannot be identified from the access token and the
+    optional `device` object includes several identifiers, each of them
+    identifying a valid but different device, then the server will return
+    an error with the `422 MISSING_IDENTIFIER` error code.
+
+    # Authentication and Authorization
 
     The "Camara Security and Interoperability Profile" provides details of how
     an API consumer requests an access token. Please refer to
@@ -73,34 +190,9 @@ info:
     in compliance with privacy regulations, upholding the principles of
     transparency and user-centric privacy-by-design.
 
-    # Identifying the device from the access token
+    # Further info and support
 
-    This API requires the API consumer to identify a device as the subject of
-    the API as follows:
-    - When the API is invoked using a two-legged access token, the subject will
-    be identified from the optional `device` object, which
-    therefore MUST be provided.
-
-    - When a three-legged access token is used however, this optional
-    identifier MUST NOT be provided, as the subject will be uniquely
-    identified from the access token.
-
-    This approach simplifies API usage for API consumers using a three-legged
-    access token to invoke the API by relying on the information that is
-    associated with the access token and was identified during the
-    authentication process.
-
-    ## Error handling:
-    - If the subject cannot be identified from the access token and the
-    optional
-    `device` object is not included in the request, then the server will return
-    an error with the `422 MISSING_IDENTIFIER` error code.
-
-    - If the subject can be identified from the access token and the optional
-    `device` object is also included in the request, then the server will
-    return an error with the `422 UNNECESSARY_IDENTIFIER` error code.
-    This will be the case even if the same device is identified by
-    these two methods, as the server is unable to make this comparison.
+    (FAQs will be added in a later version of the documentation)
 
     ---
   contact:
@@ -108,29 +200,28 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
+  x-camara-commonalities: 0.5
 externalDocs:
-  description: Product documentation at CAMARA.
+  description: Product documentation at CAMARA
   url: https://github.com/camaraproject/EdgeCloud
 servers:
-  - url: "{apiRoot}/{basePath}"
+  - url: "{apiRoot}/application-endpoint-discovery/vwip"
     variables:
       apiRoot:
         default: https://localhost:443
         description: API root.
-      basePath:
-        default: application-endpoint-discovery/wip
-        description: Base path for the Application Endpoint Discovery.
+
 tags:
   - name: Application Endpoint Discovery
     description: |
-      Find the closest App Instance Endpoint to the user device.
+      Find the optimal Application Instance Endpoint(s) to the user device.
 paths:
-  /retrieve-closest-app-endpoints:
+  /retrieve-optimal-app-endpoints:
     post:
       security:
         - openId:
             - application-endpoint-discovery:app-endpoints:read
-      operationId: getAppEndpoints
+      operationId: getOptimalAppEndpoints
       parameters:
         - name: x-correlator
           in: header
@@ -140,34 +231,43 @@ paths:
             request, the API provider must include it in the response with
             the same value that was used in the request. Otherwise, it is
             optional to include the "x-correlator" header in the response with
-             any valid value. Recommendation is to use UUID for values.
+            any valid value. Recommendation is to use UUID for values.
           schema:
             type: string
-            format: uuid
+            pattern: ^[a-zA-Z0-9-]{0,55}$
+            example: "b4333c46-49c0-4f62-80d7-f0ef930f1c46"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Device"
+              $ref: "#/components/schemas/EndpointDiscoveryInfo"
+            examples:
+              Identify Device By 3-Legged Access Token and AppId:
+                $ref: '#/components/examples/IdentifyDeviceBy3LeggedTokenAppId'
+              Identify Device By Phone Number and AppId:
+                $ref: '#/components/examples/IdentifyDeviceByPhoneNumberAppId'
+              Identify Device By IP Address and ApplicationEndpointsId:
+                $ref: '#/components/examples/IdentifyDeviceByIPAddressAppEndpointsId'
+              Identify Device By Multiple Identifiers and AppId:
+                $ref: '#/components/examples/IdentifyDeviceByMultipleIdentifiersAppId'
       responses:
         "200":
           description: |
-           Successful response, returning the closest App Instance Endpoints
+           Successful response, returning the optimal App Instance Endpoint(s)
            to the user device identified in the request body. The response
-           will include the App Instance with the minimum to the end user
-           device identified in the request. There can be multiple application
-           instances returned in the response and the API consumer can choose
-           the one that best suits their needs.
+           will include the endpoint(s) exposed by the Application Instance(s)
+           with the shortest network path to the end user device identified in the
+           request. There can be multiple application endpoints returned in the
+           response and the API consumer can choose the one that best suits
+           their needs.
           headers:
             x-correlator:
               $ref: "#/components/headers/x-correlator"
           content:
             application/json:
               schema:
-                title: EdgeHostedApplicationEndpoints
-                type: array
-                items:
-                  $ref: "#/components/schemas/EdgeHostedapplication"
+                $ref: "#/components/schemas/EndpointDiscoveryResult"
+
         "400":
           $ref: "#/components/responses/Generic400"
         "401":
@@ -181,13 +281,13 @@ paths:
         "429":
           $ref: "#/components/responses/Generic429"
       tags:
-        - Endpoint Discovery
+        - Application Endpoint Discovery
       summary: |
-        Returns the Endpoint of the closest App Instance to user device
-        identified in the request.
+        Returns the Endpoint(s) of the optimal Application Instance(s) to the user
+        device identified in the request.
       description: |
-        On receiving this request, the network will return the name
-        of the App Instance with the shortest network path to the end user
+        On receiving this request, the network will return the endpoint(s)
+        of the App Instance(s) with the shortest network path to the end user
         device identified in the request.
 components:
   securitySchemes:
@@ -206,7 +306,7 @@ components:
       required: false
       schema:
         type: string
-        format: uuid
+        pattern: ^[a-zA-Z0-9-]{0,55}$
   schemas:
     Device:
       description: |
@@ -221,27 +321,123 @@ components:
         * `phoneNumber`
         * `networkAccessIdentifier`
 
-        NOTE: the MNO might support only a subset of these options. The API
-        invoker can provide multiple identifiers to be compatible across
-        different MNOs. In this case the identifiers MUST belong to
-        the same device.
+        NOTE1: the network operator might support only a subset of these
+        options. The API invoker can provide multiple identifiers to be
+        compatible across different network operators. In this case the
+        identifiers MUST belong to the same device.
+
+        NOTE2: as for this Commonalities release, we are enforcing that
+        the networkAccessIdentifier is only part of the schema for
+        future-proofing, and CAMARA does not currently allow its use.
+        After the CAMARA meta-release work is concluded and the relevant
+        issues are resolved, its use will need to be explicitly documented
+        in the guidelines.
       type: object
       properties:
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+        networkAccessIdentifier:
+          $ref: "#/components/schemas/NetworkAccessIdentifier"
+        ipv4Address:
+          $ref: "#/components/schemas/DeviceIpv4Addr"
+        ipv6Address:
+          $ref: "#/components/schemas/SingleIpv6Addr"
+      minProperties: 1
+
+    PhoneNumber:
+      description: |
+        A public identifier addressing a telephone subscription. In mobile
+        networks it corresponds to the MSISDN (Mobile Station International
+        Subscriber Directory Number). In order to be globally unique it has
+        to be formatted in international format, according to E.164
+        standard, prefixed with '+'.
+      type: string
+      pattern: '^\+[1-9][0-9]{4,14}$'
+      example: "+123456789"
+
+    NetworkAccessIdentifier:
+      description: |
+        A public identifier addressing a subscription in a mobile network.
+        In 3GPP terminology, it corresponds to the GPSI formatted with the
+        External Identifier ({Local Identifier}@{Domain Identifier}). Unlike
+        the telephone number, the network access identifier is not subjected
+        to portability ruling in force, and is individually managed by each
+        operator.
+      type: string
+      example: "123456789@domain.com"
+
+    DeviceIpv4Addr:
+      type: object
+      description: |
+        The device should be identified by either the public (observed) IP
+        address and port as seen by the application server, or the private
+        (local) and any public (observed) IP addresses in use by the device
+        (this information can be obtained by various means, for example from
+        some DNS servers).
+
+        If the allocated and observed IP addresses are the same (i.e. NAT is
+        not in use) then  the same address should be specified for both
+        publicAddress and privateAddress.
+
+        If NAT64 is in use, the device should be identified by its
+        publicAddress and publicPort, or separately by its allocated IPv6
+        address (field ipv6Address of the Device object)
+
+        In all cases, publicAddress must be specified, along with at least
+        one of either privateAddress or publicPort, dependent upon which is
+        known. In general, mobile devices cannot be identified by their
+        public IPv4 address alone.
+      properties:
+        publicAddress:
+          $ref: "#/components/schemas/SingleIpv4Addr"
+        privateAddress:
+          $ref: "#/components/schemas/SingleIpv4Addr"
+        publicPort:
+          $ref: "#/components/schemas/Port"
+      anyOf:
+        - required: [publicAddress, privateAddress]
+        - required: [publicAddress, publicPort]
+      example:
+        publicAddress: "84.125.93.10"
+        publicPort: 59765
+
+    SingleIpv4Addr:
+      description: A single IPv4 address with no subnet mask
+      type: string
+      format: ipv4
+      example: "84.125.93.10"
+
+    Port:
+      description: TCP or UDP port number
+      type: integer
+      minimum: 0
+      maximum: 65535
+
+    SingleIpv6Addr:
+      description: |
+        The device should be identified by the observed IPv6 address, or by
+        any single IPv6 address from within the subnet allocated to the
+        device (e.g. adding ::0 to the /64 prefix).
+      type: string
+      format: ipv6
+      example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
+
+    EndpointDiscoveryInfo:
+      description: |
+        Element to retrieve the optimal application endpoint(s) for the
+        identified device.
+      type: object
+      anyOf:
+        - required: [applicationEndpointsId]
+        - required: [appId]
+      properties:
         device:
-          type: object
-          properties:
-            phoneNumber:
-              $ref: "#/components/schemas/PhoneNumber"
-            networkAccessIdentifier:
-              $ref: "#/components/schemas/NetworkAccessIdentifier"
-            ipv4Address:
-              $ref: "#/components/schemas/Ipv4Addr"
-            ipv6Address:
-              $ref: "#/components/schemas/Ipv6Addr"
+          $ref: "#/components/schemas/Device"
         applicationEndpointsId:
           $ref: "#/components/schemas/ApplicationEndpointsId"
         appId:
           $ref: "#/components/schemas/AppId"
+
     ApplicationEndpointsId:
       description: |
         A system-defined string identifier representing
@@ -253,36 +449,58 @@ components:
     AppId:
       type: string
       format: uuid
-      description: A globally unique identifier associated
-        with the application.
-        This GUID will have been previously provided by the
-        Edge Cloud Zone provider.
+      description: |
+        A globally unique identifier associated with the application.
+        This GUID will have been previously provided by the Edge Cloud Zone
+        provider.
+      example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 
-    EdgeHostedapplication:
-      description: Edge hosted application represented
-        by application Endpoint definition
+    EndpointDiscoveryResult:
+      description: |
+        Endpoint Discovery result including optimal application endpoint(s)
+        for the requested identified device.
       type: object
+      required:
+        - applicationEndpoints
+      anyOf:
+        - required: [applicationEndpointsId]
+        - required: [appId]
       properties:
-        applicationEndpointsId:
-          $ref: "#/components/schemas/ApplicationEndpointsId"
-        applicationEndpoint:
-          $ref: "#/components/schemas/ResourcesapplicationEndpoint"
-        applicationServerProviderName:
-          type: string
-          description: Unique ID representing the Edge
-            Application Provider
+        applicationEndpoints:
+          description: Array of Application Endpoints.
+          type: array
+          items:
+            $ref: "#/components/schemas/ApplicationEndpoint"
+          minItems: 1
         appId:
           $ref: "#/components/schemas/AppId"
-        applicationDescription:
+        applicationEndpointsId:
+          $ref: "#/components/schemas/ApplicationEndpointsId"
+        applicationServerProviderName:
           type: string
-          description: Description of the application Endpoint
-          additionalProperties: false
+          description: Unique ID representing the Edge Application Provider
         applicationProfileId:
           $ref: "#/components/schemas/ApplicationProfileId"
+
+    EdgeCloudZone:
+      type: object
+      description: |
+        An Edge Cloud Zone, uniquely identified by a
+        combination of the value of the Edge Cloud Zone Id object
+        and the value of the Edge Cloud Provider
+        object. This value is used to identify an Edge Cloud zone
+        between Edge Clouds from different Edge Cloud Providers.
+      required:
+        - edgeCloudZoneId
+        - edgeCloudZoneName
+        - edgeCloudProvider
+      properties:
         edgeCloudZoneId:
           $ref: "#/components/schemas/EdgeCloudZoneId"
         edgeCloudZoneName:
           $ref: "#/components/schemas/EdgeCloudZoneName"
+        edgeCloudZoneStatus:
+          $ref: "#/components/schemas/EdgeCloudZoneStatus"
         edgeCloudProvider:
           $ref: "#/components/schemas/EdgeCloudProvider"
         edgeCloudRegion:
@@ -295,41 +513,91 @@ components:
       example: "123e4567-e89b-12d3-a456-426614174000"
 
     EdgeCloudRegion:
-      description: The region where the Edge Cloud Zone is located.
+      description: |
+        The EdgeCloudProvider's name for the region where the Edge Cloud
+        Zone is located.
       type: string
+      pattern: ^[A-Za-z0-9]([A-Za-z0-9-]{0,53}[A-Za-z0-9])?$
       example: "us-west-1"
+
+    EdgeCloudZoneStatus:
+      description: Status of the Edge Cloud Zone (default is 'unknown')
+      type: string
+      enum:
+        - active
+        - inactive
+        - unknown
+      default: unknown
 
     EdgeCloudProvider:
       description: The provider of the Edge Cloud.
       type: string
-      example: "Provider A"
+      pattern: ^[A-Za-z0-9]([A-Za-z0-9-]{0,53}[A-Za-z0-9])?$
+      example: "ProviderA"
 
     EdgeCloudZoneName:
       description: The name of the Edge Cloud Zone.
       type: string
-      example: "Zone A"
+      pattern: ^[A-Za-z0-9]([A-Za-z0-9-]{0,53}[A-Za-z0-9])?$
+      example: "ZoneA"
 
     ApplicationProfileId:
       description: A unique identifier for the application profile.
       type: string
       format: uuid
       example: "123e4567-e89b-12d3-a456-426614174000"
-    ResourcesapplicationEndpoint:
+
+    ApplicationEndpoint:
       type: object
-      description: Information about the application endpoint, including
-       URI, FQDN, IP addresses, and port.
+      description: |
+        An application server IP address or FQDN with a port,
+        exposed by an application instance deployed on the Edge Cloud
+        provider.
+      required:
+        - port
+      anyOf:
+        - required: [fqdn]
+        - required: [ipv4Addresses]
+        - required: [ipv6Addresses]
       properties:
-        uri:
-          $ref: "#/components/schemas/Uri"
         fqdn:
           $ref: "#/components/schemas/Fqdn"
-        ipv4Address:
-          $ref: "#/components/schemas/Ipv4Addr"
-        ipv6Address:
-          $ref: "#/components/schemas/Ipv6Addr"
+        ipv4Addresses:
+          description: Array of IPv4 addresses.
+          type: array
+          items:
+            $ref: "#/components/schemas/Ipv4Address"
+          minItems: 1
+        ipv6Addresses:
+          description: Array of IPv6 addresses.
+          type: array
+          items:
+            $ref: "#/components/schemas/Ipv6Address"
+          minItems: 1
         port:
           $ref: "#/components/schemas/Port"
-      additionalProperties: false
+        edgeCloudZone:
+          $ref: "#/components/schemas/EdgeCloudZone"
+        applicationEndpointDescription:
+          type: string
+          description: Description of the application endpoint
+
+    Fqdn:
+      type: string
+      description: Fully Qualified Domain Name.
+
+    Ipv4Address:
+      type: string
+      description: |
+        A single IPv4 address specified in dotted-quad form like 1.2.3.4.
+      example: "198.51.100.1"
+
+    Ipv6Address:
+      type: string
+      description: |
+        A single IPv6 address, following IETF 5952 format like
+        2001:db8:85a3:8d3:1319:8a2e:370:7344.
+      example: "2001:db8:85a3::8a2e:370:7334"
 
     ErrorInfo:
       type: object
@@ -348,51 +616,6 @@ components:
         message:
           type: string
           description: Detailed error description
-
-    Uri:
-      type: string
-      description: Uniform Resource Identifier.
-      example: "https://example.com/resource"
-    Fqdn:
-      type: string
-      description: Fully Qualified Domain Name.
-    Ipv4Addr:
-      type: string
-      description: |
-        IP of the device. A single IPv4 address may be specified in
-        dotted-quad form 1.2.3.4. Only this exact IP number will match the flow
-        control rule.
-      example: "198.51.100.1"
-    Ipv6Addr:
-      type: string
-      description: |
-        IP of the device. A single IPv6 address, following IETF 5952
-        format, may be specified like 2001:db8:85a3:8d3:1319:8a2e:370:7344
-      example: "2001:db8:85a3::8a2e:370:7334"
-    Port:
-      type: integer
-      description: Port to stablish the connection
-      minimum: 0
-    PhoneNumber:
-      description: |
-        A public identifier addressing a telephone subscription.
-        In mobile networks it corresponds to the MSISDN (Mobile Station
-        International Subscriber Directory Number). In order to be globally
-        unique it has to be formatted in international format, according
-        to E.164 standard, prefixed with '+'.
-      type: string
-      pattern: '^\+[1-9][0-9]{4,14}$'
-      example: "+123456789"
-    NetworkAccessIdentifier:
-      description: |
-       A public identifier addressing a subscription in a mobile
-       network. In 3GPP terminology, it corresponds to the GPSI formatted with
-       the External Identifier ({Local Identifier}@{Domain Identifier}). Unlike
-       the telephone number, the network access identifier is not subjected to
-       portability ruling in force, and is individually managed by each
-       operator.
-      type: string
-      example: "123456789@domain.com"
   responses:
     Generic400:
       description: Bad Request
@@ -420,11 +643,12 @@ components:
                 status: 400
                 code: INVALID_ARGUMENT
                 message: Client specified an invalid argument, request body or
-                 query param.
+                  query param.
             GENERIC_400_OUT_OF_RANGE:
-              description: Out of Range. Specific Syntax Exception used when a
-               given field has a pre-defined range or a invalid filter criteria
-               combination is requested
+              description: |
+                Out of Range. Specific Syntax Exception used when a
+                given field has a pre-defined range or a invalid filter criteria
+                combination is requested
               value:
                 status: 400
                 code: OUT_OF_RANGE
@@ -447,22 +671,16 @@ components:
                   code:
                     enum:
                       - UNAUTHENTICATED
-                      - AUTHENTICATION_REQUIRED
           examples:
             GENERIC_401_UNAUTHENTICATED:
-              description: Request cannot be authenticated
+              description: |
+                Request cannot be authenticated and a new authentication
+                is required
               value:
                 status: 401
                 code: UNAUTHENTICATED
                 message: Request not authenticated due to missing, invalid,
-                 or expired credentials.
-            GENERIC_401_AUTHENTICATION_REQUIRED:
-              description: New authentication is needed, authentication
-               is no longer valid
-              value:
-                status: 401
-                code: AUTHENTICATION_REQUIRED
-                message: New authentication is required.
+                  or expired credentials. A new authentication is required.
     Generic403:
       description: Forbidden
       headers:
@@ -484,16 +702,18 @@ components:
                       - INVALID_TOKEN_CONTEXT
           examples:
             GENERIC_403_PERMISSION_DENIED:
-              description: Permission denied. OAuth2 token access does not have
-               the required scope or when the user fails operational security
+              description: |
+                Permission denied. OAuth2 token access does not have the
+                required scope or when the user fails operational security
               value:
                 status: 403
                 code: PERMISSION_DENIED
                 message: Client does not have sufficient permissions to
                  perform this action.
             GENERIC_403_INVALID_TOKEN_CONTEXT:
-              description: Reflect some inconsistency between information in
-               some field of the API and the related OAuth2 Token
+              description: |
+                Reflect some inconsistency between information in
+                some field of the API and the related OAuth2 Token
               value:
                 status: 403
                 code: INVALID_TOKEN_CONTEXT
@@ -538,30 +758,59 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorInfo"
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 422
+                  code:
+                    enum:
+                      - IDENTIFIER_MISMATCH
+                      - SERVICE_NOT_APPLICABLE
+                      - MISSING_IDENTIFIER
+                      - UNSUPPORTED_IDENTIFIER
+                      - UNNECESSARY_IDENTIFIER
           examples:
             GENERIC_422_IDENTIFIER_MISMATCH:
-              description: Inconsistency between device identifiers
-               not pointing to the same device
+              description: |
+                Inconsistency between identifiers not pointing to
+                the same device
               value:
                 status: 422
                 code: IDENTIFIER_MISMATCH
                 message: Provided identifiers are not consistent.
             GENERIC_422_SERVICE_NOT_APPLICABLE:
-              description: Service is not available for the provided device
+              description: Service not applicable for the provided identifier
               value:
                 status: 422
                 code: SERVICE_NOT_APPLICABLE
-                message: The Service is not available for the provided device.
+                message: The service is not available for the provided identifier.
             GENERIC_422_MISSING_IDENTIFIER:
-              description:
-                An identifier is not included in the request and
-                the device or phone number identificationinformation cannot
-                be derived from the 3-legged access token
+              description: |
+                An identifier is not included in the request and the device or phone
+                number identification cannot be derived from the 3-legged access
+                token
               value:
                 status: 422
                 code: MISSING_IDENTIFIER
                 message: The device cannot be identified.
+            GENERIC_422_UNSUPPORTED_IDENTIFIER:
+              description: |
+                None of the provided identifiers is supported by the implementation
+              value:
+                status: 422
+                code: UNSUPPORTED_IDENTIFIER
+                message: The identifier provided is not supported.
+            GENERIC_422_UNNECESSARY_IDENTIFIER:
+              description: |
+                An explicit identifier is provided when a device or phone
+                number has already been identified from the access token
+              value:
+                status: 422
+                code: UNNECESSARY_IDENTIFIER
+                message: The device is already identified by the access token.
     Generic429:
       description: Too Many Requests
       headers:
@@ -583,16 +832,48 @@ components:
                       - TOO_MANY_REQUESTS
           examples:
             GENERIC_429_QUOTA_EXCEEDED:
-              description: Request is rejected due to exceeding
-               a business quota limit
+              description: Request is rejected due to exceeding a business quota limit
               value:
                 status: 429
                 code: QUOTA_EXCEEDED
                 message: Out of resource quota.
             GENERIC_429_TOO_MANY_REQUESTS:
-              description: Access to the API has been temporarily
-               blocked due to rate or spike arrest limits being reached
+              description: |
+                Access to the API has been temporarily blocked due to rate or spike
+                arrest limits being reached
               value:
                 status: 429
                 code: TOO_MANY_REQUESTS
                 message: Rate limit reached.
+  examples:
+    IdentifyDeviceBy3LeggedTokenAppId:
+      description: Empty JSON when device is identified by access token
+      value:
+        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+    IdentifyDeviceByPhoneNumberAppId:
+      description: Identifying device by phone number
+      value:
+        device:
+          phoneNumber: "+123456789"
+        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+    IdentifyDeviceByIPAddressAppEndpointsId:
+      description: Identifying device by IP address
+      value:
+        device:
+          ipv4Address:
+            publicAddress: "84.125.93.10"
+            publicPort: 59765
+        applicationEndpointsId: "4d596ac1-7822-4927-a3c5-d72e1f922c94"
+
+    IdentifyDeviceByMultipleIdentifiersAppId:
+      description: Identifying device by multiple device identifiers
+      value:
+        device:
+          phoneNumber: "+123456789"
+          ipv4Address:
+            publicAddress: "84.125.93.10"
+            publicPort: 59765
+          networkAccessIdentifier: "123456789@domain.com"
+        appId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
