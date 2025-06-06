@@ -814,6 +814,7 @@ components:
             - OVA
             - CONTAINER
             - HELM
+            - CSAR
         operatingSystem:
           $ref: '#/components/schemas/OperatingSystem'
         appRepo:
