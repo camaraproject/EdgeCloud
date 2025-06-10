@@ -598,11 +598,6 @@ paths:
           headers:
             x-correlator:
               $ref: "#/components/headers/x-correlator"
-            Location:
-              description: Contains the URI of the newly created application.
-              required: true
-              schema:
-                type: string
           content:
             application/json:
               schema:
@@ -676,6 +671,8 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+        '410':
+          $ref: '#/components/responses/410'
         '500':
           $ref: '#/components/responses/500'
         '503':
@@ -702,7 +699,7 @@ paths:
           schema:
             $ref: "#/components/schemas/AppDeploymentId"
       responses:
-        '204':
+        '202':
           description: |
             Request accepted to be processed. It applies for async
             deletion process
@@ -717,6 +714,8 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+        '410':
+          $ref: '#/components/responses/410'
         '500':
           $ref: '#/components/responses/500'
         '503':
@@ -1850,6 +1849,19 @@ components:
             status: 404
             code: NOT_FOUND
             message: "Resource does not exist"
+    '410':
+      description: Gone
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 410
+            code: GONE
+            message: "The resource has been permanently removed"
     '500':
       description: Internal Server Error
       headers:
