@@ -733,6 +733,79 @@ paths:
           $ref: '#/components/responses/500'
         '503':
           $ref: '#/components/responses/503'
+    patch:
+      security:
+        - openId:
+            - edge-application-management:deployments:update
+      tags:
+        - Application
+      summary: Update an Application Deployment
+      description: |
+        Update the configuration or properties of an existing application deployment.
+        This may include changing the deployment name, target Edge Cloud Zones, or other updatable fields.
+      operationId: updateAppDeployment
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+        - name: appDeploymentId
+          in: path
+          description: |
+            Identifier of the specific application deployment to be updated.
+          required: true
+          schema:
+            $ref: "#/components/schemas/AppDeploymentId"
+      requestBody:
+        description: |
+          The fields to update for the application deployment.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appDeploymentName:
+                  $ref: '#/components/schemas/AppDeploymentName'
+                edgeCloudZones:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/EdgeCloudZoneId'
+                kubernetesClusterRefs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/KubernetesClusterRef'
+      responses:
+        '200':
+          description: Application deployment updated successfully
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppDeploymentInfo'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '410':
+          $ref: '#/components/responses/410'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                status: 409
+                code: CONFLICT
+                message: "Update conflict"
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
 
   /clusters:
     get:
