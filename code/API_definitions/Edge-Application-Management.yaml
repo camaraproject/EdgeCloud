@@ -80,7 +80,7 @@ info:
     * __getAppDeployments__ - Retrieves a list of deployments for a given
     application.
     * __deleteAppDeployment__ - Terminates a specific application deployment,
-    removing all associated instances within the specified Edge Cloud Zone.
+    removing all associated instances.
 
     __Edge Cloud information__
     *  __getEdgeCloudZones__ List of the operators Edge Cloud Zones and their
@@ -564,7 +564,7 @@ paths:
             - edge-application-management:deployments:write
       tags:
         - Application
-      summary: Deployment of an Application
+      summary: Deploy an Application
       description: |
         Ask the Edge Cloud Platform to instantiate an application to several
         Edge Cloud Zones.
@@ -689,8 +689,7 @@ paths:
         - Application
       summary: Terminate an Application Deployment
       description: |
-        Delete a deployment terminating all related instances of an application within
-        an Edge Cloud Zone
+        Delete a deployment terminating all related instances of an application
       operationId: deleteAppDeployment
       parameters:
         - $ref: '#/components/parameters/x-correlator'
@@ -916,7 +915,7 @@ components:
       description: |
         A globally unique identifier associated with a existing deployment
         of an application. Edge Cloud Platform generates this identifier when
-        the instantiation in the Edge Cloud Zone is successful.
+        the deployment request in the Edge Cloud Zone is successful.
 
     AppDeploymentInfo:
       type: object
