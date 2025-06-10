@@ -591,6 +591,10 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/EdgeCloudZoneId'
+                kubernetesClusterRefs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/KubernetesClusterRef'
         required: true
       responses:
         '202':
