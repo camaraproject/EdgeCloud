@@ -654,6 +654,15 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/AppId'
+        - name: appDeploymentId
+          description: |
+            A globally unique identifier associated with a existing deployment
+            of an application. Edge Cloud Platform generates this identifier when
+            the deployment request in the Edge Cloud Zone is successful.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/AppDeploymentId'
       responses:
         '200':
           description: |
