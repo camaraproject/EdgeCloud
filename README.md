@@ -21,7 +21,7 @@ Sandbox API Repository to describe, develop, document, and test Service API(s) w
   * Provide and manage application images to be deployed on resources within the operator network. 
   * Use reserved compute resources within the operator network for the deployment of applications on VMs or containers.  
   * Influence the traffic routing from the user device toward the Edge instance of the Application (https://github.com/camaraproject/TrafficInfluence). 
-  * NOTE: The scope of this API family should be limited (at least at a first stage) to 4G and 5G.  
+  * NOTE: The scope of these APIs should be limited (at least at a first stage) to 4G and 5G.  
 * Describe, develop, document and test the APIs (with 1-2 Telcos)  
 * Started: 5th July 2022
 
