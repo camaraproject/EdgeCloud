@@ -744,10 +744,10 @@ paths:
         Update the configuration or properties of an existing application deployment
         using JSON Merge Patch semantics (RFC 7396). Only the fields provided in the
         request body will be updated. Fields not included in the request will remain unchanged.
-        
+
         IMPORTANT: When updating array fields (like edgeCloudZones or kubernetesClusterRefs),
         JSON Merge Patch will REPLACE the entire array, not merge or append to it.
-        
+
         This operation may include changing the deployment name, target Edge Cloud Zones, or other updatable fields.
       operationId: updateAppDeployment
       parameters:
@@ -763,7 +763,7 @@ paths:
         description: |
           The fields to update for the application deployment using JSON Merge Patch (RFC 7396).
           Only the fields included in the request will be updated; omitted fields remain unchanged.
-          
+
           NOTE: When updating array fields (edgeCloudZones, kubernetesClusterRefs), the entire array
           will be REPLACED, not merged. To modify an array, you must include the complete array
           with all desired elements in your request.
@@ -790,7 +790,7 @@ paths:
                   This example shows how to update only the deployment name.
                   Other fields will remain unchanged.
                 value:
-                  appDeploymentName: "my-updated-deployment"
+                  appDeploymentName: "my_updated_deployment"
               updateMultipleFields:
                 summary: Update multiple fields simultaneously
                 description: |
@@ -798,34 +798,34 @@ paths:
                   and Edge Cloud Zones in a single request. Remember that both
                   array fields will be completely replaced with the new values.
                 value:
-                  appDeploymentName: "production-deployment"
+                  appDeploymentName: "production_deployment"
                   edgeCloudZones:
-                    - "zone-us-east-1"
-                    - "zone-us-west-1"
+                    - "123e4567-e89b-12d3-a456-426614174000"
+                    - "123e4567-e89b-12d3-a456-426614174001"
                   kubernetesClusterRefs:
-                    - "cluster-prod-east"
-                    - "cluster-prod-west"
+                    - "642f6105-7015-4af1-a4d1-e1ecb8437abc"
+                    - "642f6105-7015-4af1-a4d1-e1ecb8437def"
               arrayReplacementExample:
                 summary: Example of array replacement behavior
                 description: |
                   This example demonstrates how arrays are completely replaced in JSON Merge Patch.
-                  
+
                   If the current deployment has:
-                  - edgeCloudZones: ["zone-us-east-1", "zone-us-west-1", "zone-eu-central-1"]
-                  - kubernetesClusterRefs: ["cluster-1", "cluster-2"]
-                  
+                  - edgeCloudZones: ["123e4567-e89b-12d3-a456-426614174000", "123e4567-e89b-12d3-a456-426614174001", "123e4567-e89b-12d3-a456-426614174002"]
+                  - kubernetesClusterRefs: ["642f6105-7015-4af1-a4d1-e1ecb8437abc", "642f6105-7015-4af1-a4d1-e1ecb8437def"]
+
                   And the user sends this patch:
-                  - edgeCloudZones: ["zone-us-east-1", "zone-ap-south-1"]
-                  
+                  - edgeCloudZones: ["123e4567-e89b-12d3-a456-426614174000", "123e4567-e89b-12d3-a456-426614174003"]
+
                   The result will be:
-                  - edgeCloudZones: ["zone-us-east-1", "zone-ap-south-1"] (completely replaced)
-                  - kubernetesClusterRefs: ["cluster-1", "cluster-2"] (unchanged, as it wasn't in the patch)
-                  
+                  - edgeCloudZones: ["123e4567-e89b-12d3-a456-426614174000", "123e4567-e89b-12d3-a456-426614174003"] (completely replaced)
+                  - kubernetesClusterRefs: ["642f6105-7015-4af1-a4d1-e1ecb8437abc", "642f6105-7015-4af1-a4d1-e1ecb8437def"] (unchanged, as it wasn't in the patch)
+
                   To add a single zone while keeping existing ones, ALL zones must be included in the request.
                 value:
                   edgeCloudZones:
-                    - "zone-us-east-1"
-                    - "zone-ap-south-1"
+                    - "123e4567-e89b-12d3-a456-426614174000"
+                    - "123e4567-e89b-12d3-a456-426614174003"
       responses:
         '200':
           description: Application deployment updated successfully
