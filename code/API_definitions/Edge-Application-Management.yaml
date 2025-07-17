@@ -741,8 +741,14 @@ paths:
         - Application
       summary: Update an Application Deployment
       description: |
-        Update the configuration or properties of an existing application deployment.
-        This may include changing the deployment name, target Edge Cloud Zones, or other updatable fields.
+        Update the configuration or properties of an existing application deployment
+        using JSON Merge Patch semantics (RFC 7396). Only the fields provided in the
+        request body will be updated. Fields not included in the request will remain unchanged.
+        
+        IMPORTANT: When updating array fields (like edgeCloudZones or kubernetesClusterRefs),
+        JSON Merge Patch will REPLACE the entire array, not merge or append to it.
+        
+        This operation may include changing the deployment name, target Edge Cloud Zones, or other updatable fields.
       operationId: updateAppDeployment
       parameters:
         - $ref: '#/components/parameters/x-correlator'
@@ -755,7 +761,12 @@ paths:
             $ref: "#/components/schemas/AppDeploymentId"
       requestBody:
         description: |
-          The fields to update for the application deployment.
+          The fields to update for the application deployment using JSON Merge Patch (RFC 7396).
+          Only the fields included in the request will be updated; omitted fields remain unchanged.
+          
+          NOTE: When updating array fields (edgeCloudZones, kubernetesClusterRefs), the entire array
+          will be REPLACED, not merged. To modify an array, you must include the complete array
+          with all desired elements in your request.
         required: true
         content:
           application/merge-patch+json:
@@ -772,6 +783,49 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/KubernetesClusterRef'
+            examples:
+              updateDeploymentName:
+                summary: Update only the deployment name
+                description: |
+                  This example shows how to update only the deployment name.
+                  Other fields will remain unchanged.
+                value:
+                  appDeploymentName: "my-updated-deployment"
+              updateMultipleFields:
+                summary: Update multiple fields simultaneously
+                description: |
+                  This example shows how to update both the deployment name
+                  and Edge Cloud Zones in a single request. Remember that both
+                  array fields will be completely replaced with the new values.
+                value:
+                  appDeploymentName: "production-deployment"
+                  edgeCloudZones:
+                    - "zone-us-east-1"
+                    - "zone-us-west-1"
+                  kubernetesClusterRefs:
+                    - "cluster-prod-east"
+                    - "cluster-prod-west"
+              arrayReplacementExample:
+                summary: Example of array replacement behavior
+                description: |
+                  This example demonstrates how arrays are completely replaced in JSON Merge Patch.
+                  
+                  If the current deployment has:
+                  - edgeCloudZones: ["zone-us-east-1", "zone-us-west-1", "zone-eu-central-1"]
+                  - kubernetesClusterRefs: ["cluster-1", "cluster-2"]
+                  
+                  And the user sends this patch:
+                  - edgeCloudZones: ["zone-us-east-1", "zone-ap-south-1"]
+                  
+                  The result will be:
+                  - edgeCloudZones: ["zone-us-east-1", "zone-ap-south-1"] (completely replaced)
+                  - kubernetesClusterRefs: ["cluster-1", "cluster-2"] (unchanged, as it wasn't in the patch)
+                  
+                  To add a single zone while keeping existing ones, ALL zones must be included in the request.
+                value:
+                  edgeCloudZones:
+                    - "zone-us-east-1"
+                    - "zone-ap-south-1"
       responses:
         '200':
           description: Application deployment updated successfully
