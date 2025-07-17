@@ -758,7 +758,7 @@ paths:
           The fields to update for the application deployment.
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               type: object
               properties:
