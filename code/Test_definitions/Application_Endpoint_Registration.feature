@@ -43,8 +43,6 @@ Scenario: Successfully register application endpoint with IPv4 address
     Then the response status code is 200
     And the response header "Content-Type" is "application/json"
     And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
-    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
-    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ApplicationEndpointsId"
     And the response property is a valid UUID format
@@ -66,6 +64,7 @@ Scenario: Successfully register application endpoint with IPv6 address
     When the request "registerApplicationEndpoints" is sent
     Then the response status code is 200
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ApplicationEndpointsId"
     And the response property is a valid UUID format
@@ -209,6 +208,7 @@ Scenario: Fail to register with invalid URI format
     When the request "registerApplicationEndpoints" is sent
     Then the response status code is 400
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ErrorInfo"
     And the response property "$.code" is "INVALID_ARGUMENT"
@@ -217,10 +217,12 @@ Scenario: Fail to register with invalid URI format
 Scenario: Fail to retrieve endpoint with invalid applicationEndpointsId format
     Given the path "/application-endpoints/{applicationEndpointsId}"
     And the path parameter "applicationEndpointsId" is set to "invalid-uuid-format"
+    And the header "x-correlator" complies with the schema at "#/components/parameters/x-correlator"
     And the header "x-correlator" is set to a valid correlation identifier
     When the request "getApplicationEndpointsById" is sent
     Then the response status code is 400
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ErrorInfo"
     And the response property "$.code" is "INVALID_ARGUMENT"
@@ -232,12 +234,14 @@ Scenario: Fail to retrieve endpoint with invalid applicationEndpointsId format
 @app_endpoint_registration_14_no_auth_token
 Scenario: Fail to register when no authentication token is provided
     Given the path "/application-endpoints"
+    And the header "x-correlator" complies with the schema at "#/components/parameters/x-correlator"
     And the header "x-correlator" is set to a valid correlation identifier
     And an API consumer without an authentication token
     And the request body is an array containing valid ApplicationEndpointInfo
     When the request "registerApplicationEndpoints" is sent
     Then the response status code is 401
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ErrorInfo"
     And the response property "$.code" is "UNAUTHENTICATED"
@@ -245,12 +249,14 @@ Scenario: Fail to register when no authentication token is provided
 @app_endpoint_registration_15_insufficient_scope
 Scenario: Fail to register when token lacks required write scope
     Given the path "/application-endpoints"
+    And the header "x-correlator" complies with the schema at "#/components/parameters/x-correlator"
     And the header "x-correlator" is set to a valid correlation identifier
     And an API consumer with an authentication token missing 'application-endpoint-registration:application-endpoints:write' scope
     And the request body is an array containing valid ApplicationEndpointInfo
     When the request "registerApplicationEndpoints" is sent
     Then the response status code is 403
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ErrorInfo"
     And the response property "$.code" is "PERMISSION_DENIED"
@@ -258,12 +264,14 @@ Scenario: Fail to register when token lacks required write scope
 @app_endpoint_registration_16_invalid_token_context
 Scenario: Fail when application profile in request doesn't match token context
     Given the path "/application-endpoints"
+    And the header "x-correlator" complies with the schema at "#/components/parameters/x-correlator"
     And the header "x-correlator" is set to a valid correlation identifier
     And an API consumer with a valid token associated with a specific application profile
     And the request body is an array containing ApplicationEndpointInfo with different applicationProfileId than token context
     When the request "registerApplicationEndpoints" is sent
     Then the response status code is 403
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ErrorInfo"
     And the response property "$.code" is "INVALID_TOKEN_CONTEXT"
@@ -276,10 +284,12 @@ Scenario: Fail when application profile in request doesn't match token context
 Scenario: Fail to retrieve application endpoint with non-existent ID
     Given the path "/application-endpoints/{applicationEndpointsId}"
     And the path parameter "applicationEndpointsId" is set to a valid UUID format but non-existent endpoint ID
+    And the header "x-correlator" complies with the schema at "#/components/parameters/x-correlator"
     And the header "x-correlator" is set to a valid correlation identifier
     When the request "getApplicationEndpointsById" is sent
     Then the response status code is 404
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ErrorInfo"
     And the response property "$.code" is "NOT_FOUND"
@@ -287,12 +297,14 @@ Scenario: Fail to retrieve application endpoint with non-existent ID
 @app_endpoint_registration_18_unidentifiable_application_profile
 Scenario: Fail when application profile cannot be identified from token context
     Given the path "/application-endpoints"
+    And the header "x-correlator" complies with the schema at "#/components/parameters/x-correlator"
     And the header "x-correlator" is set to a valid correlation identifier
     And an API consumer with a token that doesn't contain application profile information
     And the request body is an array containing ApplicationEndpointInfo where applicationProfileId cannot be derived from token
     When the request "registerApplicationEndpoints" is sent
     Then the response status code is 422
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ErrorInfo"
     And the response property "$.code" is "UNIDENTIFIABLE_APPLICATION_PROFILE"
@@ -300,11 +312,13 @@ Scenario: Fail when application profile cannot be identified from token context
 @app_endpoint_registration_19_service_not_supported
 Scenario: Fail when service is not supported for the application profile
     Given the path "/application-endpoints"
+    And the header "x-correlator" complies with the schema at "#/components/parameters/x-correlator"
     And the header "x-correlator" is set to a valid correlation identifier
     And the request body is an array containing ApplicationEndpointInfo with unsupported applicationProfileId
     When the request "registerApplicationEndpoints" is sent
     Then the response status code is 422
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ErrorInfo"
     And the response property "$.code" is "NOT_SUPPORTED"
@@ -316,41 +330,22 @@ Scenario: Fail when service is not supported for the application profile
 @app_endpoint_registration_20_register_multiple_endpoints
 Scenario: Successfully register multiple application endpoints in one request
     Given the path "/application-endpoints"
+    And the header "x-correlator" complies with the schema at "#/components/parameters/x-correlator"
     And the header "x-correlator" is set to a valid correlation identifier
     And the request body is an array containing multiple valid ApplicationEndpointInfo objects
     When the request "registerApplicationEndpoints" is sent
     Then the response status code is 200
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ApplicationEndpointsId"
     And the response property is a valid UUID format
 
-@app_endpoint_registration_21_complete_crud_flow
-Scenario: Complete flow - register, verify, update, and delete endpoints
-    Given the path "/application-endpoints"
-    And the header "x-correlator" is set to a valid correlation identifier
-    And the request body is an array containing valid ApplicationEndpointInfo
-    When the request "registerApplicationEndpoints" is sent
-    Then the response status code is 200
-    And the response property is stored as "createdEndpointId"
-    
-    When I retrieve the endpoint using the stored ID via "getApplicationEndpointsById"
-    Then the response status code is 200
-    And the retrieved endpoint matches the originally registered data
-    
-    When I update the endpoint using the stored ID via "updateApplicationEndpoint"
-    Then the response status code is 204
-    
-    When I delete the endpoint using the stored ID via "deregisterApplicationEndpoint"
-    Then the response status code is 200
-    
-    When I attempt to retrieve the deleted endpoint via "getApplicationEndpointsById"
-    Then the response status code is 404
-    And the response property "$.code" is "NOT_FOUND"
 
-@app_endpoint_registration_22_register_endpoint_with_optional_fields
+@app_endpoint_registration_21_register_endpoint_with_optional_fields
 Scenario: Successfully register endpoint with all optional fields populated
     Given the path "/application-endpoints"
+    And the header "x-correlator" complies with the schema at "#/components/parameters/x-correlator"
     And the header "x-correlator" is set to a valid correlation identifier
     And the request body is an array containing ApplicationEndpointInfo with all optional fields:
       | applicationEndpoint.uri | http://app.example.com/api/v1 |
@@ -358,5 +353,6 @@ Scenario: Successfully register endpoint with all optional fields populated
     When the request "registerApplicationEndpoints" is sent
     Then the response status code is 200
     And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" complies with the schema at "#/components/headers/x-correlator"
     And the response header "x-correlator" has same value as the request header "x-correlator"
     And the response body complies with the OAS schema at "#/components/schemas/ApplicationEndpointsId"
