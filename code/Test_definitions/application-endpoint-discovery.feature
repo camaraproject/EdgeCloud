@@ -1,5 +1,5 @@
   @application_endpoint_discovery
-Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getClosestAppEndpoint
+Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getOptimalAppEndpoints
   # Input to be provided by the implementation to the tester
   #
   # Implementation indications:
@@ -12,7 +12,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
 
   Background:
     Given an environment at "apiRoot"
-    And the resource "/application-endpoint-discovery/vwip/retrieve-closest-app-endpoints"                                                     |
+    And the resource "/application-endpoint-discovery/vwip/retrieve-optimal-app-endpoints"                                                     |
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
     And the header "x-correlator" is set to a UUID value
@@ -20,30 +20,64 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
 #### Happy Path Scenarios #########
 
   @application_endpoint_discovery.01_success_appid
-  Scenario: Successful retrieval of the closest application endpoint for a given device and application
+  Scenario: Successful retrieval of the optimal application endpoint for a given device and application
     Given a valid testing device supported by the service, identified by the token or provided in the request body
     And the testing device is connected to a mobile network
     And the request body is set to a valid request body
     And the request body includes an appId parameter that identifies an application deployed on the platform
     And the application has instances up and running
-    When the HTTP POST request "getConnectedNetworkType" is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response code is 200
     And the response header "Content-Type" is "application/json"
     And the response header "x-correlator" has same value as the request header "x-correlator"
-    And the response body complies with the OAS schema at "#/components/schemas/EdgeHostedApplicationEndpoints"
+    And the response body complies with the OAS schema at "#/components/schemas/EndpointDiscoveryResult"
+    And the EndpointDiscoveryResult parameter has an array of one "applicationEndpoints"
 
   @application_endpoint_discovery.02_success_applicationEndpointsId
-  Scenario: Successful retrieval of the closest application endpoint for a given device and applicationEndpointsId
+  Scenario: Successful retrieval of the optimal application endpoint for a given device and applicationEndpointsId
     Given a valid testing device supported by the service, identified by the token or provided in the request body
     And the testing device is connected to a mobile network
     And the request body is set to a valid request body
     And the request body includes an applicationEndpointsId parameter that identifies an application endpoints ID identifier registered in the platform
     And the application has instances up and running
-    When the HTTP POST request "getConnectedNetworkType" is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response code is 200
     And the response header "Content-Type" is "application/json"
     And the response header "x-correlator" has same value as the request header "x-correlator"
-    And the response body complies with the OAS schema at "#/components/schemas/EdgeHostedApplicationEndpoints"
+    And the response body complies with the OAS schema at "#/components/schemas/EndpointDiscoveryResult"
+    And the EndpointDiscoveryResult parameter has an array of one "applicationEndpoints"
+
+  @application_endpoint_discovery.03_success_appid_multiple_endpoints
+  Scenario: Successful retrieval of multiple optimal application endpoints for a given device and application
+    Given a valid testing device supported by the service, identified by the token or provided in the request body
+    And the testing device is connected to a mobile network
+    And the request body is set to a valid request body
+    And the request body includes an appId parameter that identifies an application deployed on the platform
+    And the application has instances up and running
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
+    Then the response code is 200
+    And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" has same value as the request header "x-correlator"
+    And the response body complies with the OAS schema at "#/components/schemas/EndpointDiscoveryResult"
+    And the EndpointDiscoveryResult parameter has an array of two "applicationEndpoints"
+
+  @application_endpoint_discovery.04_success_multiple_device_identifiers
+  Scenario: Successful retrieval of the optimal application endpoint for a given device that includes multiple identifiers
+    Given a valid testing device supported by the service, identified by the token or provided in the request body
+    And the testing device is connected to a mobile network
+    And the request body is set to a valid request body
+    And the request body includes an appId parameter that identifies an application deployed on the platform
+    And the application has instances up and running
+    And at least 2 types of device identifiers are supported by the implementation
+    And the request body property "$.device" includes several identifiers, each of them identifying a valid device
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
+    Then the response code is 200
+    And the response header "Content-Type" is "application/json"
+    And the response header "x-correlator" has same value as the request header "x-correlator"
+    And the response body complies with the OAS schema at "#/components/schemas/EndpointDiscoveryResult"
+    And the EndpointDiscoveryResult parameter has an array of one "applicationEndpoints"
+    And the EndpointDiscoveryResult parameter has a "device" parameter indicating the device identifier used to obtain the optimal endpoint
+
 #### Error Scenarios      ###########
 #################
 # Error code 400
@@ -53,7 +87,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario: The device value is an empty object
     Given the header "Authorization" is set to a valid access token which does not identify a single device
     And the request body property "$.device" is set to: {}
-    When the HTTP "POST" request is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 400
     And the response property "$.status" is 400
     And the response property "$.code" is "INVALID_ARGUMENT"
@@ -63,7 +97,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario Outline: Some device identifier value does not comply with the schema
     Given the header "Authorization" is set to a valid access token which does not identify a single device
     And the request body property "<device_identifier>" does not comply with the OAS schema at "<oas_spec_schema>"
-    When the HTTP "POST" request is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 400
     And the response property "$.status" is 400
     And the response property "$.code" is "INVALID_ARGUMENT"
@@ -81,7 +115,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
     Given the header "Authorization" is set to a valid access token which does not identify a single device
     And the request body does not include property "$.appId"
     And the request body does not include property "$.applicationEndpointsId"
-    When the HTTP "POST" request is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 400
     And the response property "$.status" is 400
     And the response property "$.code" is "INVALID_ARGUMENT"
@@ -94,17 +128,17 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario: Expired access token
     Given the header "Authorization" is set to an expired access token
     And the request body is set to a valid request body
-    When the request "getClosestAppEndpoint" is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 401
     And the response property "$.status" is 401
-    And the response property "$.code" is "UNAUTHENTICATED" or "AUTHENTICATION_REQUIRED"
+    And the response property "$.code" is "UNAUTHENTICATED"
     And the response property "$.message" contains a user friendly text
 
   @application_endpoint_discovery_401.2_no_authorization_header
   Scenario: No Authorization header
     Given the header "Authorization" is removed
     And the request body is set to a valid request body
-    When the request "getClosestAppEndpoint" is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 401
     And the response property "$.status" is 401
     And the response property "$.code" is "UNAUTHENTICATED"
@@ -114,7 +148,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario: Malformed access token
     Given the header "Authorization" is set to a malformed token
     And the request body is set to a valid request body
-    When the request "getClosestAppEndpoint" is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 401
     And the response header "Content-Type" is "application/json"
     And the response property "$.status" is 401
@@ -128,7 +162,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario: Client does not have sufficient permissions to perform this action
     Given header "Authorization" set to an access token not including scope "connected-network-type:read"
     And the request body is set to a valid request body
-    When the request "getConnectedNetworkType" is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 403
     And the response property "$.status" is 403
     And the response property "$.code" is "PERMISSION_DENIED"
@@ -141,7 +175,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario: Some identifier cannot be matched to a device
     Given the header "Authorization" is set to a valid access token which does not identify a single device
     And the request body property "$.device" is compliant with the schema but does not identify a valid device
-    When the HTTP "POST" request is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 404
     And the response property "$.status" is 404
     And the response property "$.code" is "IDENTIFIER_NOT_FOUND"
@@ -151,7 +185,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario: Some identifier cannot be matched to an application
     Given the header "Authorization" is set to a valid access token which does not identify a single device
     And the request body property "$.appId" is compliant with the schema but does not identify a valid application
-    When the HTTP "POST" request is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 404
     And the response property "$.status" is 404
     And the response property "$.code" is "NOT_FOUND"
@@ -161,7 +195,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario: Some identifier cannot be matched to an application endpoint
     Given the header "Authorization" is set to a valid access token which does not identify a single device
     And the request body property "$.applicationEndpointsId" is compliant with the schema but does not identify a valid application endpoints ID
-    When the HTTP "POST" request is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 404
     And the response property "$.status" is 404
     And the response property "$.code" is "NOT_FOUND"
@@ -174,7 +208,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario: Device not to be included when it can be deduced from the access token
     Given the header "Authorization" is set to a valid access token identifying a device
     And the request body property "$.device" is set to a valid device
-    When the HTTP "POST" request is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 422
     And the response property "$.status" is 422
     And the response property "$.code" is "UNNECESSARY_IDENTIFIER"
@@ -184,7 +218,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario: Device not included and cannot be deduced from the access token
     Given the header "Authorization" is set to a valid access token which does not identify a single device
     And the request body property "$.device" is not included
-    When the HTTP "POST" request is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 422
     And the response property "$.status" is 422
     And the response property "$.code" is "MISSING_IDENTIFIER"
@@ -195,7 +229,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
     Given that some types of device identifiers are not supported by the implementation
     And the header "Authorization" is set to a valid access token which does not identify a single device
     And the request body property "$.device" only includes device identifiers not supported by the implementation
-    When the HTTP "POST" request is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 422
     And the response property "$.status" is 422
     And the response property "$.code" is "UNSUPPORTED_IDENTIFIER"
@@ -205,22 +239,12 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
   Scenario: Service not available for the device
     Given that the service is not available for all devices commercialized by the operator
     And a valid device, identified by the token or provided in the request body, for which the service is not applicable
-    When the HTTP "POST" request is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     Then the response status code is 422
     And the response property "$.status" is 422
     And the response property "$.code" is "SERVICE_NOT_APPLICABLE"
     And the response property "$.message" contains a user-friendly text
 
-  @application_endpoint_discovery_422.5_error_device_identifiers_mismatch
-  Scenario: Device identifiers mismatch
-    Given the header "Authorization" is set to a valid access token which does not identify a single device
-    And at least 2 types of device identifiers are supported by the implementation
-    And the request body property "$.device" includes several identifiers, each of them identifying a valid but different device
-    When the HTTP "POST" request is sent
-    Then the response status code is 422
-    And the response property "$.status" is 422
-    And the response property "$.code" is "IDENTIFIER_MISMATCH"
-    And the response property "$.message" contains a user friendly text
 #################
 # Error code 503
 #################
@@ -233,7 +257,7 @@ Feature: CAMARA Application Endpoint Discovery API, v0.1.0 - Operation getCloses
     And the request body is set to a valid request body
     And the request body includes an appId parameter that identifies an application deployed on the platform
     And the application has instances up and running
-    When the HTTP POST request "getConnectedNetworkType" is sent
+    When the HTTP POST request "getOptimalAppEndpoints" is sent
     And a network error prevents the connected network type from being retrieved
     Then the response status code is 503
     And the response property "$.status" is 503

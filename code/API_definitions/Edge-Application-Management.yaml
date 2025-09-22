@@ -74,6 +74,14 @@ info:
     * __deleteAppInstance__ - Removes a given application instance from an Edge
     Cloud Zone.
 
+    __Application Deployment Management__
+    * __createAppDeployment__ - Requests the Edge Cloud Provider to create and
+    maintain application instances to multiple Edge Cloud Zones.
+    * __getAppDeployments__ - Retrieves a list of deployments for a given
+    application.
+    * __deleteAppDeployment__ - Terminates a specific application deployment,
+    removing all associated instances.
+
     __Edge Cloud information__
     *  __getEdgeCloudZones__ List of the operators Edge Cloud Zones and their
     status, ordering the results by location and filtering by status
@@ -124,6 +132,11 @@ info:
     * __Application Instance__ - Is an instance (VM or Container based) running
     in an Edge Cloud Zone. The Edge Cloud Platform generates a unique ID
     for each instance.
+    * __Application Deployment__ - A specification that defines the requirements
+    for the Edge Cloud Provider to create and maintain application instances
+    across multiple Edge Cloud Zones. The deployment ensures that the
+    application is instantiated and managed consistently across the specified
+    zones, meeting the defined requirements.
     * __Edge Cloud__ - Cloud-like capabilities located at the network edge
     including, from the Application Provider's perspective, access to
     elastically allocated compute, data storage and network resources,
@@ -548,6 +561,311 @@ paths:
           $ref: '#/components/responses/500'
         '503':
           $ref: '#/components/responses/503'
+
+  /deployments:
+    post:
+      security:
+        - openId:
+            - edge-application-management:deployments:write
+      tags:
+        - Application
+      summary: Deploy an Application
+      description: |
+        Ask the Edge Cloud Platform to instantiate an application to several
+        Edge Cloud Zones.
+      operationId: createAppDeployment
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+      requestBody:
+        description: |
+          Information about the application and where to deploy it.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - appDeploymentName
+                - appId
+                - edgeCloudZones
+              properties:
+                appDeploymentName:
+                  $ref: '#/components/schemas/AppDeploymentName'
+                appId:
+                  $ref: '#/components/schemas/AppId'
+                edgeCloudZones:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/EdgeCloudZoneId'
+                kubernetesClusterRefs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/KubernetesClusterRef'
+        required: true
+      responses:
+        '202':
+          description: Application deployment accepted
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appDeploymentId:
+                    $ref: '#/components/schemas/AppDeploymentId'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                status: 409
+                code: CONFLICT
+                message: "Deployment already exists"
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    get:
+      security:
+        - openId:
+            - edge-application-management:deployments:read
+      tags:
+        - Application
+      summary: Retrieve a list of Application Deployment for a given App
+      description: |
+        Ask the Edge Cloud Provider the information of the Deployments for a
+        given application
+      operationId: getAppDeployments
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+        - name: appId
+          description: |
+            A globally unique identifier associated with
+            the application.
+            Edge Cloud Provider generates this identifier when the
+            application is submitted.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/AppId'
+        - name: appDeploymentId
+          description: |
+            A globally unique identifier associated with a existing deployment
+            of an application. Edge Cloud Platform generates this identifier when
+            the deployment request in the Edge Cloud Zone is successful.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/AppDeploymentId'
+      responses:
+        '200':
+          description: |
+            List of application deployments. Returns an empty list if no
+            deployments were found or none match the specified query
+            parameters.
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppDeploymentInfo'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '410':
+          $ref: '#/components/responses/410'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+  /deployments/{appDeploymentId}:
+    delete:
+      security:
+        - openId:
+            - edge-application-management:deployments:delete
+      tags:
+        - Application
+      summary: Terminate an Application Deployment
+      description: |
+        Delete a deployment terminating all related instances of an application
+      operationId: deleteAppDeployment
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+        - name: appDeploymentId
+          in: path
+          description: |
+            Identificator of the specific application deployment
+            that will be terminated
+          required: true
+          schema:
+            $ref: "#/components/schemas/AppDeploymentId"
+      responses:
+        '202':
+          description: |
+            Request accepted to be processed. It applies for async
+            deletion process
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '410':
+          $ref: '#/components/responses/410'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+    patch:
+      security:
+        - openId:
+            - edge-application-management:deployments:update
+      tags:
+        - Application
+      summary: Update an Application Deployment
+      description: |
+        Update the configuration or properties of an existing application deployment
+        using JSON Merge Patch semantics (RFC 7396). Only the fields provided in the
+        request body will be updated. Fields not included in the request will remain unchanged.
+
+        IMPORTANT: When updating array fields (like edgeCloudZones or kubernetesClusterRefs),
+        JSON Merge Patch will REPLACE the entire array, not merge or append to it.
+
+        This operation may include changing the deployment name, target Edge Cloud Zones, or other updatable fields.
+      operationId: updateAppDeployment
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+        - name: appDeploymentId
+          in: path
+          description: |
+            Identifier of the specific application deployment to be updated.
+          required: true
+          schema:
+            $ref: "#/components/schemas/AppDeploymentId"
+      requestBody:
+        description: |
+          The fields to update for the application deployment using JSON Merge Patch (RFC 7396).
+          Only the fields included in the request will be updated; omitted fields remain unchanged.
+
+          NOTE: When updating array fields (edgeCloudZones, kubernetesClusterRefs), the entire array
+          will be REPLACED, not merged. To modify an array, you must include the complete array
+          with all desired elements in your request.
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              type: object
+              properties:
+                appDeploymentName:
+                  $ref: '#/components/schemas/AppDeploymentName'
+                edgeCloudZones:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/EdgeCloudZoneId'
+                kubernetesClusterRefs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/KubernetesClusterRef'
+            examples:
+              updateDeploymentName:
+                summary: Update only the deployment name
+                description: |
+                  This example shows how to update only the deployment name.
+                  Other fields will remain unchanged.
+                value:
+                  appDeploymentName: "my_updated_deployment"
+              updateMultipleFields:
+                summary: Update multiple fields simultaneously
+                description: |
+                  This example shows how to update both the deployment name
+                  and Edge Cloud Zones in a single request. Remember that both
+                  array fields will be completely replaced with the new values.
+                value:
+                  appDeploymentName: "production_deployment"
+                  edgeCloudZones:
+                    - "123e4567-e89b-12d3-a456-426614174000"
+                    - "123e4567-e89b-12d3-a456-426614174001"
+                  kubernetesClusterRefs:
+                    - "642f6105-7015-4af1-a4d1-e1ecb8437abc"
+                    - "642f6105-7015-4af1-a4d1-e1ecb8437def"
+              arrayReplacementExample:
+                summary: Example of array replacement behavior
+                description: |
+                  This example demonstrates how arrays are completely replaced in JSON Merge Patch.
+
+                  If the current deployment has:
+                  - edgeCloudZones: ["123e4567-e89b-12d3-a456-426614174000", "123e4567-e89b-12d3-a456-426614174001", "123e4567-e89b-12d3-a456-426614174002"]
+                  - kubernetesClusterRefs: ["642f6105-7015-4af1-a4d1-e1ecb8437abc", "642f6105-7015-4af1-a4d1-e1ecb8437def"]
+
+                  And the user sends this patch:
+                  - edgeCloudZones: ["123e4567-e89b-12d3-a456-426614174000", "123e4567-e89b-12d3-a456-426614174003"]
+
+                  The result will be:
+                  - edgeCloudZones: ["123e4567-e89b-12d3-a456-426614174000", "123e4567-e89b-12d3-a456-426614174003"] (completely replaced)
+                  - kubernetesClusterRefs: ["642f6105-7015-4af1-a4d1-e1ecb8437abc", "642f6105-7015-4af1-a4d1-e1ecb8437def"] (unchanged, as it wasn't in the patch)
+
+                  To add a single zone while keeping existing ones, ALL zones must be included in the request.
+                value:
+                  edgeCloudZones:
+                    - "123e4567-e89b-12d3-a456-426614174000"
+                    - "123e4567-e89b-12d3-a456-426614174003"
+      responses:
+        '200':
+          description: Application deployment updated successfully
+          headers:
+            x-correlator:
+              $ref: "#/components/headers/x-correlator"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppDeploymentInfo'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '410':
+          $ref: '#/components/responses/410'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                status: 409
+                code: CONFLICT
+                message: "Update conflict"
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
+
   /clusters:
     get:
       security:
@@ -771,6 +1089,38 @@ components:
         Edge Cloud Platform generates this identifier when the
         instantiation in the Edge Cloud Zone is successful.
 
+    AppDeploymentId:
+      type: string
+      format: uuid
+      description: |
+        A globally unique identifier associated with a existing deployment
+        of an application. Edge Cloud Platform generates this identifier when
+        the deployment request in the Edge Cloud Zone is successful.
+
+    AppDeploymentInfo:
+      type: object
+      required:
+        - appDeploymentName
+        - appDeploymentId
+        - appId
+        - edgeCloudZones
+        - appInstances
+      properties:
+        appDeploymentName:
+          $ref: '#/components/schemas/AppDeploymentName'
+        appDeploymentId:
+          $ref: '#/components/schemas/AppDeploymentId'
+        appId:
+          $ref: '#/components/schemas/AppId'
+        edgeCloudZones:
+          type: array
+          items:
+            $ref: '#/components/schemas/EdgeCloudZoneId'
+        appInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/AppInstanceId'
+
     AppInstanceInfo:
       description: Information about the application instance.
       type: object
@@ -830,6 +1180,11 @@ components:
       type: string
       pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
       description: Name of the App instance, scoped to the AppProvider
+
+    AppDeploymentName:
+      type: string
+      pattern: ^[A-Za-z][A-Za-z0-9_]{1,63}$
+      description: Name of the App Deployment, scoped to the AppProvider
 
     AppManifest:
       description: |
@@ -1713,6 +2068,19 @@ components:
             status: 404
             code: NOT_FOUND
             message: "Resource does not exist"
+    '410':
+      description: Gone
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 410
+            code: GONE
+            message: "The resource has been permanently removed"
     '500':
       description: Internal Server Error
       headers:
