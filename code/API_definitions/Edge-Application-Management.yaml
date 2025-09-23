@@ -636,6 +636,9 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
+      callbacks:
+        onAppInstanceStatusChange:
+          $ref: '#/components/callbacks/onAppDeploymentStatusChange'
     get:
       security:
         - openId:
@@ -1031,13 +1034,66 @@ components:
                   items:
                     $ref: '#/components/schemas/AppInstanceInfo'
           responses:
-            '202':
+            '204':
               description: Your server implementation should return this HTTP
                 status code if the data was received successfully
               content: {}
               headers:
                 x-correlator:
                   $ref: '#/components/headers/x-correlator'
+            '400':
+              $ref: '#/components/responses/400'
+            '401':
+              $ref: '#/components/responses/401'
+            '403':
+              $ref: '#/components/responses/403'
+            '410':
+              $ref: '#/components/responses/410'
+            '429':
+              $ref: '#/components/responses/429'
+
+    onAppDeploymentStatusChange:
+      '{$request.body.notificationSink.sink}':
+        post:
+          tags:
+            - App Deployment CALLBACK Operation
+          summary: Provide a notification for a change in status
+           of the deployed application
+          description: Deploying an application is an asyncronous task. After the
+           application has been started, the server will return a callback response
+           at the specified URL.
+          operationId: EdgeApplicationManagementDeploymentCallback
+          parameters:
+            - $ref: '#/components/parameters/x-correlator'
+          security:
+            - notificationsBearerAuth: []
+          requestBody:
+            description: Body containing the status of the Application Deployment
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AppDeploymentInfo'
+          responses:
+            '204':
+              description: Your server implementation should return this HTTP
+                status code if the data was received successfully
+              content: {}
+              headers:
+                x-correlator:
+                  $ref: '#/components/headers/x-correlator'
+            '400':
+              $ref: '#/components/responses/400'
+            '401':
+              $ref: '#/components/responses/401'
+            '403':
+              $ref: '#/components/responses/403'
+            '410':
+              $ref: '#/components/responses/410'
+            '429':
+              $ref: '#/components/responses/429'
 
   schemas:
     AccessEndpoint:
@@ -2081,6 +2137,19 @@ components:
             status: 410
             code: GONE
             message: "The resource has been permanently removed"
+    '429':
+      description: Too Many Requests
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            status: 429
+            code: QUOTA_EXCEEDED
+            message: "Quota exceeded: ..."
     '500':
       description: Internal Server Error
       headers:
