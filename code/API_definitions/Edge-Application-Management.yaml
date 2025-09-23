@@ -408,8 +408,8 @@ paths:
                   $ref: '#/components/schemas/EdgeCloudZoneId'
                 kubernetesClusterRef:
                   $ref: '#/components/schemas/KubernetesClusterRef'
-                notificationSink:
-                  $ref: '#/components/schemas/NotificationSink'
+                subscriptionRequest:
+                  $ref: '#/components/schemas/SubscriptionRequest'
         required: true
       responses:
         '202':
@@ -600,6 +600,8 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/KubernetesClusterRef'
+                subscriptionRequest:
+                  $ref: '#/components/schemas/SubscriptionRequest'
         required: true
       responses:
         '202':
@@ -1005,9 +1007,6 @@ components:
       schema:
         type: string
         format: uuid
-  #########################################################################
-  #                             Events/Callbacks                          #
-  #########################################################################
   callbacks:
     onAppInstanceStatusChange:
       '{$request.body.notificationSink.sink}':
@@ -1096,6 +1095,338 @@ components:
               $ref: '#/components/responses/429'
 
   schemas:
+    Protocol:
+      type: string
+      enum: ["HTTP", "MQTT3", "MQTT5", "AMQP", "NATS", "KAFKA"]
+      description: Identifier of a delivery protocol. Only HTTP is allowed for now
+      example: "HTTP"
+
+    SubscriptionId:
+      type: string
+      description: The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as `subscriptionId` as per [Commonalities Event Notification Model](/documentation/API-design-guidelines.md#122-event-notification).
+      example: qs15-h556-rt89-1298
+
+    Subscription:
+      description: Represents a event-type subscription.
+      type: object
+      required:
+        - sink
+        - protocol
+        - config
+        - types
+        - id
+      properties:
+        protocol:
+          $ref: "#/components/schemas/Protocol"
+        sink:
+          type: string
+          format: uri
+          pattern: ^https:\/\/.+$
+          description: The address to which events shall be delivered using the selected protocol.
+          example: "https://endpoint.example.com/sink"
+        types:
+          description: |
+            Camara Event types eligible to be delivered by this subscription.
+            Note: the maximum number of event types per subscription will be decided at API project level
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            $ref: "#/components/schemas/SubscriptionEventType"
+        config:
+          $ref: '#/components/schemas/SubscriptionConfig'
+        id:
+          $ref: '#/components/schemas/SubscriptionId'
+        startsAt:
+          type: string
+          format: date-time
+          description: |
+            Date when the event subscription will begin/began
+            It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+          example: "2023-07-03T12:27:08.312Z"
+        expiresAt:
+          type: string
+          format: date-time
+          description: |
+            Date when the event subscription will expire. Only provided when `subscriptionExpireTime` is indicated by API client or Telco Operator has specific policy about that.
+            It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+          example: "2023-07-03T12:27:08.312Z"
+        status:
+          type: string
+          description: |-
+            Current status of the subscription - Management of Subscription State engine is not mandatory for now. Note not all statuses may be considered to be implemented. Details:
+              - `ACTIVATION_REQUESTED`: Subscription creation (POST) is triggered but subscription creation process is not finished yet.
+              - `ACTIVE`: Subscription creation process is completed. Subscription is fully operative.
+              - `INACTIVE`: Subscription is temporarily inactive, but its workflow logic is not deleted.
+              - `EXPIRED`: Subscription is ended (no longer active). This status applies when subscription is ended due to `SUBSCRIPTION_EXPIRED` or `ACCESS_TOKEN_EXPIRED` event.
+              - `DELETED`: Subscription is ended as deleted (no longer active). This status applies when subscription information is kept (i.e. subscription workflow is no longer active but its meta-information is kept).
+          enum:
+            - ACTIVATION_REQUESTED
+            - ACTIVE
+            - EXPIRED
+            - INACTIVE
+            - DELETED
+      discriminator:
+        propertyName: protocol
+        mapping:
+          HTTP: '#/components/schemas/HTTPSubscriptionResponse'
+          MQTT3: '#/components/schemas/MQTTSubscriptionResponse'
+          MQTT5: '#/components/schemas/MQTTSubscriptionResponse'
+          AMQP: '#/components/schemas/AMQPSubscriptionResponse'
+          NATS: '#/components/schemas/NATSSubscriptionResponse'
+          KAFKA: '#/components/schemas/ApacheKafkaSubscriptionResponse'
+
+    SubscriptionRequest:
+      description: The request for creating a event-type event subscription
+      type: object
+      required:
+        - sink
+        - protocol
+        - config
+        - types
+      properties:
+        protocol:
+          $ref: "#/components/schemas/Protocol"
+        sink:
+          type: string
+          format: uri
+          pattern: ^https:\/\/.+$
+          description: The address to which events shall be delivered using the selected protocol.
+          example: "https://endpoint.example.com/sink"
+        sinkCredential:
+          $ref: "#/components/schemas/SinkCredential"
+        types:
+          description: |
+            Camara Event types eligible to be delivered by this subscription.
+            Note: the maximum number of event types per subscription will be decided at API project level
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            $ref: "#/components/schemas/SubscriptionEventType"
+        config:
+          $ref: "#/components/schemas/SubscriptionConfig"
+      discriminator:
+        propertyName: protocol
+        mapping:
+          HTTP: "#/components/schemas/HTTPSubscriptionRequest"
+          MQTT3: "#/components/schemas/MQTTSubscriptionRequest"
+          MQTT5: "#/components/schemas/MQTTSubscriptionRequest"
+          AMQP: "#/components/schemas/AMQPSubscriptionRequest"
+          NATS: "#/components/schemas/NATSSubscriptionRequest"
+          KAFKA: "#/components/schemas/ApacheKafkaSubscriptionRequest"
+
+    SubscriptionConfig:
+      description: |
+        Implementation-specific configuration parameters needed by the subscription manager for acquiring events.
+        In CAMARA we have predefined attributes like `subscriptionExpireTime`, `subscriptionMaxEvents`, `initialEvent`
+        Specific event type attributes must be defined in `subscriptionDetail`
+        Note: if a request is performed for several event type, all subscribed event will use same `config` parameters.
+      type: object
+      required:
+        - subscriptionDetail
+      properties:
+        subscriptionDetail:
+          description: The detail of the requested event subscription.
+          type: object
+        subscriptionExpireTime:
+          type: string
+          format: date-time
+          example: 2023-01-17T13:18:23.682Z
+          description: The subscription expiration time (in date-time format) requested by the API consumer. It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone. Up to API project decision to keep it.
+        subscriptionMaxEvents:
+          type: integer
+          description: Identifies the maximum number of event reports to be generated (>=1) requested by the API consumer - Once this number is reached, the subscription ends. Up to API project decision to keep it.
+          minimum: 1
+          example: 5
+        initialEvent:
+          type: boolean
+          description: |
+            Set to `true` by API consumer if consumer wants to get an event as soon as the subscription is created and current situation reflects event request.
+            Example: Consumer request Roaming event. If consumer sets initialEvent to true and device is in roaming situation, an event is triggered
+            Up to API project decision to keep it.
+
+    SubscriptionEventType:
+      type: string
+      description: |
+        event-type that could be subscribed through this subscription. Several event-type could be defined.
+      enum:
+        - org.camaraproject.Edge-Application-Management.v0.onAppInstanceStatusChange
+        - org.camaraproject.Edge-Application-Management.v0.onDeploymentStatusChange
+
+    SinkCredential:
+      description: A sink credential provides authentication or authorization information necessary to enable delivery of events to a target.
+      type: object
+      properties:
+        credentialType:
+          type: string
+          enum:
+            - PLAIN
+            - ACCESSTOKEN
+            - REFRESHTOKEN
+          description: |
+            The type of the credential.
+            Note: Type of the credential - MUST be set to ACCESSTOKEN for now
+      discriminator:
+        propertyName: credentialType
+        mapping:
+          PLAIN: "#/components/schemas/PlainCredential"
+          ACCESSTOKEN: "#/components/schemas/AccessTokenCredential"
+          REFRESHTOKEN: "#/components/schemas/RefreshTokenCredential"
+      required:
+        - credentialType
+
+    HTTPSubscriptionRequest:
+      allOf:
+        - $ref: "#/components/schemas/SubscriptionRequest"
+        - type: object
+          properties:
+            protocolSettings:
+              $ref: "#/components/schemas/HTTPSettings"
+
+    HTTPSubscriptionResponse:
+      allOf:
+        - $ref: "#/components/schemas/Subscription"
+        - type: object
+          properties:
+            protocolSettings:
+              $ref: "#/components/schemas/HTTPSettings"
+
+    HTTPSettings:
+      type: object
+      properties:
+        headers:
+          type: object
+          description: |-
+            A set of key/value pairs that is copied into the HTTP request as custom headers.
+            NOTE: Use/Applicability of this concept has not been discussed in Commonalities under the scope of Meta Release v0.4. When required by an API project as an option to meet a UC/Requirement, please generate an issue for Commonalities discussion about it.
+          additionalProperties:
+            type: string
+        method:
+          type: string
+          description: The HTTP method to use for sending the message.
+          enum:
+            - POST
+
+    MQTTSubscriptionRequest:
+      allOf:
+        - $ref: "#/components/schemas/SubscriptionRequest"
+        - type: object
+          properties:
+            protocolSettings:
+              $ref: "#/components/schemas/MQTTSettings"
+
+    MQTTSubscriptionResponse:
+      allOf:
+        - $ref: "#/components/schemas/Subscription"
+        - type: object
+          properties:
+            protocolSettings:
+              $ref: "#/components/schemas/MQTTSettings"
+
+    MQTTSettings:
+      type: object
+      properties:
+        topicName:
+          type: string
+        qos:
+          type: integer
+          format: int32
+        retain:
+          type: boolean
+        expiry:
+          type: integer
+          format: int32
+        userProperties:
+          type: object
+      required:
+        - topicName
+
+    AMQPSubscriptionRequest:
+      allOf:
+        - $ref: "#/components/schemas/SubscriptionRequest"
+        - type: object
+          properties:
+            protocolSettings:
+              $ref: "#/components/schemas/AMQPSettings"
+
+    AMQPSubscriptionResponse:
+      allOf:
+        - $ref: "#/components/schemas/Subscription"
+        - type: object
+          properties:
+            protocolSettings:
+              $ref: "#/components/schemas/AMQPSettings"
+
+    AMQPSettings:
+      type: object
+      properties:
+        address:
+          type: string
+        linkName:
+          type: string
+        senderSettlementMode:
+          type: string
+          enum: ["settled", "unsettled"]
+        linkProperties:
+          type: object
+          additionalProperties:
+            type: string
+
+    ApacheKafkaSubscriptionRequest:
+      allOf:
+        - $ref: "#/components/schemas/SubscriptionRequest"
+        - type: object
+          properties:
+            protocolSettings:
+              $ref: "#/components/schemas/ApacheKafkaSettings"
+
+    ApacheKafkaSubscriptionResponse:
+      allOf:
+        - $ref: "#/components/schemas/Subscription"
+        - type: object
+          properties:
+            protocolSettings:
+              $ref: "#/components/schemas/ApacheKafkaSettings"
+
+    ApacheKafkaSettings:
+      type: object
+      properties:
+        topicName:
+          type: string
+        partitionKeyExtractor:
+          type: string
+        clientId:
+          type: string
+        ackMode:
+          type: integer
+      required:
+        - topicName
+
+    NATSSubscriptionRequest:
+      allOf:
+        - $ref: "#/components/schemas/SubscriptionRequest"
+        - type: object
+          properties:
+            protocolSettings:
+              $ref: "#/components/schemas/NATSSettings"
+
+    NATSSubscriptionResponse:
+      allOf:
+        - $ref: "#/components/schemas/Subscription"
+        - type: object
+          properties:
+            protocolSettings:
+              $ref: "#/components/schemas/NATSSettings"
+
+    NATSSettings:
+      type: object
+      properties:
+        subject:
+          type: string
+      required:
+        - subject
+
     AccessEndpoint:
       type: object
       description: |
