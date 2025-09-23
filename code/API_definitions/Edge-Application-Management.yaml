@@ -1946,44 +1946,6 @@ components:
                   - vfio-pci
                   - interface
 
-    NotificationSink:
-      description: ""
-      type: object
-      required:
-        - sink
-      properties:
-        sink:
-          description: 'https callback address where the notification
-            must be POST-ed'
-          type: string
-          format: uri
-        sinkCredentials:
-          description: Sink credential provides authorization information
-            necessary to enable delivery of events to a target
-          type: object
-          properties:
-            credentialtype:
-              type: string
-              description: Type of the credential - MUST be set to
-                ACCESSTOKEN for now
-              enum:
-                - "ACCESSTOKEN"
-            accessToken:
-              type: string
-              description: Access Token granting access to the POST
-                operation to create notification
-            accessTokenExpireUtc:
-              type: string
-              format: date-time
-              description: An absolute UTC instant at which the access
-                token shall be considered expired.
-            accessTokenType:
-              type: string
-              description: Type of access token - MUST be set to bearer
-                for now
-              enum:
-                - "bearer"
-
     AdditionalStorage:
       description: Additional storage for the application.
       type: array
