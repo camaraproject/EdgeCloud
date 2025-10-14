@@ -12,6 +12,17 @@
 Sandbox API Repository to describe, develop, document, and test Service API(s) within the Sub Project [Edge Cloud](https://lf-camaraproject.atlassian.net/wiki/x/IwEpBQ).
 
 * API Repository [wiki page](https://lf-camaraproject.atlassian.net/wiki/x/ujLe)
+* Warning
+
+> [!WARNING]  
+> After the CAMARA Spring25 meta release this repository has been separated into 3 individual repositories:
+> - [SimpleEdgeDiscovery](https://github.com/camaraproject/SimpleEdgeDiscovery)
+> - [ApplicationEndpointDiscovery](https://github.com/camaraproject/ApplicationEndPointDiscovery)
+> - [TrafficInfluence](https://github.com/camaraproject/TrafficInfluence)
+> - [ApplicationEndpointRegistration](https://github.com/camaraproject/ApplicationEndpointRegistration)
+> - [OptimalEdgeDiscovery](https://github.com/camaraproject/OptimalEdgeDiscovery)
+>
+> This repository should be only used for maintenance of previous releases. For contributions to the API development please use exclusively the new repositories. Thanks!
 
 ## Scope
 
