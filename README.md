@@ -22,7 +22,9 @@ Sandbox API Repository to describe, develop, document, and test Service API(s) w
 > - [ApplicationEndpointRegistration](https://github.com/camaraproject/ApplicationEndpointRegistration)
 > - [OptimalEdgeDiscovery](https://github.com/camaraproject/OptimalEdgeDiscovery)
 >
-> This repository should be only used for maintenance of previous releases. For contributions to the API development please use exclusively the new repositories. Thanks!
+> **For these APIs:** This repository should be only used for maintenance of previous releases. For contributions to the API development please use exclusively the new repositories. Thanks!
+
+**For the EdgeApplicationManagement API:** API development will continue in this repository until further notice
 
 ## Scope
 
