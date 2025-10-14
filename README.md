@@ -15,7 +15,7 @@ Sandbox API Repository to describe, develop, document, and test Service API(s) w
 * Warning
 
 > [!WARNING]  
-> After the CAMARA Spring25 meta release this repository has been separated into 3 individual repositories:
+> After the CAMARA Spring25 meta release this repository has been separated into 5 individual repositories:
 > - [SimpleEdgeDiscovery](https://github.com/camaraproject/SimpleEdgeDiscovery)
 > - [ApplicationEndpointDiscovery](https://github.com/camaraproject/ApplicationEndPointDiscovery)
 > - [TrafficInfluence](https://github.com/camaraproject/TrafficInfluence)
