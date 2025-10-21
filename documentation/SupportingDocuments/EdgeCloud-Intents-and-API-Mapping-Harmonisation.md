@@ -40,12 +40,12 @@ The purpose is to bridge earlier MEC & Deployment API proposals with the current
 |----------------|----------------|--------------|---------------------------|
 | Intent 1 | Discover EdgeCloud Zones | Identify available edge zones, their regions, and capabilities. | `Optimal Edge Discovery API` |
 | Intent 3 | Retrieve Zone Information | Obtain metadata about edge zones and their resource status. | `Simple Edge Discovery API` |
-| Intent 5 | Register and Manage Applications | Register application artifacts and metadata for instantiation. | `Edge Cloud Lifecycle Management API` |
-| Intent 7 | Instantiate Application | Deploy a registered application instance on one or more Edge Zones. | `Edge Cloud Lifecycle Management API` |
+| Intent 5 | Register and Manage Applications | Register application artifacts and metadata for instantiation. | `Edge Application Management API` |
+| Intent 7 | Instantiate Application | Deploy a registered application instance on one or more Edge Zones. | `Edge Application Management API` |
 | Intent 9 | Register Application Endpoints | Record operational endpoints for deployed application instances. | `Application Endpoint Registration API` |
 | Intent 11 | Discover Optimal Endpoints | Determine best-performing or geographically closest endpoint for an end-user device. | `Application Endpoint Discovery API` |
 | Intent 13 | Influence Network Traffic | Route premium user traffic toward specific edge instances. | `Traffic Influence API` |
-| Intent 18 | Terminate Application | Decommission instances and remove registration information. | `Edge Cloud Lifecycle Management API` |
+| Intent 18 | Terminate Application | Decommission instances and remove registration information. | `Edge Application Management API` |
 
 ---
 
@@ -102,7 +102,7 @@ sequenceDiagram
 
 - **Simple Edge Discovery**: Provides baseline nearest-zone discovery using network proximity.
 - **Optimal Edge Discovery**: Extends discovery with richer metadata (zone characteristics, latency, region).
-- **Edge Cloud Lifecycle Management**: Enables deployment and lifecycle control of applications in these zones.
+- **Edge Application Management**: Enables deployment and lifecycle control of applications in these zones.
 - **Application Endpoint Registration**: Establishes registry of deployed endpoints.
 - **Application Endpoint Discovery**: Allows clients or servers to dynamically retrieve optimal endpoints.
 - **Traffic Influence**: Complements discovery and lifecycle by providing routing enforcement at the network level.
@@ -132,7 +132,7 @@ sequenceDiagram
 | API | Depends On | Dependency Description |
 |-----|------------|------------------------|
 | Optimal Edge Discovery | None | Can be used standalone for planning |
-| Edge Cloud Lifecycle Management | Optimal Edge Discovery | Uses discovered zones for deployment decisions |
+| Edge Application Management | Optimal Edge Discovery | Uses discovered zones for deployment decisions |
 | Application Endpoint Registration | Edge Cloud Lifecycle Management | Registers endpoints of instantiated applications |
 | Application Endpoint Discovery | Endpoint Registration | Discovers registered endpoints |
 | Traffic Influence | Endpoint Discovery | Optimises routing to discovered endpoints |
@@ -154,7 +154,7 @@ Discovery → Deployment → Registration → Discovery (endpoint) → Influence
 
 - **CAMARA – Simple Edge Discovery API**: [User Story](https://github.com/camaraproject/SimpleEdgeDiscovery/blob/main/documentation/API_documentation/SimpleEdgeDiscovery_User_Story.md)
 - **CAMARA – Optimal Edge Discovery API**: [User Story](https://github.com/camaraproject/OptimalEdgeDiscovery/blob/main/documentation/API_documentation/optimal-edge-discovery-User-Story.md)
-- **CAMARA – Edge Cloud Lifecycle Management**: [User Story](https://github.com/camaraproject/EdgeCloud/blob/main/documentation/SupportingDocuments/API_Documentation/User%20Stories/Edge.Cloud.Lifecycle.Management.User.Story.md)
+- **CAMARA – Edge Application Management**: [User Story](https://github.com/camaraproject/EdgeCloud/blob/main/documentation/SupportingDocuments/API_Documentation/User%20Stories/Edge.Cloud.Lifecycle.Management.User.Story.md)
 - **CAMARA – Application Endpoint Registration API**: [User Story](https://github.com/camaraproject/ApplicationEndpointRegistration/blob/main/documentation/API_documentation/application-endpoint-registration-User-Story.md)
 - **CAMARA – Application Endpoint Discovery API**: [User Story](https://github.com/camaraproject/ApplicationEndpointDiscovery/blob/main/documentation/SupportingDocuments/API_Documentation/User%20Stories/Application%20Endpoint%20Discovery%20User%20Story.md)
 - **CAMARA – Traffic Influence API**: [User Story](https://github.com/camaraproject/TrafficInfluence/blob/main/documentation/API_documentation/traffic-influence-user-story-use-case-1.md)
