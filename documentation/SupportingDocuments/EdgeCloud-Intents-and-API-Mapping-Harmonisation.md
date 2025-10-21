@@ -36,18 +36,36 @@ The purpose is to bridge earlier MEC & Deployment API proposals with the current
 
 ## 4. EdgeCloud Lifecycle Intents Overview
 
-| **Intent ID** | **Intent Name** | **Purpose** | **Mapped CAMARA API(s)** |
-|----------------|----------------|--------------|---------------------------|
-| Intent 1 | Discover EdgeCloud Zones | Identify available edge zones, their regions, and capabilities. | `Optimal Edge Discovery API` |
-| Intent 3 | Retrieve Zone Information | Obtain metadata about edge zones and their resource status. | `Simple Edge Discovery API` |
-| Intent 5 | Register and Manage Applications | Register application artifacts and metadata for instantiation. | `Edge Application Management API` |
-| Intent 7 | Instantiate Application | Deploy a registered application instance on one or more Edge Zones. | `Edge Application Management API` |
-| Intent 9 | Register Application Endpoints | Record operational endpoints for deployed application instances. | `Application Endpoint Registration API` |
-| Intent 11 | Discover Optimal Endpoints | Determine best-performing or geographically closest endpoint for an end-user device. | `Application Endpoint Discovery API` |
-| Intent 13 | Influence Network Traffic | Route premium user traffic toward specific edge instances. | `Traffic Influence API` |
-| Intent 18 | Terminate Application | Decommission instances and remove registration information. | `Edge Application Management API` |
+| **Intent ID** | **Intent Name** | **Purpose / Description** | **Mapped CAMARA API / Status** |
+|---------------|----------------|----------------------------|--------------------------------|
+| **Intent 1** | Discover EdgeCloud Zones | Identify available Edge Cloud Zones, regions, and topology. |  `Optimal Edge Discovery API` |
+| **Intent 2** | List Available Regions / Capabilities | Retrieve region-level capabilities (compute type, GPU, etc.). |  Planned extension of Optimal Edge Discovery |
+| **Intent 3** | Retrieve Zone Information | Obtain metadata, KPIs, or status of an Edge Cloud Zone. | `Simple Edge Discovery API` |
+| **Intent 4** | Filter / Select Preferred Zones | Apply filters (latency, region) for optimal zone selection. | Planned enhancement within Optimal Edge Discovery |
+| **Intent 5** | Register / Onboard Application | Upload manifests, metadata, and container images. | `Edge Cloud Lifecycle Management API` |
+| **Intent 6** | Validate Application Metadata | Validate manifests and dependencies before deployment. | Partially covered by Lifecycle Management |
+| **Intent 7** | Instantiate Application | Deploy application instances in selected Edge Zones. | `Edge Cloud Lifecycle Management API` |
+| **Intent 8** | Scale Application Instance | Adjust resources dynamically (horizontal/vertical). | Future – EdgeCloud Scaling API (proposed) |
+| **Intent 9** | Register Application Endpoints | Register deployed app endpoints (URLs, ports, zones). | `Application Endpoint Registration API` |
+| **Intent 10** | Update Endpoint Metadata | Modify endpoint details (status, performance). | Within `Application Endpoint Registration API` |
+| **Intent 11** | Discover Optimal Application Endpoints | Find best endpoint for a device based on latency or policy. | `Application Endpoint Discovery API` |
+| **Intent 12** | Client-Side Endpoint Selection | Allow clients to select among multiple available endpoints. | Optional behaviour of Endpoint Discovery |
+| **Intent 13** | Influence Network Traffic | Apply routing rules for premium users or optimisation. | `Traffic Influence API` |
+| **Intent 14** | Configure Network Policies | Manage slicing/routing preferences for traffic flows. | Evolution of Traffic Influence |
+| **Intent 15** | Monitor Application Performance | Retrieve runtime telemetry: latency, usage, etc. | Future – Edge Telemetry API (proposed) |
+| **Intent 16** | Retrieve Edge Metrics / Zone Health | Query Edge Zone health and operational metrics. | Under discussion – EdgeCloud Monitoring API |
+| **Intent 17** | Automate Policy or Scaling Actions | Enable closed-loop orchestration and scaling triggers. | Future – Edge Orchestration Intent API |
+| **Intent 18** | Terminate Application | Decommission instances and release resources. | `Edge Cloud Lifecycle Management API` |
+| **Intent 19** | Deregister Application Endpoints | Remove obsolete endpoints from registry. | `Application Endpoint Registration API` |
+| **Intent 20** | Audit and Logging | Track API operations, logs, and service usage. | Commonalities Cross-API Logging proposal |
+| **Intent 21** | Federated Edge Discovery | Discover edge zones from partner operators/hyperscalers. | Proposed – Edge Federation Discovery API |
+| **Intent 22** | Cross-Operator Application Placement | Deploy app instances across federated networks. | Future CAMARA/GSMA initiative |
+| **Intent 23** | Consent and Policy Management | Manage end-user consent during discovery/exposure. | Privacy & Consent WG |
+| **Intent 24** | Service Quality Enforcement | Apply QoS constraints dynamically per application. | Future – Edge QoS Policy API |
+| **Intent 25** | Edge Resource Reservation / Pre-Booking | Reserve compute/storage/network capacity pre-deployment. | Proposed – Edge Reservation API |
 
 ---
+
 
 ## 5. Harmonised EdgeCloud Lifecycle Flow
 
