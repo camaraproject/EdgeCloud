@@ -1,5 +1,5 @@
 
-Edge Cloud Lifecycle Management User Story
+Edge Application Management User Story
 _This document is based on the [CAMARA Commonalities template for User Stories](https://github.com/camaraproject/Commonalities/blob/main/documentation/Userstory-template.md)_  
 _Roles are referenced from the ITU-T Cloud Refence Architecture._
 
@@ -77,6 +77,7 @@ sequenceDiagram
     end
    end
 ```
+
 
 
 
