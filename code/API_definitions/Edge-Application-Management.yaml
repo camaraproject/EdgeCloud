@@ -639,7 +639,7 @@ paths:
         '503':
           $ref: '#/components/responses/503'
       callbacks:
-        onAppInstanceStatusChange:
+        onAppDeploymentStatusChange:
           $ref: '#/components/callbacks/onAppDeploymentStatusChange'
     get:
       security:
@@ -1007,36 +1007,34 @@ components:
       schema:
         type: string
         format: uuid
+
   callbacks:
     onAppInstanceStatusChange:
-      '{$request.body.notificationSink.sink}':
+      '{$request.body#/subscriptionRequest/sink}':
         post:
           tags:
             - App Instance CALLBACK Operation
-          summary: Provide a notification for a change in status
-           of the instantiated application
-          description: Instantiating an application is an asyncronous task. After the
-           application has been started, the server will return a callback response
-           at the specified URL.
+          summary: Provide a notification for a change in status of the instantiated application
+          description: |
+            Instantiating an application is an asynchronous task. After the application status changes,
+            the server will return a callback response at the specified URL.
+
+            **WARNING**: This callback endpoint must be exposed on the listener side as `POST {$request.body#/subscriptionRequest/sink}`
           operationId: EdgeApplicationManagementCallback
           parameters:
             - $ref: '#/components/parameters/x-correlator'
           security:
             - notificationsBearerAuth: []
           requestBody:
-            description: Body containing the status of the Application
+            description: Event notification with the status of the Application Instance
             required: true
             content:
-              application/json:
+              application/cloudevents+json:
                 schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/AppInstanceInfo'
+                  $ref: '#/components/schemas/CloudEvent'
           responses:
             '204':
-              description: Your server implementation should return this HTTP
-                status code if the data was received successfully
-              content: {}
+              description: Successful notification - No Content
               headers:
                 x-correlator:
                   $ref: '#/components/headers/x-correlator'
@@ -1052,34 +1050,31 @@ components:
               $ref: '#/components/responses/429'
 
     onAppDeploymentStatusChange:
-      '{$request.body.notificationSink.sink}':
+      '{$request.body#/subscriptionRequest/sink}':
         post:
           tags:
             - App Deployment CALLBACK Operation
-          summary: Provide a notification for a change in status
-           of the deployed application
-          description: Deploying an application is an asyncronous task. After the
-           application has been started, the server will return a callback response
-           at the specified URL.
+          summary: Provide a notification for a change in status of the deployed application
+          description: |
+            Deploying an application is an asynchronous task. After the application deployment status changes,
+            the server will return a callback response at the specified URL.
+
+            **WARNING**: This callback endpoint must be exposed on the listener side as `POST {$request.body#/subscriptionRequest/sink}`
           operationId: EdgeApplicationManagementDeploymentCallback
           parameters:
             - $ref: '#/components/parameters/x-correlator'
           security:
             - notificationsBearerAuth: []
           requestBody:
-            description: Body containing the status of the Application Deployment
+            description: Event notification with the status of the Application Deployment
             required: true
             content:
-              application/json:
+              application/cloudevents+json:
                 schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/AppDeploymentInfo'
+                  $ref: '#/components/schemas/CloudEvent'
           responses:
             '204':
-              description: Your server implementation should return this HTTP
-                status code if the data was received successfully
-              content: {}
+              description: Successful notification - No Content
               headers:
                 x-correlator:
                   $ref: '#/components/headers/x-correlator'
@@ -1095,98 +1090,80 @@ components:
               $ref: '#/components/responses/429'
 
   schemas:
-    Protocol:
-      type: string
-      enum: ["HTTP", "MQTT3", "MQTT5", "AMQP", "NATS", "KAFKA"]
-      description: Identifier of a delivery protocol. Only HTTP is allowed for now
-      example: "HTTP"
-
-    SubscriptionId:
-      type: string
-      description: The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as `subscriptionId` as per [Commonalities Event Notification Model](/documentation/API-design-guidelines.md#122-event-notification).
-      example: qs15-h556-rt89-1298
-
-    Subscription:
-      description: Represents a event-type subscription.
+    CloudEvent:
+      description: Cloud Event notification following CloudEvents 1.0 specification
       type: object
       required:
-        - sink
-        - protocol
-        - config
-        - types
         - id
+        - source
+        - type
+        - specversion
+        - time
       properties:
-        protocol:
-          $ref: "#/components/schemas/Protocol"
-        sink:
+        id:
+          type: string
+          description: Identifier of this event, that must be unique in the source context
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        source:
           type: string
           format: uri
-          pattern: ^https:\/\/.+$
-          description: The address to which events shall be delivered using the selected protocol.
-          example: "https://endpoint.example.com/sink"
-        types:
-          description: |
-            Camara Event types eligible to be delivered by this subscription.
-            Note: the maximum number of event types per subscription will be decided at API project level
-          type: array
-          minItems: 1
-          maxItems: 1
-          items:
-            $ref: "#/components/schemas/SubscriptionEventType"
-        config:
-          $ref: '#/components/schemas/SubscriptionConfig'
-        id:
-          $ref: '#/components/schemas/SubscriptionId'
-        startsAt:
+          description: Identifies the context in which an event happened
+          example: "https://edge-cloud-provider.example.com"
+        type:
+          $ref: '#/components/schemas/SubscriptionEventType'
+        specversion:
           type: string
-          format: date-time
-          description: |
-            Date when the event subscription will begin/began
-            It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
-          example: "2023-07-03T12:27:08.312Z"
-        expiresAt:
-          type: string
-          format: date-time
-          description: |
-            Date when the event subscription will expire. Only provided when `subscriptionExpireTime` is indicated by API client or Telco Operator has specific policy about that.
-            It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
-          example: "2023-07-03T12:27:08.312Z"
-        status:
-          type: string
-          description: |-
-            Current status of the subscription - Management of Subscription State engine is not mandatory for now. Note not all statuses may be considered to be implemented. Details:
-              - `ACTIVATION_REQUESTED`: Subscription creation (POST) is triggered but subscription creation process is not finished yet.
-              - `ACTIVE`: Subscription creation process is completed. Subscription is fully operative.
-              - `INACTIVE`: Subscription is temporarily inactive, but its workflow logic is not deleted.
-              - `EXPIRED`: Subscription is ended (no longer active). This status applies when subscription is ended due to `SUBSCRIPTION_EXPIRED` or `ACCESS_TOKEN_EXPIRED` event.
-              - `DELETED`: Subscription is ended as deleted (no longer active). This status applies when subscription information is kept (i.e. subscription workflow is no longer active but its meta-information is kept).
           enum:
-            - ACTIVATION_REQUESTED
-            - ACTIVE
-            - EXPIRED
-            - INACTIVE
-            - DELETED
-      discriminator:
-        propertyName: protocol
-        mapping:
-          HTTP: '#/components/schemas/HTTPSubscriptionResponse'
-          MQTT3: '#/components/schemas/MQTTSubscriptionResponse'
-          MQTT5: '#/components/schemas/MQTTSubscriptionResponse'
-          AMQP: '#/components/schemas/AMQPSubscriptionResponse'
-          NATS: '#/components/schemas/NATSSubscriptionResponse'
-          KAFKA: '#/components/schemas/ApacheKafkaSubscriptionResponse'
+            - "1.0"
+          description: Version of the CloudEvents specification (must be 1.0)
+        datacontenttype:
+          type: string
+          enum:
+            - application/json
+          description: Media-type of the event payload encoding (must be application/json for CAMARA APIs)
+        time:
+          type: string
+          format: date-time
+          description: Timestamp of when the occurrence happened (RFC 3339)
+          example: "2023-01-17T13:18:23.682Z"
+        data:
+          type: object
+          description: Event notification details payload
+          properties:
+            appInstanceId:
+              type: string
+              description: Application instance identifier (for instance-based events)
+            appDeploymentId:
+              type: string
+              description: Application deployment identifier (for deployment-based events)
+            status:
+              type: string
+              description: Current status of the application instance or deployment
+            terminationReason:
+              type: string
+              enum:
+                - SUBSCRIPTION_EXPIRED
+                - MAX_EVENTS_REACHED
+                - ACCESS_TOKEN_EXPIRED
+              description: Reason for subscription termination (for subscription-ended events)
+
+    SubscriptionEventType:
+      type: string
+      description: |
+        Event-type that could be subscribed through this subscription. Several event-type could be defined.
+      enum:
+        - org.camaraproject.edge-application-management.v0.app-instance-status-change
+        - org.camaraproject.edge-application-management.v0.app-deployment-status-change
+        - org.camaraproject.edge-application-management.v0.subscription-ended
 
     SubscriptionRequest:
-      description: The request for creating a event-type event subscription
+      description: The request for creating an event-type event subscription (implicit subscription, HTTP only)
       type: object
       required:
         - sink
-        - protocol
-        - config
         - types
+        - config
       properties:
-        protocol:
-          $ref: "#/components/schemas/Protocol"
         sink:
           type: string
           format: uri
@@ -1206,15 +1183,6 @@ components:
             $ref: "#/components/schemas/SubscriptionEventType"
         config:
           $ref: "#/components/schemas/SubscriptionConfig"
-      discriminator:
-        propertyName: protocol
-        mapping:
-          HTTP: "#/components/schemas/HTTPSubscriptionRequest"
-          MQTT3: "#/components/schemas/MQTTSubscriptionRequest"
-          MQTT5: "#/components/schemas/MQTTSubscriptionRequest"
-          AMQP: "#/components/schemas/AMQPSubscriptionRequest"
-          NATS: "#/components/schemas/NATSSubscriptionRequest"
-          KAFKA: "#/components/schemas/ApacheKafkaSubscriptionRequest"
 
     SubscriptionConfig:
       description: |
@@ -1233,199 +1201,44 @@ components:
           type: string
           format: date-time
           example: 2023-01-17T13:18:23.682Z
-          description: The subscription expiration time (in date-time format) requested by the API consumer. It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone. Up to API project decision to keep it.
+          description: The subscription expiration time (in date-time format) requested by the API consumer. It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
         subscriptionMaxEvents:
           type: integer
-          description: Identifies the maximum number of event reports to be generated (>=1) requested by the API consumer - Once this number is reached, the subscription ends. Up to API project decision to keep it.
+          description: Identifies the maximum number of event reports to be generated (>=1) requested by the API consumer - Once this number is reached, the subscription ends.
           minimum: 1
           example: 5
         initialEvent:
           type: boolean
           description: |
             Set to `true` by API consumer if consumer wants to get an event as soon as the subscription is created and current situation reflects event request.
-            Example: Consumer request Roaming event. If consumer sets initialEvent to true and device is in roaming situation, an event is triggered
-            Up to API project decision to keep it.
-
-    SubscriptionEventType:
-      type: string
-      description: |
-        event-type that could be subscribed through this subscription. Several event-type could be defined.
-      enum:
-        - org.camaraproject.Edge-Application-Management.v0.onAppInstanceStatusChange
-        - org.camaraproject.Edge-Application-Management.v0.onDeploymentStatusChange
+            Example: If initialEvent is set to true and application is in a specific status, an event is triggered.
 
     SinkCredential:
       description: A sink credential provides authentication or authorization information necessary to enable delivery of events to a target.
       type: object
+      required:
+        - credentialType
+        - accessToken
+        - accessTokenExpiresUtc
+        - accessTokenType
       properties:
         credentialType:
           type: string
           enum:
-            - PLAIN
             - ACCESSTOKEN
-            - REFRESHTOKEN
-          description: |
-            The type of the credential.
-            Note: Type of the credential - MUST be set to ACCESSTOKEN for now
-      discriminator:
-        propertyName: credentialType
-        mapping:
-          PLAIN: "#/components/schemas/PlainCredential"
-          ACCESSTOKEN: "#/components/schemas/AccessTokenCredential"
-          REFRESHTOKEN: "#/components/schemas/RefreshTokenCredential"
-      required:
-        - credentialType
-
-    HTTPSubscriptionRequest:
-      allOf:
-        - $ref: "#/components/schemas/SubscriptionRequest"
-        - type: object
-          properties:
-            protocolSettings:
-              $ref: "#/components/schemas/HTTPSettings"
-
-    HTTPSubscriptionResponse:
-      allOf:
-        - $ref: "#/components/schemas/Subscription"
-        - type: object
-          properties:
-            protocolSettings:
-              $ref: "#/components/schemas/HTTPSettings"
-
-    HTTPSettings:
-      type: object
-      properties:
-        headers:
-          type: object
-          description: |-
-            A set of key/value pairs that is copied into the HTTP request as custom headers.
-            NOTE: Use/Applicability of this concept has not been discussed in Commonalities under the scope of Meta Release v0.4. When required by an API project as an option to meet a UC/Requirement, please generate an issue for Commonalities discussion about it.
-          additionalProperties:
-            type: string
-        method:
+          description: Type of the credential - MUST be set to ACCESSTOKEN for now
+        accessToken:
           type: string
-          description: The HTTP method to use for sending the message.
+          description: Access Token granting access to the POST operation to create notification
+        accessTokenExpiresUtc:
+          type: string
+          format: date-time
+          description: An absolute UTC instant at which the access token shall be considered expired. Token expiration SHOULD occur after the expiration of the application instance or deployment, allowing the client to be notified of any changes during its existence. If the token expires while the resource is still active, the client will stop receiving notifications.
+        accessTokenType:
+          type: string
           enum:
-            - POST
-
-    MQTTSubscriptionRequest:
-      allOf:
-        - $ref: "#/components/schemas/SubscriptionRequest"
-        - type: object
-          properties:
-            protocolSettings:
-              $ref: "#/components/schemas/MQTTSettings"
-
-    MQTTSubscriptionResponse:
-      allOf:
-        - $ref: "#/components/schemas/Subscription"
-        - type: object
-          properties:
-            protocolSettings:
-              $ref: "#/components/schemas/MQTTSettings"
-
-    MQTTSettings:
-      type: object
-      properties:
-        topicName:
-          type: string
-        qos:
-          type: integer
-          format: int32
-        retain:
-          type: boolean
-        expiry:
-          type: integer
-          format: int32
-        userProperties:
-          type: object
-      required:
-        - topicName
-
-    AMQPSubscriptionRequest:
-      allOf:
-        - $ref: "#/components/schemas/SubscriptionRequest"
-        - type: object
-          properties:
-            protocolSettings:
-              $ref: "#/components/schemas/AMQPSettings"
-
-    AMQPSubscriptionResponse:
-      allOf:
-        - $ref: "#/components/schemas/Subscription"
-        - type: object
-          properties:
-            protocolSettings:
-              $ref: "#/components/schemas/AMQPSettings"
-
-    AMQPSettings:
-      type: object
-      properties:
-        address:
-          type: string
-        linkName:
-          type: string
-        senderSettlementMode:
-          type: string
-          enum: ["settled", "unsettled"]
-        linkProperties:
-          type: object
-          additionalProperties:
-            type: string
-
-    ApacheKafkaSubscriptionRequest:
-      allOf:
-        - $ref: "#/components/schemas/SubscriptionRequest"
-        - type: object
-          properties:
-            protocolSettings:
-              $ref: "#/components/schemas/ApacheKafkaSettings"
-
-    ApacheKafkaSubscriptionResponse:
-      allOf:
-        - $ref: "#/components/schemas/Subscription"
-        - type: object
-          properties:
-            protocolSettings:
-              $ref: "#/components/schemas/ApacheKafkaSettings"
-
-    ApacheKafkaSettings:
-      type: object
-      properties:
-        topicName:
-          type: string
-        partitionKeyExtractor:
-          type: string
-        clientId:
-          type: string
-        ackMode:
-          type: integer
-      required:
-        - topicName
-
-    NATSSubscriptionRequest:
-      allOf:
-        - $ref: "#/components/schemas/SubscriptionRequest"
-        - type: object
-          properties:
-            protocolSettings:
-              $ref: "#/components/schemas/NATSSettings"
-
-    NATSSubscriptionResponse:
-      allOf:
-        - $ref: "#/components/schemas/Subscription"
-        - type: object
-          properties:
-            protocolSettings:
-              $ref: "#/components/schemas/NATSSettings"
-
-    NATSSettings:
-      type: object
-      properties:
-        subject:
-          type: string
-      required:
-        - subject
+            - bearer
+          description: Type of access token - MUST be set to bearer for now
 
     AccessEndpoint:
       type: object
