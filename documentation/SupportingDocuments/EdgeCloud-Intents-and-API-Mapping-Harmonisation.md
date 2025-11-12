@@ -149,7 +149,8 @@ sequenceDiagram
 
 | API | Depends On | Dependency Description |
 |-----|------------|------------------------|
-| Optimal Edge Discovery | None | Can be used standalone for planning |
+| Simple Edge Discovery | None | Can be used standalone for planning |
+| Optimal Edge Discovery | None | Can be used standalone for planning  |
 | Edge Application Management | Optimal Edge Discovery | Uses discovered zones for deployment decisions |
 | Application Endpoint Registration | Edge Cloud Lifecycle Management | Registers endpoints of instantiated applications |
 | Application Endpoint Discovery | Endpoint Registration | Discovers registered endpoints |
