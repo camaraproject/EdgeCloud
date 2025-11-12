@@ -38,7 +38,7 @@ The purpose is to bridge earlier MEC & Deployment API proposals with the current
 
 | **Intent ID** | **Intent Name** | **Purpose / Description** | **Mapped CAMARA API / Status** |
 |---------------|----------------|----------------------------|--------------------------------|
-| **Intent 1** | Discover EdgeCloud Zones | Discover the closest Edge Cloud Zone to a user device based purely on network topology (shortest network path). |  `Optimal Edge Discovery API` |
+| **Intent 1** | Discover EdgeCloud Zones | Discover the closest Edge Cloud Zone to a user device based purely on network topology (shortest network path). |  `Simple Edge Discovery API` |
 | **Intent 2** | List Available Regions / Capabilities | Discover the best Edge Cloud Zone for an application, considering compute, storage, and network performance requirements beyond distance. |  Planned extension of Optimal Edge Discovery |
 | **Intent 3** | Retrieve Zone Information | Obtain metadata, KPIs, and current resource availability of a specific Edge Cloud Zone. | `Simple Edge Discovery API` |
 | **Intent 4** | Filter / Select Preferred Zones | Apply filters (latency, region) for optimal zone selection. | Planned enhancement within Optimal Edge Discovery |
