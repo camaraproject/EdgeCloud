@@ -52,7 +52,7 @@ The purpose is to bridge earlier MEC & Deployment API proposals with the current
 | **Intent 12** | Client-Side Endpoint Selection | Allow clients to select among multiple available endpoints. | Optional behaviour of Endpoint Discovery |
 | **Intent 13** | Influence Network Traffic | Apply routing rules for premium users or optimisation. | `Traffic Influence API` |
 | **Intent 14** | Configure Network Policies | Manage slicing/routing preferences for traffic flows. | Evolution of Traffic Influence |
-| **Intent 15** | Monitor Application Performance | Retrieve runtime telemetry: latency, usage, etc. | Future – Edge Telemetry API (proposed) |
+| **Intent 15** | Monitor Application Performance | Retrieve runtime telemetry: latency, usage, etc. | SessionInsights API |
 | **Intent 16** | Retrieve Edge Metrics / Zone Health | Query Edge Zone health and operational metrics. | Under discussion – EdgeCloud Monitoring API |
 | **Intent 17** | Automate Policy or Scaling Actions | Enable closed-loop orchestration and scaling triggers. | Future – Edge Orchestration Intent API |
 | **Intent 18** | Terminate Application | Decommission instances and release resources. | `Edge Cloud Lifecycle Management API` |
