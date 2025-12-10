@@ -1068,7 +1068,9 @@ components:
             content:
               application/cloudevents+json:
                 schema:
-                  $ref: '#/components/schemas/CloudEvent'
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CloudEvent'
           responses:
             '204':
               description: Successful notification - No Content
@@ -1096,6 +1098,7 @@ components:
         - type
         - specversion
         - time
+        - accessPoints
       properties:
         id:
           type: string
@@ -1134,8 +1137,8 @@ components:
               type: string
               description: Application deployment identifier (for deployment-based events)
             status:
-              type: string
-              description: Current status of the application instance or deployment
+              $ref: '#/components/schemas/CloudEventStatus'
+              description: New status of the application instance or deployment
             terminationReason:
               type: string
               enum:
@@ -1143,6 +1146,18 @@ components:
                 - MAX_EVENTS_REACHED
                 - ACCESS_TOKEN_EXPIRED
               description: Reason for subscription termination (for subscription-ended events)
+            accessPoints:
+              $ref: '#/components/schemas/AccessEndpoint'
+
+    CloudEventStatus:
+      description: |
+        Status of the application instance or deployment
+      enum:
+        - DEPLOYING
+        - RUNNING
+        - FAILED
+        - TERMINATING
+        - TERMINATED
 
     SubscriptionEventType:
       type: string
@@ -1158,8 +1173,7 @@ components:
       type: object
       required:
         - sink
-        - types
-        - config
+        - sinkCredential
       properties:
         sink:
           type: string
