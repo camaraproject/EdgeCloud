@@ -405,6 +405,8 @@ paths:
                   $ref: '#/components/schemas/EdgeCloudZoneId'
                 kubernetesClusterRef:
                   $ref: '#/components/schemas/KubernetesClusterRef'
+                subscriptionRequest:
+                  $ref: '#/components/schemas/SubscriptionRequest'
         required: true
       responses:
         '202':
@@ -444,6 +446,9 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
+      callbacks:
+        onAppInstanceStatusChange:
+          $ref: '#/components/callbacks/onAppInstanceStatusChange'
     get:
       security:
         - openId:
@@ -592,6 +597,8 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/KubernetesClusterRef'
+                subscriptionRequest:
+                  $ref: '#/components/schemas/SubscriptionRequest'
         required: true
       responses:
         '202':
@@ -628,6 +635,9 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
+      callbacks:
+        onAppDeploymentStatusChange:
+          $ref: '#/components/callbacks/onAppDeploymentStatusChange'
     get:
       security:
         - openId:
@@ -995,7 +1005,252 @@ components:
         type: string
         format: uuid
 
+  callbacks:
+    onAppInstanceStatusChange:
+      '{$request.body#/subscriptionRequest/sink}':
+        post:
+          tags:
+            - App Instance CALLBACK Operation
+          summary: Provide a notification for a change in status of the instantiated application
+          description: |
+            Instantiating an application is an asynchronous task. After the application status changes,
+            the server will return a callback response at the specified URL.
+
+            **WARNING**: This callback endpoint must be exposed on the listener side as `POST {$request.body#/subscriptionRequest/sink}`
+          operationId: EdgeApplicationManagementCallback
+          parameters:
+            - $ref: '#/components/parameters/x-correlator'
+          security:
+            - notificationsBearerAuth: []
+          requestBody:
+            description: Event notification with the status of the Application Instance
+            required: true
+            content:
+              application/cloudevents+json:
+                schema:
+                  $ref: '#/components/schemas/CloudEvent'
+          responses:
+            '204':
+              description: Successful notification - No Content
+              headers:
+                x-correlator:
+                  $ref: '#/components/headers/x-correlator'
+            '400':
+              $ref: '#/components/responses/400'
+            '401':
+              $ref: '#/components/responses/401'
+            '403':
+              $ref: '#/components/responses/403'
+            '410':
+              $ref: '#/components/responses/410'
+            '429':
+              $ref: '#/components/responses/429'
+
+    onAppDeploymentStatusChange:
+      '{$request.body#/subscriptionRequest/sink}':
+        post:
+          tags:
+            - App Deployment CALLBACK Operation
+          summary: Provide a notification for a change in status of the deployed application
+          description: |
+            Deploying an application is an asynchronous task. After the application deployment status changes,
+            the server will return a callback response at the specified URL.
+
+            **WARNING**: This callback endpoint must be exposed on the listener side as `POST {$request.body#/subscriptionRequest/sink}`
+          operationId: EdgeApplicationManagementDeploymentCallback
+          parameters:
+            - $ref: '#/components/parameters/x-correlator'
+          security:
+            - notificationsBearerAuth: []
+          requestBody:
+            description: Event notification with the status of the Application Deployment
+            required: true
+            content:
+              application/cloudevents+json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CloudEvent'
+          responses:
+            '204':
+              description: Successful notification - No Content
+              headers:
+                x-correlator:
+                  $ref: '#/components/headers/x-correlator'
+            '400':
+              $ref: '#/components/responses/400'
+            '401':
+              $ref: '#/components/responses/401'
+            '403':
+              $ref: '#/components/responses/403'
+            '410':
+              $ref: '#/components/responses/410'
+            '429':
+              $ref: '#/components/responses/429'
+
   schemas:
+    CloudEvent:
+      description: Cloud Event notification following CloudEvents 1.0 specification
+      type: object
+      required:
+        - id
+        - source
+        - type
+        - specversion
+        - time
+        - accessPoints
+      properties:
+        id:
+          type: string
+          description: Identifier of this event, that must be unique in the source context
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        source:
+          type: string
+          format: uri
+          description: Identifies the context in which an event happened
+          example: "https://edge-cloud-provider.example.com"
+        type:
+          $ref: '#/components/schemas/SubscriptionEventType'
+        specversion:
+          type: string
+          enum:
+            - "1.0"
+          description: Version of the CloudEvents specification (must be 1.0)
+        datacontenttype:
+          type: string
+          enum:
+            - application/json
+          description: Media-type of the event payload encoding (must be application/json for CAMARA APIs)
+        time:
+          type: string
+          format: date-time
+          description: Timestamp of when the occurrence happened (RFC 3339)
+          example: "2023-01-17T13:18:23.682Z"
+        data:
+          type: object
+          description: Event notification details payload
+          properties:
+            appInstanceId:
+              type: string
+              description: Application instance identifier (for instance-based events)
+            appDeploymentId:
+              type: string
+              description: Application deployment identifier (for deployment-based events)
+            status:
+              $ref: '#/components/schemas/CloudEventStatus'
+              description: New status of the application instance or deployment
+            terminationReason:
+              type: string
+              enum:
+                - SUBSCRIPTION_EXPIRED
+                - MAX_EVENTS_REACHED
+                - ACCESS_TOKEN_EXPIRED
+              description: Reason for subscription termination (for subscription-ended events)
+            accessPoints:
+              $ref: '#/components/schemas/AccessEndpoint'
+
+    CloudEventStatus:
+      description: |
+        Status of the application instance or deployment
+      enum:
+        - DEPLOYING
+        - RUNNING
+        - FAILED
+        - TERMINATING
+        - TERMINATED
+
+    SubscriptionEventType:
+      type: string
+      description: |
+        Event-type that could be subscribed through this subscription. Several event-type could be defined.
+      enum:
+        - org.camaraproject.edge-application-management.v0.app-instance-status-change
+        - org.camaraproject.edge-application-management.v0.app-deployment-status-change
+        - org.camaraproject.edge-application-management.v0.subscription-ended
+
+    SubscriptionRequest:
+      description: The request for creating an event-type event subscription (implicit subscription, HTTP only)
+      type: object
+      required:
+        - sink
+        - sinkCredential
+      properties:
+        sink:
+          type: string
+          format: uri
+          pattern: ^https:\/\/.+$
+          description: The address to which events shall be delivered using the selected protocol.
+          example: "https://endpoint.example.com/sink"
+        sinkCredential:
+          $ref: "#/components/schemas/SinkCredential"
+        types:
+          description: |
+            Camara Event types eligible to be delivered by this subscription.
+            Note: the maximum number of event types per subscription will be decided at API project level
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            $ref: "#/components/schemas/SubscriptionEventType"
+        config:
+          $ref: "#/components/schemas/SubscriptionConfig"
+
+    SubscriptionConfig:
+      description: |
+        Implementation-specific configuration parameters needed by the subscription manager for acquiring events.
+        In CAMARA we have predefined attributes like `subscriptionExpireTime`, `subscriptionMaxEvents`, `initialEvent`
+        Specific event type attributes must be defined in `subscriptionDetail`
+        Note: if a request is performed for several event type, all subscribed event will use same `config` parameters.
+      type: object
+      required:
+        - subscriptionDetail
+      properties:
+        subscriptionDetail:
+          description: The detail of the requested event subscription.
+          type: object
+        subscriptionExpireTime:
+          type: string
+          format: date-time
+          example: 2023-01-17T13:18:23.682Z
+          description: The subscription expiration time (in date-time format) requested by the API consumer. It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
+        subscriptionMaxEvents:
+          type: integer
+          description: Identifies the maximum number of event reports to be generated (>=1) requested by the API consumer - Once this number is reached, the subscription ends.
+          minimum: 1
+          example: 5
+        initialEvent:
+          type: boolean
+          description: |
+            Set to `true` by API consumer if consumer wants to get an event as soon as the subscription is created and current situation reflects event request.
+            Example: If initialEvent is set to true and application is in a specific status, an event is triggered.
+
+    SinkCredential:
+      description: A sink credential provides authentication or authorization information necessary to enable delivery of events to a target.
+      type: object
+      required:
+        - credentialType
+        - accessToken
+        - accessTokenExpiresUtc
+        - accessTokenType
+      properties:
+        credentialType:
+          type: string
+          enum:
+            - ACCESSTOKEN
+          description: Type of the credential - MUST be set to ACCESSTOKEN for now
+        accessToken:
+          type: string
+          description: Access Token granting access to the POST operation to create notification
+        accessTokenExpiresUtc:
+          type: string
+          format: date-time
+          description: An absolute UTC instant at which the access token shall be considered expired. Token expiration SHOULD occur after the expiration of the application instance or deployment, allowing the client to be notified of any changes during its existence. If the token expires while the resource is still active, the client will stop receiving notifications.
+        accessTokenType:
+          type: string
+          enum:
+            - bearer
+          description: Type of access token - MUST be set to bearer for now
+
     AccessEndpoint:
       type: object
       description: |
@@ -1999,6 +2254,19 @@ components:
             status: 410
             code: GONE
             message: "The resource has been permanently removed"
+    '429':
+      description: Too Many Requests
+      headers:
+        X-Correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          example:
+            status: 429
+            code: QUOTA_EXCEEDED
+            message: "Quota exceeded: ..."
     '500':
       description: Internal Server Error
       headers:
