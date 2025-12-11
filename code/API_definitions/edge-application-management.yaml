@@ -24,7 +24,7 @@ info:
     their application to the Edge Cloud Platform which do bookkeeping,
     resource validation and other pre-deployment operations.
     Application details can contain components network specification,
-    package type (QCOW2, OVA, CONTAINER, HELM), operating system details and
+    package type (QCOW2, OVA, CONTAINER, HELM, CSAR), operating system details and
     respository to download the image of the desired application.
     Once the application is available on the Edge Cloud
     Platform, the Application Provider can instantiate the application.
@@ -1166,6 +1166,7 @@ components:
             - OVA
             - CONTAINER
             - HELM
+            - CSAR
         operatingSystem:
           $ref: '#/components/schemas/OperatingSystem'
         appRepo:
