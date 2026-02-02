@@ -1145,7 +1145,19 @@ components:
                 - SUBSCRIPTION_EXPIRED
                 - MAX_EVENTS_REACHED
                 - ACCESS_TOKEN_EXPIRED
-              description: Reason for subscription termination (for subscription-ended events)
+                - SUBSCRIPTION_DELETED
+                - NETWORK_TERMINATED
+                - DELIVERY_FAILURE
+                - RESOURCE_DELETED
+              description: |
+                Reason for subscription termination (for subscription-ended events):
+                - SUBSCRIPTION_EXPIRED: Subscription expire time has been reached
+                - MAX_EVENTS_REACHED: Maximum number of events has been reached
+                - ACCESS_TOKEN_EXPIRED: Access token expiration time has been reached
+                - SUBSCRIPTION_DELETED: Subscription was deleted by the API consumer
+                - NETWORK_TERMINATED: API server stopped sending notifications
+                - DELIVERY_FAILURE: Repeated failures delivering events to sink endpoint (non-retryable)
+                - RESOURCE_DELETED: Monitored application instance or deployment no longer exists
             accessPoints:
               $ref: '#/components/schemas/AccessEndpoint'
 
