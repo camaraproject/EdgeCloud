@@ -1137,7 +1137,8 @@ components:
               type: string
               description: Application deployment identifier (for deployment-based events)
             status:
-              $ref: '#/components/schemas/CloudEventStatus'
+              allOf:
+                - $ref: '#/components/schemas/CloudEventStatus'
               description: New status of the application instance or deployment
             terminationReason:
               type: string
