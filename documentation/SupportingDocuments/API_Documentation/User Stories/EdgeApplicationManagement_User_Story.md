@@ -6,7 +6,7 @@
 |MNO|Communications Service Provider|API Publisher |
 |User Client(UC)|API Consumer|API Requester |
 
-Note: the role of Edge Service Provider may be played by either the MNO or Cloud Service Providers (Hyperscalers).
+Note: the role of Edge Service Provider may be played by different entities, for example: MNOs, Hyperscalers, etc
 
 
 
@@ -23,9 +23,9 @@ Note: the role of Edge Service Provider may be played by either the MNO or Cloud
 |Step 6|The AP may request updated information of existing app instances of a given app. Possible status for app instantiation includes "ready" also information for endpoint info is provided for the app instance| O |
 |Step 7|App instance may provide service for end users | O |
 |Step 8|The AP request termination of one app instance (optionally all app instances in a given region) | M |
-|Step 9|The OP validates the request (terminates with a notification to the UE if content is not valid e.g. given appId does not exist)| M|
-|Step 10|The OP response to the AP and starts the termination of the app instance, moving its status to terminating| M|
-|Ends when|The UE connects to the EAS| M |
+|Step 9|The ESP validates the request (terminates with a notification to the UE if content is not valid e.g. given appId does not exist)| M|
+|Step 10|The ESP response to the AP and starts the termination of the app instance, moving its status to terminating| M|
+|Ends when|The UC connects to the EAS| M |
 
 
 
