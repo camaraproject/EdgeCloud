@@ -1,8 +1,8 @@
 | Org                    | Name                   | GitHub Username             |
 | -----------------------| -----------------------|-----------------------------|
-| 5GFF| Kevin Smith | Kevsy |  
-| 5GFF | Mahesh Chapalamadugu | maheshc01 |
+| Vodafone| Kevin Smith | Kevsy |  
+| Verizon | Mahesh Chapalamadugu | maheshc01 |
 | Capgemini | Deepak Gunjal | gunjald |
-| Telefonica | Cristina Santana Casillas | crissancas |
+| Telefonica | Jose manuel Conde Gómez | JoseMConde |
 | EdgeXR | Jon Gainsley | gainsley |
 
