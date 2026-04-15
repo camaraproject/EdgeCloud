@@ -12,28 +12,28 @@
 Sandbox API Repository to describe, develop, document, and test Service API(s) within the Sub Project [Edge Cloud](https://lf-camaraproject.atlassian.net/wiki/x/IwEpBQ).
 
 * API Repository [wiki page](https://lf-camaraproject.atlassian.net/wiki/x/ujLe)
-* Warning
 
 > [!WARNING]  
-> After the CAMARA Spring25 meta release, the following APIs have been separated into 5 individual repositories:
+> As of April 2026, the family of EdgeCloud APIs have been separated into 6 individual repositories:
 > - [SimpleEdgeDiscovery](https://github.com/camaraproject/SimpleEdgeDiscovery)
 > - [ApplicationEndpointDiscovery](https://github.com/camaraproject/ApplicationEndPointDiscovery)
 > - [TrafficInfluence](https://github.com/camaraproject/TrafficInfluence)
 > - [ApplicationEndpointRegistration](https://github.com/camaraproject/ApplicationEndpointRegistration)
 > - [OptimalEdgeDiscovery](https://github.com/camaraproject/OptimalEdgeDiscovery)
+> - [EdgeApplicationManagement](https://github.com/camaraproject/EdgeApplicationManagement)
 >
-> **For these APIs:** This repository should be only used for maintenance of previous releases. For contributions to the API development please use exclusively the new repositories. Thanks!
-
-**For the EdgeApplicationManagement API:** API development will continue in this repository until further notice
+> This EdgeCloud repository should be only used for maintenance of previous releases. For contributions to the API development please use exclusively the new repositories. Thanks!
 
 ## Scope
 
 * Service APIs for “Edge Cloud” (see APIBacklog.md)
-* It provides the customer with the ability to:  
-  * Discover the closest edge cloud zone to a given device (https://github.com/camaraproject/SimpleEdgeDiscovery).
-  * Provide and manage application images to be deployed on resources within the operator network. 
-  * Use reserved compute resources within the operator network for the deployment of applications on VMs or containers.  
-  * Influence the traffic routing from the user device toward the Edge instance of the Application (https://github.com/camaraproject/TrafficInfluence). 
+* These provides the customer with the ability to:  
+  * [SimpleEdgeDiscovery](https://github.com/camaraproject/SimpleEdgeDiscovery): Discover the closest edge cloud zone to a given device.
+  * [OptimalEdgeDiscovery](https://github.com/camaraproject/OptimalEdgeDiscovery): Discover the optimal edge cloud zone for a given device and application. 
+  * [EdgeApplicationManagement](https://github.com/camaraproject/EdgeApplicationManagement):
+    * Provide and manage application images to be deployed on resources within the operator network.
+    * Use reserved compute resources within the operator network for the deployment of applications on VMs or containers.  
+  * [TrafficInfluence](https://github.com/camaraproject/TrafficInfluence): Influence the traffic routing from the user device toward the Edge instance of the Application . 
   * NOTE: The scope of these APIs should be limited (at least at a first stage) to 4G and 5G.  
 * Describe, develop, document and test the APIs (with 1-2 Telcos)  
 * Started: 5th July 2022
